@@ -32,6 +32,7 @@
       <!-- Page plugins -->
       <!-- Argon CSS -->
       <link rel="stylesheet" href="{{asset('design/assets/css/argon.css?v=1.2.0')}}" type="text/css">
+      <link rel="stylesheet" href="{{asset('css/toastr.min.css')}}">
     </head>
     
     <body>
@@ -163,7 +164,7 @@
         <div class="header bg-primary pb-6">
           <div class="container-fluid">
             <div class="header-body">
-              @include('layouts.breadcumb')
+              @yield('breadcumb')
               {{--@include('layouts.estadisticas')--}}
             </div>
           </div>
@@ -211,6 +212,7 @@
       <script src="{{asset('design/assets/vendor/chart.js/dist/Chart.extension.js')}}"></script>
       <!-- Argon JS -->
       <script src="{{asset('design/assets/js/argon.js?v=1.2.0')}}"></script>
+      <script src="{{ asset('js/toastr.min.js') }}"></script>
     </body>
     
     </html>
