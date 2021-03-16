@@ -14,5 +14,6 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
+	echo "holis";die;
     return view('layouts.principal');
 });
