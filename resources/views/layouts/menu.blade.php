@@ -13,6 +13,19 @@
                 <!-- Nav items -->
                 <ul class="navbar-nav">
                     <li class="nav-item">
+                        <a class="nav-link" href="{{ route('usuario/listado') }}">
+                        <i class="ni ni-single-02 text-primary"></i>
+                        <span class="nav-link-text">Usuarios</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('producto/listado') }}">
+                        <i class="ni ni-books text-primary"></i>
+                        <span class="nav-link-text">Productos</span>
+                        </a>
+                    </li>
+                    <!--
+                    <li class="nav-item">
                         <a class="nav-link active" href="examples/dashboard.html">
                         <i class="ni ni-tv-2 text-primary"></i>
                         <span class="nav-link-text">Dashboard</span>
@@ -30,12 +43,7 @@
                         <span class="nav-link-text">Google</span>
                         </a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="examples/profile.html">
-                        <i class="ni ni-single-02 text-yellow"></i>
-                        <span class="nav-link-text">Profile</span>
-                        </a>
-                    </li>
+                    
                     <li class="nav-item">
                         <a class="nav-link" href="examples/tables.html">
                         <i class="ni ni-bullet-list-67 text-default"></i>
@@ -60,6 +68,7 @@
                         <span class="nav-link-text">Upgrade</span>
                         </a>
                     </li>
+                -->
                 </ul>
             </div>
         </div>

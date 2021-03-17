@@ -1,7 +1,8 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-
+use App\Http\Controllers\UsuarioController;
+use App\Http\Controllers\ProductoController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -14,6 +15,13 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-	echo "holis";die;
     return view('layouts.principal');
 });
+
+Route::any('usuario/formulario', [UsuarioController::class, 'Formulario'])->name('usuario/formulario');
+Route::get('usuario/listado', [UsuarioController::class, 'Listado'])->name('usuario/listado');
+
+Route::get('producto/listado', [ProductoController::class, 'Listado'])->name('producto/listado');
+Route::get('producto/cargar_archivo', function () {
+    return view('producto.cargar_archivo');
+})->name('producto/cargar_archivo');
