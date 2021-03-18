@@ -15,11 +15,15 @@ use App\Http\Controllers\ProductoController;
 */
 
 Route::get('/', function () {
-    return view('layouts.principal');
+    return view('login.login');
 });
-
+Route::any('usuario/validar', [UsuarioController::class, 'Validar'])->name('usuario/validar');
+Route::get('usuario/cerrar_sesion', [UsuarioController::class, 'CerrarSesion'])->name('usuario/cerrar_sesion');
 Route::any('usuario/formulario', [UsuarioController::class, 'Formulario'])->name('usuario/formulario');
 Route::get('usuario/listado', [UsuarioController::class, 'Listado'])->name('usuario/listado');
+Route::any('usuario/perfil/{id_usuario}', [UsuarioController::class, 'Perfil'])->name('usuario/perfil');
+Route::any('usuario/cambiar_password', [UsuarioController::class, 'CambiarPassword'])->name('usuario/cambiar_password');
+Route::any('usuario/actualizar_perfil', [UsuarioController::class, 'ActualizarPerfil'])->name('usuario/actualizar_perfil');
 
 Route::get('producto/listado', [ProductoController::class, 'Listado'])->name('producto/listado');
 Route::get('producto/cargar_archivo', function () {

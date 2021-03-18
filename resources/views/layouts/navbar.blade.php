@@ -1,3 +1,14 @@
+@php
+    $usuario = \App\Models\Usuario::find(session('id_usuario'));
+@endphp
+@if ($usuario == null)
+    <script>
+        location.href = '{{ route('usuario/cerrar_sesion') }}'
+    </script>
+    @php
+        die();
+    @endphp
+@endif
 <nav class="navbar navbar-top navbar-expand navbar-dark bg-primary border-bottom">
   <div class="container-fluid">
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
@@ -84,10 +95,10 @@
           <a class="nav-link pr-0" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             <div class="media align-items-center">
               <span class="avatar avatar-sm rounded-circle">
-                <img alt="Image placeholder" src="{{asset('design/assets/img/theme/team-4.jpg')}}">
+                <img alt="Image placeholder" src="{{$usuario->obtenerImagen()}}">
               </span>
               <div class="media-body  ml-2  d-none d-lg-block">
-                <span class="mb-0 text-sm  font-weight-bold">John Snow</span>
+                <span class="mb-0 text-sm  font-weight-bold">{{$usuario->nombres}}</span>
               </div>
             </div>
           </a>
@@ -96,21 +107,21 @@
             <h6 class="text-overflow m-0">Bienvenido!</h6>
             </div>
             
-            <a href="#!" class="dropdown-item">
-            <i class="ni ni-single-02"></i>
-            <span>Mi perfil</span>
-            </a>
+              <a href="{{route('usuario/perfil', $usuario->id_usuario)}}" class="dropdown-item">
+                <i class="ni ni-single-02"></i>
+                <span>Mi perfil</span>
+              </a>
 
-            <a href="#!" class="dropdown-item">
-            <i class="ni ni-settings-gear-65"></i>
-            <span>Ajustes</span>
-            </a>
-            
-            <div class="dropdown-divider"></div>
-            <a href="#!" class="dropdown-item">
-            <i class="ni ni-user-run"></i>
-            <span>Salir</span>
-            </a>
+              <a href="#!" class="dropdown-item">
+                <i class="ni ni-settings-gear-65"></i>
+                <span>Ajustes</span>
+              </a>
+              
+              <div class="dropdown-divider"></div>
+              <a href="#!" class="dropdown-item">
+                <i class="ni ni-user-run"></i>
+                <span>Salir</span>
+              </a>
           </div>
         </li>
       </ul>

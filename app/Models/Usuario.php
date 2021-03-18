@@ -19,15 +19,26 @@ class Usuario extends Model
     	'telefono',
     	'nombre_usuario',
     	'id_dominio_tipo_usuario',
-    	'direccion'
+    	'direccion',
+		'url_imagen'
     ];
-    public function tipo()
-	{
+    public function tipo(){
 		return $this->belongsTo(Dominio::class, 'id_dominio_tipo_usuario', 'id_dominio');
 	}
 
-	public function tipo_documento()
-	{
+	public function tipo_documento(){
 		return $this->belongsTo(Dominio::class, 'id_dominio_tipo_documento', 'id_dominio');
 	}
+
+	public function obtenerImagen(){
+        $ruta_imagen = "";
+        if($this->id_dominio_tipo_usuario == 2){
+            $ruta_imagen = asset('design/assets/img/theme/team-4.jpg');
+        }
+
+        if($this->url_imagen != null and $this->url_imagen != ""){
+            $ruta_imagen = asset('images/users/'.$this->url_imagen);
+        }
+        return $ruta_imagen;
+    }
 }

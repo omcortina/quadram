@@ -39,38 +39,47 @@
             </div>
             <!-- Page content -->
             <div class="container mt--8 pb-5">
-            <div class="row justify-content-center">
-                <div class="col-lg-5 col-md-7">
-                    <div class="card bg-secondary border-0 mb-0">
-                        <div class="card-body px-lg-5 py-lg-5">
-                        <div class="text-center text-muted mb-4">
-                            <medium style="font-size: 22px"><b>Bienvenido</b></medium>
-                        </div>
-                        <form role="form">
-                            <div class="form-group mb-3">
-                                <div class="input-group input-group-merge input-group-alternative">
-                                    <div class="input-group-prepend">
-                                    <span class="input-group-text"><i class="ni ni-circle-08"></i></span>
-                                    </div>
-                                    <input class="form-control" placeholder="Usuario" type="text">
+                <div class="row justify-content-center">
+                    <div class="col-lg-5 col-md-7">
+                        <div class="card bg-secondary border-0 mb-0">
+                            @if (session('mensaje_login'))
+                                <div id="msg" class="alert alert-danger" style="border-bottom-right-radius: 0px !important; border-bottom-left-radius: 0px !important;">
+                                    <li>{{session('mensaje_login')}}</li>
                                 </div>
-                            </div>
-                            <div class="form-group">
-                                <div class="input-group input-group-merge input-group-alternative">
-                                    <div class="input-group-prepend">
-                                    <span class="input-group-text"><i class="ni ni-lock-circle-open"></i></span>
-                                    </div>
-                                    <input class="form-control" placeholder="Contraseña" type="password">
+
+                                <script>
+                                    setTimeout(function(){ $('#msg').fadeOut() }, 4000);
+                                </script>
+                            @endif
+                            <div class="card-body px-lg-5 py-lg-5">
+                                <div class="text-center text-muted mb-4">
+                                    <medium style="font-size: 22px"><b>Bienvenido</b></medium>
                                 </div>
+                                {{ Form::open(array('method' => 'post', 'id' => 'form-validar', 'route' => 'usuario/validar')) }}
+                                <div class="form-group mb-3">
+                                    <div class="input-group input-group-merge input-group-alternative">
+                                        <div class="input-group-prepend">
+                                        <span class="input-group-text"><i class="ni ni-circle-08"></i></span>
+                                        </div>
+                                        <input class="form-control" placeholder="Usuario" type="text" name="nombre_usuario" id="nombre_usuario">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="input-group input-group-merge input-group-alternative">
+                                        <div class="input-group-prepend">
+                                        <span class="input-group-text"><i class="ni ni-lock-circle-open"></i></span>
+                                        </div>
+                                        <input class="form-control" placeholder="Contraseña" type="password" name="password" id="passsword">
+                                    </div>
+                                </div>
+                                <div class="text-center">
+                                <button type="submit" class="btn btn-primary my-4">Ingresar</button>
+                                </div>
+                                {{ Form::close() }}
                             </div>
-                            <div class="text-center">
-                            <button type="button" class="btn btn-primary my-4">Ingresar</button>
-                            </div>
-                        </form>
                         </div>
                     </div>
                 </div>
-            </div>
             </div>
         </div>
         <!-- Footer -->
