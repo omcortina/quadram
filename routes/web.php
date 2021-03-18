@@ -25,3 +25,6 @@ Route::get('producto/listado', [ProductoController::class, 'Listado'])->name('pr
 Route::get('producto/cargar_archivo', function () {
     return view('producto.cargar_archivo');
 })->name('producto/cargar_archivo');
+
+Route::post('producto/importar_excel', [ProductoController::class, 'ImportarExcel'])->name('producto/importar_excel');
+

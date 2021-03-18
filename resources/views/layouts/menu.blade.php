@@ -13,15 +13,15 @@
                 <!-- Nav items -->
                 <ul class="navbar-nav">
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ route('usuario/listado') }}">
-                        <i class="ni ni-single-02 text-primary"></i>
-                        <span class="nav-link-text">Usuarios</span>
-                        </a>
-                    </li>
-                    <li class="nav-item">
                         <a class="nav-link" href="{{ route('producto/listado') }}">
                         <i class="ni ni-books text-primary"></i>
                         <span class="nav-link-text">Productos</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('usuario/listado') }}">
+                        <i class="ni ni-single-02 text-primary"></i>
+                        <span class="nav-link-text">Usuarios</span>
                         </a>
                     </li>
                     <!--

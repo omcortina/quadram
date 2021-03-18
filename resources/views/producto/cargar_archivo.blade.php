@@ -7,7 +7,7 @@
         <nav aria-label="breadcrumb" class="d-none d-md-inline-block ml-md-4">
         <ol class="breadcrumb breadcrumb-links breadcrumb-dark">
             <li class="breadcrumb-item"><a href="#"><i class="fas fa-user"></i></a></li>
-            <li class="breadcrumb-item"><a href="{{ route('usuario/listado') }}">Productos</a></li>
+            <li class="breadcrumb-item"><a href="{{ route('producto/listado') }}">Productos</a></li>
             <li class="breadcrumb-item active" aria-current="page">Importar productos</li>
         </ol>
         </nav>
@@ -155,13 +155,25 @@
         <div class="col-sm-12">
             <div class="card">
                 <div class="card-header border-0">
-                    {{ Form::open(array('id' => 'form-usuario')) }}
-                        <div class="alert alert-primary">
-                            <strong>Por favor seleccione un archivo excel (.xls) para importar al sistemas un listado de productos</strong>
-                        </div>
-
+                     <form id="form-cargar-producto"
+                           action="{{ route('producto/importar_excel') }}" 
+                           method="POST" 
+                           enctype="multipart/form-data">
+                         @csrf
+                            
+                            <p>Por favor seleccione un archivo excel (.xls) para importar al sistemas un listado de productos</p>
+                            @if(isset($mensaje) and $mensaje != null)
+                                <div id="alert" 
+                                @if ($error) class="alert alert-danger" 
+                                @else class="alert alert-success" 
+                                @endif>
+                                    {{ $mensaje }}
+                                    @php $mensaje = null; @endphp
+                                </div>
+                                <script>setTimeout(()=>{$("#alert").fadeOut()},5000)</script>
+                            @endif
                         <div class="image-upload-wrap">
-                          <input class="file-upload-input" type="file" id="file_products" accept=".xlsx, .xls, .csv">
+                          <input class="file-upload-input" name="file" type="file" id="file" accept=".xlsx, .xls, .csv">
                           <div class="drag-text" style="margin: 20px 0px 20px 0px;">
                             <b class="drag-text" id="name_file">Selecciona o arrastra tu archivo</b>
                           </div>
@@ -170,12 +182,11 @@
                         <div class="row">
                             <div class="col-sm-12">
                                 <center>
-                                    <button type="button" class="btn btn-success" onclick="ValidarArchivo()">Importar Productos</button>
+                                    <button id="btn" type="button" class="btn btn-success" onclick="ValidarArchivo()">Importar Productos</button>
                                 </center>
                             </div>
                         </div>
-
-                    {{ Form::close() }}
+                    </form>
                 </div>
             </div>
         </div>
@@ -185,16 +196,29 @@
 @endsection
 <script>
     setTimeout(()=>{
-        $("#file_products").on('change',function(){
-            document.getElementById('name_file').innerHTML = "Archivo cargado - "+this.files[0].name 
+        $("#file").on('change',function(){
+            if ($("#file").val() != "") {
+                document.getElementById('name_file').innerHTML = "Archivo cargado - "+this.files[0].name 
+            }else{
+                document.getElementById('name_file').innerHTML = "Ningun archivo seleccionado"
+                setTimeout(()=>{
+                    document.getElementById('name_file').innerHTML = "Selecciona o arrastra tu archivo"
+                }, 3000)
+            }
         });
-    }, 1000)  
+        console.log("Change file configured")
+    }, 2000)  
 
     function ValidarArchivo() {
-          if (!this.files) {
-            alert("Por favor, selccione un archivo valido")
-          }
-      }  
+        if ($("#file").val() == "") {
+            alert("Por favor, seleccione un archivo valido")
+        }
+        else{
+            $("#btn").prop("disabled", true)
+            $("#form-cargar-producto").submit()
+        }
+            
+    }  
    
         
 </script>
