@@ -63,7 +63,7 @@ class UsuarioController extends Controller
     }
 
 	public function Listado(){
-		$usuarios = Usuario::all();
+		$usuarios = Usuario::all()->where("id_usuario", "<>", session('id_usuario'));
 		return view('usuario.listado', compact(['usuarios']));
 	}
 
@@ -107,14 +107,28 @@ class UsuarioController extends Controller
 			$usuario = Usuario::where("id_usuario", $data->id_usuario)
 							  ->where("password", md5($data->password))
 							  ->first();
-			if($usuario){
-				$usuario->password = md5($data->password_nueva);
-				if($usuario->update()){
-					$mensaje = "Contraseña actualizada.";
-					$error = false;
+			
+			if(!isset($data->id_usuario_para_cambiar)){
+				if($usuario){
+					$usuario->password = md5($data->password_nueva);
+					if($usuario->update()){
+						$mensaje = "Contraseña actualizada.";
+						$error = false;
+					}
+				}else{
+					$mensaje = "La contraseña actual es incorrecta.";
 				}
 			}else{
-				$mensaje = "La contraseña actual es incorrecta.";
+				if($usuario){
+					$usuario_por_cambiar = Usuario::find($data->id_usuario_para_cambiar);
+					$usuario_por_cambiar->password = md5($data->password_nueva);
+					if($usuario_por_cambiar->update()){
+						$mensaje = "Contraseña actualizada.";
+						$error = false;
+					}
+				}else{
+					$mensaje = "La contraseña actual es incorrecta.";
+				}
 			}
 		}else{
 			$mensaje = "Hubo un error.";

@@ -14,7 +14,7 @@
     </div>
 
     <div class="col-lg-6 col-5 text-right">
-      <a href="{{ route('usuario/formulario') }}" class="btn btn-sm btn-neutral">+ Nuevo producto</a>
+      <a href="#" class="btn btn-sm btn-neutral">+ Nuevo producto</a>
       <a href="{{ route('producto/cargar_archivo') }}" class="btn btn-sm btn-success">Importar productos</a>
     </div>
 </div>
@@ -26,23 +26,29 @@
       <div class="card">
         <div class="table-responsive">
           <!-- Projects table -->
-          <table class="table align-items-center table-flush">
+          <table class="table align-items-center table-flush" id="tabla_productos">
             <thead class="thead-light">
               <tr>
                 <th scope="col">Codigo</th>
                 <th scope="col">Nombre</th>
-                <th scope="col">Descripcion</th>
+                <th scope="col">Descipción</th>
                 <th scope="col">Estado</th>
-                <th scope="col"></th>
+                <th scope="col"><center>Acciones</center></th>
               </tr>
             </thead>
             <tbody>
               @foreach($productos as $producto)
                 <tr>
                   <td>{{ $producto->codigo }}</td>
-                  <td>{{ $producto->nombre }}</td>
-                  <td>{{ $producto->descripcion }}</td>
-                  <td>{{ $producto->estado == 1 ? 'Activo' : 'Inactivo' }}</td>
+                  <td>{{ Str::length($producto->nombre) > 40 ? Str::limit($producto->nombre, 37, '...') : $producto->nombre }}</td>
+                  <td>
+                    @if ($producto->descripcion != null)
+                      {{ $producto->descripcion }}
+                    @else
+                      Sin descripción
+                    @endif
+                  </td>
+                  <td style="color: #2dce89">{{ $producto->estado == 1 ? 'Activo' : 'Inactivo' }}</td>
                   <td><center>
                     <a href="">Editar</a>
                   </center></td>
@@ -50,6 +56,13 @@
               @endforeach
             </tbody>
           </table>
+        </div>
+        <div class="row"style="margin-left: 10px; margin-top: 20px;">
+          <div class="col-sm-12">
+            <center>
+              {{ $productos->links('pagination::bootstrap-4') }}
+            </center>
+          </div>
         </div>
       </div>
   </div>

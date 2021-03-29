@@ -113,6 +113,7 @@
                     <div class="col-sm-12">
                         <center>
                             <button type="button" class="btn btn-success" onclick="GuardarUsuario()">Guardar</button>
+                            <button type="button" class="btn btn-info" onclick="AbrirModal()">Cambiar contraseña</button>
                         </center>
                     </div>
                 </div>
@@ -122,8 +123,6 @@
         </div>
     </div>
 </div>
-@endsection
-
 <script>
     function GuardarUsuario(){
         let tipo_documento = $("#tipo_documento").val()
@@ -152,4 +151,95 @@
         else
             toastr.success(mensaje)
     }
+
+    function AbrirModal(){
+        $("#ModalCambiarPassword").modal("show")
+    }
+
+    function CambiarPassword(){
+        let password_actual = $("#password_actual").val()
+        let password_nueva = $("#password_nueva").val()
+        let password_confirmar = $("#password_confirmar").val()
+
+        if($.trim(password_actual) == ""){
+            toastr.error("Ingresa tu contraseña actual.");
+            return false
+        }
+
+        if($.trim(password_nueva) == "" || $.trim(password_confirmar) == ""){
+            toastr.error("Ingresa la nueva contraseña.");
+            return false
+        }
+
+        if($.trim(password_nueva) != $.trim(password_confirmar) || $.trim(password_confirmar) != $.trim(password_nueva)){
+            toastr.error("Las contraseñas no coinciden.");
+            return false
+        }
+
+        let data_form = $("#form-cambiar-password").serialize()
+        let token = data_form.split("&")[0].split("=")[1]
+        let url = "{{route('usuario/cambiar_password')}}"
+        let request = {
+            "_token" : token,
+            "id_usuario" : {{session('id_usuario')}},
+            "password" : password_actual,
+            "password_nueva" : password_nueva,
+            "id_usuario_para_cambiar" : {{$usuario->id_usuario}}
+        }
+
+        $.post(url, request, (response)=>{
+            if(response.error == false){
+                toastr.success(response.mensaje)
+                setTimeout(()=>{
+                    location.reload()
+                }, 500)
+                return false
+            }else{
+                toastr.error(response.mensaje)
+                return false
+            }
+        })
+    }
+
 </script>
+@endsection
+
+
+<div class="modal" tabindex="-1" id="ModalCambiarPassword">
+    <div class="modal-dialog modal-dialog-centered" style="max-width: 400px">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Cambiar contraseña</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" onclick="$('#ModalCambiarPassword').modal('hide')"></button>
+            </div>
+            <div class="modal-body">
+                <div class="col-sm-12">
+                    <div class="form-group">
+                        <label>Contraseña del usuario administrador</label>
+                        <input type="password" class="form-control" id="password_actual">
+                    </div>
+                </div>
+
+                <div class="col-sm-12">
+                    <div class="form-group">
+                        <label>Nueva contraseña</label>
+                        <input type="password" class="form-control" id="password_nueva">
+                    </div>
+                </div>
+
+                <div class="col-sm-12">
+                    <div class="form-group">
+                        <label>Confirmar contraseña</label>
+                        <input type="password" class="form-control" id="password_confirmar">
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="$('#ModalCambiarPassword').modal('hide')">Cerrar</button>
+                <button type="button" class="btn btn-success" onclick="CambiarPassword()">Guardar</button>
+            </div>
+        </div>
+    </div>
+</div>
+{{ Form::open(array('method' => 'post', 'id' => 'form-cambiar-password')) }}
+{{ Form::close() }}

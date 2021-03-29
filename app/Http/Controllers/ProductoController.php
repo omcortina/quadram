@@ -15,12 +15,13 @@ class ProductoController extends Controller
 {
     public function Listado()
 	{
-		$productos = Producto::orderByDesc('codigo')->get();
+		$productos = Producto::orderByDesc('codigo')->paginate(15);
 		return view('producto.listado', compact(['productos']));
 	}
 
 	public function ImportarExcel(Request $request)
 	{
+		set_time_limit (0);
 		$file = $request->file('file');
 		$mensaje = "";
 		$error = true;

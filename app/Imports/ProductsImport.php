@@ -21,9 +21,9 @@ class ProductsImport implements ToModel, WithHeadingRow
             'precio_venta' => $row["precio_venta"],
             'unidad_medida' => $row["unidad_de_medida"],
             'codigo_invima' => $row["codigo_invima"],
-            'fecha_vencimiento_invima' => $row["venc_invima"],
+            'fecha_vencimiento_invima' => date('Y-m-d', $row["venc_invima"]),
             'codigo_atc' => $row["codigo_atc"],
-            'codigo_cum' => $row["codigo_cum"],
+            'codigo_ucm' => $row["codigo_ucm"],
             'presentacion' => $row["presentacion"],
             'marca' => $row["marcalaboratorio"],
         ]);

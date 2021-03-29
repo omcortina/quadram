@@ -24,13 +24,14 @@
                         <span class="nav-link-text">Usuarios</span>
                         </a>
                     </li>
-                    <!--
+                    
                     <li class="nav-item">
-                        <a class="nav-link active" href="examples/dashboard.html">
+                        <a class="nav-link active" href="{{ route('almacen/informacion') }}">
                         <i class="ni ni-tv-2 text-primary"></i>
-                        <span class="nav-link-text">Dashboard</span>
+                        <span class="nav-link-text">Almacen</span>
                         </a>
                     </li>
+                    <!--
                     <li class="nav-item">
                         <a class="nav-link" href="examples/icons.html">
                         <i class="ni ni-planet text-orange"></i>

@@ -18,6 +18,7 @@
       <!-- Argon CSS -->
       <link rel="stylesheet" href="{{asset('design/assets/css/argon.css?v=1.2.0')}}" type="text/css">
       <link rel="stylesheet" href="{{asset('css/toastr.min.css')}}">
+      <link rel="stylesheet" href="{{asset('css/data-tables.min.css')}}">
       <script src="{{asset('design/assets/vendor/jquery/dist/jquery.min.js')}}"></script>
       <script src="{{asset('design/assets/vendor/bootstrap/dist/js/bootstrap.bundle.min.js')}}"></script>
       <script src="{{asset('design/assets/vendor/js-cookie/js.cookie.js')}}"></script>
@@ -29,6 +30,7 @@
       <!-- Argon JS -->
       <script src="{{asset('design/assets/js/argon.js?v=1.2.0')}}"></script>
       <script src="{{ asset('js/toastr.min.js') }}"></script>
+      <script src="{{ asset('js/data-tables.min.js') }}"></script>
     </head>
     
     <body>

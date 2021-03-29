@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UsuarioController;
 use App\Http\Controllers\ProductoController;
+use App\Http\Controllers\AlmacenController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -31,4 +32,5 @@ Route::get('producto/cargar_archivo', function () {
 })->name('producto/cargar_archivo');
 
 Route::post('producto/importar_excel', [ProductoController::class, 'ImportarExcel'])->name('producto/importar_excel');
+Route::any('almacen/informacion', [AlmacenController::class, 'Informacion'])->name('almacen/informacion');
 
