@@ -69,7 +69,7 @@
                                         <div class="input-group-prepend">
                                         <span class="input-group-text"><i class="ni ni-lock-circle-open"></i></span>
                                         </div>
-                                        <input class="form-control" placeholder="Contraseña" type="password" name="password" id="passsword">
+                                        <input class="form-control" placeholder="Contraseña" type="password" name="clave" id="clave">
                                     </div>
                                 </div>
                                 <div class="text-center">

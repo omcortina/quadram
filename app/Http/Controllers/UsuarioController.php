@@ -15,12 +15,12 @@ class UsuarioController extends Controller
 		$tipos_usuario = Dominio::all()->where('id_padre', 1)->where('estado', 1);
 		$tipos_documento = Dominio::all()->where('id_padre', 6)->where('estado', 1);
 		$errors = [];
-		$password = $request['documento'];
+		$clave = $request['documento'];
 		if(isset($data['id'])) $usuario = Usuario::find($data['id']);
 		if($request->except(['id'])){
 			$data = (object) $data;
 			$usuario->fill($request->except(['_token']));
-			$usuario->password = md5($password);
+			$usuario->clave = md5($clave);
 			if($usuario->save()){
 				return redirect()->route('usuario/listado');
 			}else{
@@ -37,7 +37,7 @@ class UsuarioController extends Controller
 		if($data){
 			$data = (object) $data;
 			$usuario = Usuario::where("nombre_usuario", $data->nombre_usuario)
-							  ->where("password", md5($data->password))
+							  ->where("clave", md5($data->clave))
 							  ->where("estado", 1)
 							  ->first();
 			if($usuario){

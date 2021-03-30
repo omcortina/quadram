@@ -5,8 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Almacen extends Model
+class Inventario extends Model
 {
-    protected $table = 'almacen';
-    protected $primaryKey = 'id_almacen';
+    use HasFactory;
 }
