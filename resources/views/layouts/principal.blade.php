@@ -16,6 +16,7 @@
       <link rel="stylesheet" href="{{asset('design/assets/vendor/@fortawesome/fontawesome-free/css/all.min.css')}}" type="text/css">
       <!-- Page plugins -->
       <!-- Argon CSS -->
+      <link rel="stylesheet" href="{{ asset('loader/css-loader.css') }}">
       <link rel="stylesheet" href="{{asset('design/assets/css/argon.css?v=1.2.0')}}" type="text/css">
       <link rel="stylesheet" href="{{asset('css/toastr.min.css')}}">
       <link rel="stylesheet" href="{{asset('css/data-tables.min.css')}}">
@@ -31,9 +32,24 @@
       <script src="{{asset('design/assets/js/argon.js?v=1.2.0')}}"></script>
       <script src="{{ asset('js/toastr.min.js') }}"></script>
       <script src="{{ asset('js/data-tables.min.js') }}"></script>
+
+      <script>
+        function loading(open = true,message = "Por favor espere...", timeout = null) {
+          if(timeout){
+            $("#loader").html('<div class="loader loader-default is-active" data-text="'+message+'"></div>')
+            setTimeout(function() {
+              $("#loader").html('')
+            }, timeout);
+            return true
+          }
+          if(open) $("#loader").html('<div class="loader loader-default is-active" data-text="'+message+'"></div>')
+          if(!open) $("#loader").html('')
+        }
+      </script>
     </head>
     
     <body>
+      <div id="loader"></div>
       @include('layouts.menu')
       <!-- Main content -->
       <div class="main-content" id="panel">

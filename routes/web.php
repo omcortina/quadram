@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UsuarioController;
 use App\Http\Controllers\ProductoController;
 use App\Http\Controllers\AlmacenController;
+use App\Http\Controllers\InventarioController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -27,10 +28,14 @@ Route::any('usuario/cambiar_password', [UsuarioController::class, 'CambiarPasswo
 Route::any('usuario/actualizar_perfil', [UsuarioController::class, 'ActualizarPerfil'])->name('usuario/actualizar_perfil');
 
 Route::get('producto/listado', [ProductoController::class, 'Listado'])->name('producto/listado');
-Route::get('producto/cargar_archivo', function () {
-    return view('producto.cargar_archivo');
-})->name('producto/cargar_archivo');
+Route::get('producto/cargar_archivo', function () { return view('producto.cargar_archivo');})->name('producto/cargar_archivo');
 
 Route::post('producto/importar_excel', [ProductoController::class, 'ImportarExcel'])->name('producto/importar_excel');
 Route::any('almacen/informacion', [AlmacenController::class, 'Informacion'])->name('almacen/informacion');
+
+
+//INVENTARIO
+Route::get('inventario/listado', [InventarioController::class, 'Listado'])->name('inventario/listado');
+Route::get('inventario/obtener_listado', [InventarioController::class, 'ObtenerListado'])->name('inventario/obtener_listado');
+Route::post('inventario/guardar', [InventarioController::class, 'Guardar'])->name('inventario/guardar');
 

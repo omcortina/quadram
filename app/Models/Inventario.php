@@ -7,5 +7,14 @@ use Illuminate\Database\Eloquent\Model;
 
 class Inventario extends Model
 {
-    use HasFactory;
+    protected $table = 'inventario';
+    protected $primaryKey = 'id_inventario';
+
+    public function usuario(){
+      	return $this->belongsTo(Usuario::class, 'id_usuario');
+    }
+
+    public function almacen(){
+      	return $this->belongsTo(Almacen::class, 'id_almacen');
+    }
 }

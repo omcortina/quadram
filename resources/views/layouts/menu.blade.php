@@ -26,9 +26,16 @@
                     </li>
                     
                     <li class="nav-item">
-                        <a class="nav-link active" href="{{ route('almacen/informacion') }}">
+                        <a class="nav-link" href="{{ route('almacen/informacion') }}">
                         <i class="ni ni-tv-2 text-primary"></i>
                         <span class="nav-link-text">Almacen</span>
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('inventario/listado') }}">
+                        <i class="ni ni-archive-2 text-primary"></i>
+                        <span class="nav-link-text">Inventario</span>
                         </a>
                     </li>
                     <!--

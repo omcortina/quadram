@@ -9,4 +9,6 @@ class AuditoriaConteo extends Model
 {
     protected $table = 'auditoria_conteo';
     protected $primaryKey = 'id_auditoria_conteo';
+
+    
 }
