@@ -9,4 +9,5 @@ class Almacen extends Model
 {
     protected $table = 'almacen';
     protected $primaryKey = 'id_almacen';
+
 }

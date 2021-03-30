@@ -13,7 +13,6 @@
     </div>
     <div class="col-lg-6 col-5 text-right">
         <a href="#" onclick="AgregarUbicacion()" class="btn btn-sm btn-neutral">+ Nueva ubicaión</a>
-        <a href="#" onclick="AgregarEstante()" class="btn btn-sm btn-neutral">+ Nuevo estante</a>
     </div>
 </div>
 @endsection
@@ -46,20 +45,6 @@
                     <div class="col-sm-3"></div>
                     <div class="col-sm-4">
                         <input type="text" placeholder="Nombre de la ubicación" class="form-control">
-                    </div>
-                    <div class="col-sm-2">
-                        <button class="btn btn-success">Guardar</button>
-                    </div>
-                </div>
-                <div class="row" id="div_agregar_estante">
-                    <div class="col-sm-2"></div>
-                    <div class="col-sm-3">
-                        <input type="text" placeholder="Nombre del estante" class="form-control">
-                    </div>
-                    <div class="col-sm-3">
-                        <select class="form-control">
-                            <option value="">Seleccione...</option>
-                        </select>
                     </div>
                     <div class="col-sm-2">
                         <button class="btn btn-success">Guardar</button>
@@ -139,11 +124,6 @@
     function AgregarUbicacion(){
         $("#div_agregar_ubicacion").show()
         $("#div_agregar_estante").hide()
-    }
-
-    function AgregarEstante(){
-        $("#div_agregar_ubicacion").hide()
-        $("#div_agregar_estante").show()
     }
 </script>
 @endsection  
