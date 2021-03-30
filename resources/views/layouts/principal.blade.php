@@ -46,6 +46,12 @@
           if(!open) $("#loader").html('')
         }
       </script>
+
+      <style>
+        a{
+          cursor: pointer;
+        }
+      </style>
     </head>
     
     <body>

@@ -91,13 +91,17 @@
 
 <script>
     var inventarios = []
-    var inventario = {
+    var inventario = {}
+
+    function ReiniciarInventario() {
+      var inventario = {
         'id_inventario' : null,
         'id_almacen' : null,
         'almacen' : null,
         'fecha_inicio' : null,
         'fecha_fin' : null,
         'estado' : 1
+      }
     }
 
 
@@ -128,7 +132,7 @@
                       '<td>'+item.usuario.nombres+' - '+item.usuario.documento+'</td>'+
                       '<td><span class="text-'+EstadoColor(item.estado)+'">'+EstadoTexto(item.estado)+'</span></td>'+
                       '<td><center>'+
-                        '<a onclick="Editar('+item.id_inventario+')">Editar</a>'+
+                        '<a onclick="AbrirModal('+item.id_inventario+')">Editar</a>'+
                       '</center></td>'+
                    '</tr>'
       })
@@ -159,10 +163,9 @@
       return estado == 1 ? 'Activo' : 'Inactivo'
     }
 
-
-    setTimeout(()=>{
-      $(document).ready(()=>{
+    document.addEventListener("DOMContentLoaded", function(event) {
+        ReiniciarInventario()
         BuscarInventarios()
-      })
-    },1000)
+    });
+    
 </script>
