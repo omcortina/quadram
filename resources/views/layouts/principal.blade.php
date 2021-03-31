@@ -32,7 +32,7 @@
       <script src="{{asset('design/assets/js/argon.js?v=1.2.0')}}"></script>
       <script src="{{ asset('js/toastr.min.js') }}"></script>
       <script src="{{ asset('js/data-tables.min.js') }}"></script>
-
+      <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
       <script>
         function loading(open = true,message = "Por favor espere...", timeout = null) {
           if(timeout){
@@ -45,11 +45,27 @@
           if(open) $("#loader").html('<div class="loader loader-default is-active" data-text="'+message+'"></div>')
           if(!open) $("#loader").html('')
         }
+
+        function setFilter(id_input, id_bodytable) {
+           $('#'+id_input).keyup(function () {
+            var rex = new RegExp($(this).val(), 'i');
+              $('#'+id_bodytable+' tr').hide();
+              $('#'+id_bodytable+' tr').filter(function () {
+                  return rex.test($(this).text());
+              }).show();
+
+          })
+        }
       </script>
 
       <style>
         a{
           cursor: pointer;
+        }
+        .icons{
+           margin-right: 5px;
+           color: #5e72e4 !important;
+           cursor: pointer;
         }
       </style>
     </head>
@@ -79,7 +95,9 @@
       </div>
       <!-- Argon Scripts -->
       <!-- Core -->
-      
+      <script>
+        setTimeout(()=>{ feather.replace() }, 1000)
+      </script>
     </body>
     
     </html>

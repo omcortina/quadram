@@ -7,7 +7,7 @@
         <ol class="breadcrumb breadcrumb-links breadcrumb-dark">
             <li class="breadcrumb-item"><a href="#"><i class="fas fa-user"></i></a></li>
             <li class="breadcrumb-item"><a href="#">Inventario</a></li>
-            <li class="breadcrumb-item active" aria-current="page">Información inventario</li>
+            <li class="breadcrumb-item active" aria-current="page">Auditorias</li>
         </ol>
         </nav>
     </div>
@@ -26,9 +26,7 @@
                         <div class="form-group">
                             <label><b>Almacen</b></label>
                             <select id="inventario_id_almacen" class="form-control">
-                                @foreach($almacenes as $item)
-                                <option value="{{ $item->id_almacen }}"> {{ $item->nombre }}</option>
-                                @endforeach
+                                
                             </select>
                         </div>
                     </div>

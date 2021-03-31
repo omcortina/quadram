@@ -10,6 +10,10 @@ class Inventario extends Model
     protected $table = 'inventario';
     protected $primaryKey = 'id_inventario';
 
+    protected $fillable = [
+    	'fecha_inicio', 'fecha_fin','estado'
+    ];
+	
     public function usuario(){
       	return $this->belongsTo(Usuario::class, 'id_usuario');
     }

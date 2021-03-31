@@ -33,7 +33,7 @@
                     </li>
 
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ route('inventario/listado') }}">
+                        <a class="nav-link" href="{{ route('inventario/gestion') }}">
                         <i class="ni ni-archive-2 text-primary"></i>
                         <span class="nav-link-text">Inventario</span>
                         </a>

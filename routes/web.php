@@ -5,6 +5,7 @@ use App\Http\Controllers\UsuarioController;
 use App\Http\Controllers\ProductoController;
 use App\Http\Controllers\AlmacenController;
 use App\Http\Controllers\InventarioController;
+use App\Http\Controllers\AuditoriaController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -35,7 +36,10 @@ Route::any('almacen/informacion', [AlmacenController::class, 'Informacion'])->na
 
 
 //INVENTARIO
-Route::get('inventario/listado', [InventarioController::class, 'Listado'])->name('inventario/listado');
+Route::get('inventario/gestion', [InventarioController::class, 'Gestion'])->name('inventario/gestion');
 Route::get('inventario/obtener_listado', [InventarioController::class, 'ObtenerListado'])->name('inventario/obtener_listado');
 Route::post('inventario/guardar', [InventarioController::class, 'Guardar'])->name('inventario/guardar');
+
+//AUDITORIA
+Route::get('auditoria/gestion/{id_inventario}', [AuditoriaController::class, 'Gestion'])->name('auditoria/gestion');
 

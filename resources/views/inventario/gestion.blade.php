@@ -17,9 +17,17 @@
       <a onclick="AbrirModal()" class="btn btn-sm btn-neutral">+ Nuevo inventario</a>
     </div>
 </div>
+<div class="row">
+  <div class="col-sm-3"></div>
+  <div class="col-sm-6">
+    <input id="filtro" type="text" class="form-control pull-right text-center" placeholder="Consulta aqui" name="">
+  </div>
+</div>
 @endsection
 
 @section('contenido')
+
+<br>
 <div class="row">
   <div class="col-sm-12">
       <div class="card">
@@ -88,13 +96,15 @@
         </div>
     </div>
 </div>
+@csrf
 
 <script>
+
     var inventarios = []
     var inventario = {}
 
     function ReiniciarInventario() {
-      var inventario = {
+      inventario = {
         'id_inventario' : null,
         'id_almacen' : null,
         'almacen' : null,
@@ -109,12 +119,30 @@
         $('#ModalInventario').modal('hide')
     }
 
-    function AbrirModal(id_almacen = null) {
-        $('#ModalInventario').modal('show')
+    function AbrirModal(id_inventario = null) {
+      ReiniciarInventario()
+      LimpiarModal()
+      if(id_inventario != null){
+        let inv = this.inventarios.find(item => item.id_inventario == id_inventario)
+        this.inventario.id_inventario = inv.id_inventario
+        $('#inventario_id_almacen').val(inv.id_almacen).prop('selected', true);
+        $('#inventario_fecha_inicio').val(inv.fecha_inicio.replace(" ", "T"))
+        $('#inventario_fecha_fin').val(inv.fecha_fin.replace(" ", "T"))
+        EstablecerEstadoActual(inv.estado)
+      }
+      $('#ModalInventario').modal('show')
     }
 
-    function BuscarInventarios() {
-      loading(true, 'Consultando inventarios...')
+    function LimpiarModal() {
+      $('#inventario_fecha_inicio').val(null)
+      $('#inventario_fecha_fin').val(null)
+      $("#inventario_estado").addClass("btn-success")
+      $("#inventario_estado").removeClass("btn-danger")
+      $("#inventario_estado").html("Activo")
+    }
+
+    function BuscarInventarios(_loading = true) {
+      if(_loading) loading(true, 'Consultando inventarios...')
        $.get('{{ route("inventario/obtener_listado") }}', (response) => {
           this.inventarios = response.inventarios
           ActualizarTabla()
@@ -122,9 +150,42 @@
        })
     }
 
+    function Guardar() {
+      if($("#inventario_fecha_inicio").val() == null || $("#inventario_fecha_fin").val() == null){
+        alert("Por favor debe suministrar las fechas del invntario")
+        return;
+      }
+
+      let url = '{{ route("inventario/guardar") }}'
+      this.inventario.id_almacen = $("#inventario_id_almacen").val()
+      this.inventario.fecha_inicio = $("#inventario_fecha_inicio").val()
+      this.inventario.fecha_fin = $("#inventario_fecha_fin").val()
+      let _token = $('input[name=_token]')[0].value
+      let request = {
+        '_token' : _token,
+        'inventario' : this.inventario
+      }
+
+      $.post(url, request, (response) =>{
+          
+          if(!response.error){
+            toastr.success(response.mensaje)
+            this.BuscarInventarios(false)
+            this.CerrarModal()
+          }else{
+            toastr.error(response.mensaje)
+          }
+      })
+      .fail((error) => {
+          toastr.error("Ocurrio un error")
+      })
+
+    }
+
     function ActualizarTabla() {
       let tabla = ""
       this.inventarios.forEach((item) => {
+        let ruta_auditorias = "{{ config('global.servidor') }}/auditoria/gestion/"+item.id_inventario
           tabla += '<tr>'+
                       '<td>'+item.almacen.nombre+'</td>'+
                       '<td>'+item.fecha_inicio+'</td>'+
@@ -132,11 +193,13 @@
                       '<td>'+item.usuario.nombres+' - '+item.usuario.documento+'</td>'+
                       '<td><span class="text-'+EstadoColor(item.estado)+'">'+EstadoTexto(item.estado)+'</span></td>'+
                       '<td><center>'+
-                        '<a onclick="AbrirModal('+item.id_inventario+')">Editar</a>'+
+                        '<a class="icons" title="Editar" onclick="AbrirModal('+item.id_inventario+')"><i data-feather="edit"></i></a>'+
+                        '<a class="icons" title="Auditorias" target="_blank" href="'+ruta_auditorias+'"><i data-feather="clipboard"></i></a>'+
                       '</center></td>'+
                    '</tr>'
       })
       $("#bodytable_inventarios").html(tabla)
+      feather.replace() //PARA VISUALIZAR LOS ICONOS
     }
 
     function EstablecerEstado() {
@@ -147,11 +210,23 @@
             this.inventario.estado = 0
        
         }else{
-            
+
             $("#inventario_estado").addClass("btn-success")
             $("#inventario_estado").removeClass("btn-danger")
             $("#inventario_estado").html("Activo")
             this.inventario.estado = 1
+        }
+    }
+
+    function EstablecerEstadoActual(estado) {
+        if(estado == 0) {
+            $("#inventario_estado").removeClass("btn-success")
+            $("#inventario_estado").addClass("btn-danger")
+            $("#inventario_estado").html("Inactivo")
+        }else{
+            $("#inventario_estado").addClass("btn-success")
+            $("#inventario_estado").removeClass("btn-danger")
+            $("#inventario_estado").html("Activo")
         }
     }
 
@@ -166,6 +241,7 @@
     document.addEventListener("DOMContentLoaded", function(event) {
         ReiniciarInventario()
         BuscarInventarios()
+        setFilter("filtro", "bodytable_inventarios")
     });
     
 </script>
