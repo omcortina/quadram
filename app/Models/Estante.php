@@ -9,8 +9,13 @@ class Estante extends Model
 {
     protected $table = 'estante';
     protected $primaryKey = 'id_estante';
+    protected $fillable = [
+    	'nombre',
+    	'id_locacion',
+      'estado'
+    ];
 
-    public function almacen(){
-		return $this->belongsTo(Locacion::class, 'id_locacion');
-	}
+    public function locacion(){
+      return $this->belongsTo(Locacion::class, 'id_locacion');
+    }
 }
