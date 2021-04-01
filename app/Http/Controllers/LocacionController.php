@@ -9,14 +9,16 @@ class LocacionController extends Controller
 {
     public function Listado($id_almacen){
         $locaciones = Locacion::all()->where("id_almacen", $id_almacen);
+        $nuevas_locaciones = [];
         foreach ($locaciones as $locacion) {
             $locacion->estantes;
             foreach ($locacion->estantes as $estante) {
                 $estante->locacion;
             }
+            array_push($nuevas_locaciones, $locacion);
         }
         return response()->json([
-            "locaciones" => $locaciones
+            "locaciones" => $nuevas_locaciones
         ]);
     }
 
@@ -51,8 +53,13 @@ class LocacionController extends Controller
     public function EstantesPorLocacion($id_locacion){
         $locacion = Locacion::findOrFail($id_locacion);
         $estantes = $locacion->estantes;
+        $nuevos_estantes = [];
+        foreach ($estantes as $estante) {
+            $estante->locacion;
+            array_push($nuevos_estantes, $estante);
+        }
         return response()->json([
-            "estantes" => $estantes
+            "estantes" => $nuevos_estantes
         ]);
     }
 }

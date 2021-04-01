@@ -37,7 +37,7 @@ class UsuarioController extends Controller
 		if($data){
 			$data = (object) $data;
 			$usuario = Usuario::where("nombre_usuario", $data->nombre_usuario)
-							  ->where("password", md5($data->password))
+							  ->where("clave", md5($data->password))
 							  ->where("estado", 1)
 							  ->first();
 			if($usuario){

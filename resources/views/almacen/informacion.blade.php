@@ -118,29 +118,29 @@
     function ListadoLocacion(){
         let url = "{{ route('locacion/listado', $almacen->id_almacen) }}"
         $.get(url, (response)=>{
-            setTimeout(()=>{
-                this.locaciones = response.locaciones
-                let fila_locacion = ""
-                let fila_estante = ""
+            let fila_locacion = ""
+            let fila_estante = ""
+            if(response.locaciones.length > 0){
                 response.locaciones.forEach((locacion)=>{
                     fila_locacion += "<tr>"+
                                         "<td>"+locacion.id_locacion+"</td>"+
                                         "<td>"+locacion.nombre+"</td>"+
-                                        "<td><center><a href='#' onclick='ModalEstante("+locacion.id_locacion+")' style='margin-right: 15px;'><i class='fa fa-plus'></i></a><a href='#' onclick='ConsultarEstantesPorLocacion("+locacion.id_locacion+")'><i class='fa fa-cubes'></i></a></center></td>"
+                                        "<td><center><span onclick='ModalEstante("+locacion.id_locacion+")' style='margin-right: 15px;'><i class='fa fa-plus'></i></span><span onclick='ConsultarEstantesPorLocacion("+locacion.id_locacion+")'><i class='fa fa-cubes'></i></span></center></td>"
                                     "</tr>"
-
-                    locacion.estantes.forEach((estante)=>{
-                        fila_estante += "<tr>"+
-                                            "<td>"+estante.id_estante+"</td>"+
-                                            "<td>"+estante.nombre+"</td>"+
-                                            "<td>"+estante.locacion.nombre+"</td>"+
-                                            "<td><center><a href='#' style='margin-right: 15px;'><i class='fa fa-plus'></i></a><a href='#'><i class='fa fa-list'></i></a></center></td>"
-                                        "</tr>"
-                    })
+                    if(locacion.estantes.length > 0){
+                        locacion.estantes.forEach((estante)=>{
+                            fila_estante += "<tr>"+
+                                                "<td>"+estante.id_estante+"</td>"+
+                                                "<td>"+estante.nombre+"</td>"+
+                                                "<td>"+estante.locacion.nombre+"</td>"+
+                                                "<td><center><span style='margin-right: 15px;'><i class='fa fa-plus'></i></span><span><i class='fa fa-list'></i></span></center></td>"
+                                            "</tr>"
+                        })
+                    }
                 })
                 $("#bodytable_locacion").html(fila_locacion)
                 $("#bodytable_estante").html(fila_estante)
-            }, 500)
+            }
         })
     }
     
@@ -234,7 +234,19 @@
     function ConsultarEstantesPorLocacion(id_locacion){
         let url = "{{ config('global.servidor') }}/locacion/estantes_por_locacion/"+id_locacion
         $.get(url, (response)=>{
-
+            let fila = "";
+            if(response.estantes.length > 0){
+                response.estantes.forEach((estante)=>{
+                    $("#bodytable_estante").html(fila)
+                    fila += "<tr>"+
+                                "<td>"+estante.id_estante+"</td>"+
+                                "<td>"+estante.nombre+"</td>"+
+                                "<td>"+estante.locacion.nombre+"</td>"+
+                                "<td><center><span style='margin-right: 15px;'><i class='fa fa-plus'></i></span><span><i class='fa fa-list'></i></span></center></td>"
+                            "</tr>"
+                })
+                $("#bodytable_estante").html(fila)
+            }
         })
     }
 </script>
