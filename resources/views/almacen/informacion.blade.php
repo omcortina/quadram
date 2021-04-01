@@ -125,7 +125,7 @@
                     fila_locacion += "<tr>"+
                                         "<td>"+locacion.id_locacion+"</td>"+
                                         "<td>"+locacion.nombre+"</td>"+
-                                        "<td><center><span onclick='ModalEstante("+locacion.id_locacion+")' style='margin-right: 15px;'><i class='fa fa-plus'></i></span><span onclick='ConsultarEstantesPorLocacion("+locacion.id_locacion+")'><i class='fa fa-cubes'></i></span></center></td>"
+                                        "<td><center><span class='icons' onclick='ModalEstante("+locacion.id_locacion+")'><i data-feather='plus-circle'></i></span><span class='icons' onclick='ConsultarEstantesPorLocacion("+locacion.id_locacion+")'><i data-feather='box'></i></span></center></td>"
                                     "</tr>"
                     if(locacion.estantes.length > 0){
                         locacion.estantes.forEach((estante)=>{
@@ -133,11 +133,12 @@
                                                 "<td>"+estante.id_estante+"</td>"+
                                                 "<td>"+estante.nombre+"</td>"+
                                                 "<td>"+estante.locacion.nombre+"</td>"+
-                                                "<td><center><span style='margin-right: 15px;'><i class='fa fa-plus'></i></span><span><i class='fa fa-list'></i></span></center></td>"
+                                                "<td><center><span class='icons'><i data-feather='plus-circle'></i></span><span class='icons'><i data-feather='list'></i></span></center></td>"
                                             "</tr>"
                         })
                     }
                 })
+                feather.replace()
                 $("#bodytable_locacion").html(fila_locacion)
                 $("#bodytable_estante").html(fila_estante)
             }

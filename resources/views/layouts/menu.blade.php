@@ -26,7 +26,7 @@
                     </li>
                     
                     <li class="nav-item">
-                        <a class="nav-link active" href="{{ route('almacen/ver_listado') }}">
+                        <a class="nav-link" href="{{ route('almacen/ver_listado') }}">
                         <i class="ni ni-tv-2 text-primary"></i>
                         <span class="nav-link-text">Almacen</span>
                         </a>

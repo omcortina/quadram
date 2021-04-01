@@ -62,8 +62,10 @@
         a{
           cursor: pointer;
         }
-        .icons{
-           margin-right: 5px;
+        .icons svg{
+           margin-right: 10px;
+           width: 18px;
+           height: 18px;
            color: #5e72e4 !important;
            cursor: pointer;
         }
