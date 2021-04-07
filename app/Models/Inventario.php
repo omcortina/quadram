@@ -21,4 +21,9 @@ class Inventario extends Model
     public function almacen(){
       	return $this->belongsTo(Almacen::class, 'id_almacen');
     }
+
+    public function auditorias(){
+        return $this->hasMany(Auditoria::class, 'id_inventario');
+    }
+
 }

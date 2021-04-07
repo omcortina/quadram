@@ -55,5 +55,7 @@ Route::get('inventario/obtener_listado', [InventarioController::class, 'ObtenerL
 Route::post('inventario/guardar', [InventarioController::class, 'Guardar'])->name('inventario/guardar');
 
 //AUDITORIA
-Route::get('auditoria/gestion/{id_inventario}', [AuditoriaController::class, 'Gestion'])->name('auditoria/gestion');
+Route::get('auditoria/listado/{id_inventario}', [AuditoriaController::class, 'Listado'])->name('auditoria/listado');
+Route::any('auditoria/gestion', [AuditoriaController::class, 'Gestion'])->name('auditoria/gestion');
+Route::get('auditoria/buscar_locaciones/{id_almacen}', [AuditoriaController::class, 'BuscarLocaciones'])->name('auditoria/buscar_locaciones');
 

@@ -214,6 +214,7 @@
             alert("Por favor, seleccione un archivo valido")
         }
         else{
+            loading(true, "Importando productos...")
             $("#btn").prop("disabled", true)
             $("#form-cargar-producto").submit()
         }

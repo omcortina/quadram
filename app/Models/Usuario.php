@@ -41,4 +41,9 @@ class Usuario extends Model
         }
         return $ruta_imagen;
     }
+
+    public function nombre_completo()
+    {
+        return $this->nombres." ".$this->apellidos;
+    }
 }
