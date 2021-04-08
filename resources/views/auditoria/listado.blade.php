@@ -47,9 +47,14 @@
             <tbody id="bodytable_auditorias">
               @foreach($inventario->auditorias as $auditoria)
                 <tr>
-                  <td>{{ $auditoria->almacen->nombre }}</td>
+                  <td>{{ $inventario->almacen->nombre }}</td>
                   <td>{{ date('d/m/Y H:i', strtotime($auditoria->fecha_inicio)) }} hasta {{ date('d/m/Y H:i', strtotime($auditoria->fecha_fin)) }}</td>
-                  <td>{{ date('d/m/Y H:i', strtotime($auditoria->conteo->fecha_inicio)) }} hasta {{ date('d/m/Y H:i', strtotime($auditoria->conteo->fecha_fin)) }}</td>
+                  <td>@if($auditoria->conteo()) 
+                    {{ date('d/m/Y H:i', strtotime($auditoria->conteo->fecha_inicio)) }} hasta {{ date('d/m/Y H:i', strtotime($auditoria->conteo->fecha_fin)) }}
+                      @else
+                       No definidas
+                      @endif
+                  </td>
                   <td>{{ $auditoria->usuario->nombre_completo() }}</td>
                   <td>
                     @if ($auditoria->estado == 1)

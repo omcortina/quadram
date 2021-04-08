@@ -2,15 +2,19 @@
 
 @section('breadcumb')
 <div class="row align-items-center py-4">
-    <div class="col-lg-8 col-7">
+    <div class="col-lg-9">
         <h6 class="h2 text-white d-inline-block mb-0">Gestion auditoria</h6>
         <nav aria-label="breadcrumb" class="d-none d-md-inline-block ml-md-4">
         <ol class="breadcrumb breadcrumb-links breadcrumb-dark">
             <li class="breadcrumb-item"><a href="#"><i class="fas fa-user"></i></a></li>
             <li class="breadcrumb-item"><a onclick="history.go(-1)">Auditoria</a></li>
-            <li class="breadcrumb-item active" aria-current="page">Gestion</li>
+            <li class="breadcrumb-item active" aria-current="page">Almacen - {{ $inventario->almacen->nombre }}</li>
+            <li class="breadcrumb-item active" aria-current="page">Desde {{ date('d/m/Y H:i', strtotime($inventario->fecha_inicio)) }} hasta {{ date('d/m/Y H:i', strtotime($inventario->fecha_fin)) }}</li>
         </ol>
         </nav>
+    </div>
+    <div class="col-lg-3 text-right">
+        <span id="auditoria_estado" class="btn btn-sm btn-success" onclick="EstablecerEstado()">Activa</a>
     </div>
 </div>
 @endsection
@@ -66,6 +70,9 @@
         border-color: #5e72e4;
         background-color: #324cdd;
     }
+    .btn-active:hover{
+        color: #fff;
+    }
     input[type="datetime-local"]{
         font-size: small;
     }
@@ -81,14 +88,20 @@
                     <div class="col-sm-6">
                         <div class="form-group">
                             <label>Fecha incio</label>
-                            <input type="datetime-local" class="form-control" >
+                            <input id="auditoria-fecha-inicio"  type="datetime-local" class="form-control" 
+                                    min="{{ date('Y-m-d', strtotime($inventario->fecha_inicio)) }}T{{ date('H:i:s', strtotime($inventario->fecha_inicio)) }}"
+                                    max="{{ date('Y-m-d', strtotime($inventario->fecha_fin)) }}T{{ date('H:i:s', strtotime($inventario->fecha_fin)) }}"
+                                     value="{{ $auditoria->fecha_inicio }}">
                         </div>
                     </div>
 
                     <div class="col-sm-6">
                         <div class="form-group">
                             <label>Fecha fin</label>
-                            <input type="datetime-local" class="form-control" >
+                            <input id="auditoria-fecha-fin" type="datetime-local" class="form-control" 
+                                    min="{{ date('Y-m-d', strtotime($inventario->fecha_inicio)) }}T{{ date('H:i:s', strtotime($inventario->fecha_inicio)) }}"
+                                    max="{{ date('Y-m-d', strtotime($inventario->fecha_fin)) }}T{{ date('H:i:s', strtotime($inventario->fecha_fin)) }}"
+                                     value="{{ $auditoria->fecha_fin }}">
                         </div>
                     </div>
                 </div>
@@ -139,14 +152,20 @@
                     <div class="col-sm-6">
                         <div class="form-group">
                             <label>Fecha incio</label>
-                            <input type="datetime-local" class="form-control" >
+                            <input id="conteo-fecha-inicio" type="datetime-local" class="form-control" 
+                                    min="{{ date('Y-m-d', strtotime($inventario->fecha_inicio)) }}T{{ date('H:i:s', strtotime($inventario->fecha_inicio)) }}"
+                                    max="{{ date('Y-m-d', strtotime($inventario->fecha_fin)) }}T{{ date('H:i:s', strtotime($inventario->fecha_fin)) }}"
+                                    value="{{ $conteo->fecha_inicio }}">
                         </div>
                     </div>
 
                     <div class="col-sm-6">
                         <div class="form-group">
                             <label>Fecha fin</label>
-                            <input type="datetime-local" class="form-control" >
+                            <input id="conteo-fecha-fin" type="datetime-local" class="form-control" 
+                                    min="{{ date('Y-m-d', strtotime($inventario->fecha_inicio)) }}T{{ date('H:i:s', strtotime($inventario->fecha_inicio)) }}"
+                                    max="{{ date('Y-m-d', strtotime($inventario->fecha_fin)) }}T{{ date('H:i:s', strtotime($inventario->fecha_fin)) }}"
+                                    value="{{ $conteo->fecha_fin }}">
                         </div>
                     </div>
                 </div>
@@ -200,6 +219,15 @@
         </div>
     </div>
 </div>
+
+<div class="row">
+    <div class="col-sm-12">
+        <center>
+            <button class="btn btn-primary" onclick="GuardarCambios()">Guardar cambios</button>
+        </center>
+    </div>
+</div>
+<br>
 
 <div class="modal" tabindex="-1" id="ModalAuditoria">
     <div class="modal-dialog modal-dialog-centered" style="max-width: 400px">
@@ -285,10 +313,25 @@
 @csrf
 
 <script>
+    var id_auditoria = "{{ $auditoria->id_auditoria }}"
+    var id_conteo = "{{ $conteo->id_conteo }}"
     var auditoria_locaciones = []
     var conteo_locaciones = []
-
     var conteo_actual = 1
+    var estado = 1
+    function EstablecerEstado() {
+        if(this.estado == 1) {
+            $("#auditoria_estado").removeClass("btn-success")
+            $("#auditoria_estado").addClass("btn-danger")
+            $("#auditoria_estado").html("Inactiva")
+            this.estado = 0
+        }else{
+            $("#auditoria_estado").addClass("btn-success")
+            $("#auditoria_estado").removeClass("btn-danger")
+            $("#auditoria_estado").html("Activa")
+            this.estado = 1
+        }
+    }
 
     function AuditoriaEscogerLocacion(id_locacion) {
         $(".td-location-auditoria").each(function(){ $(this).removeClass('td-active') });
@@ -324,7 +367,11 @@
 
     function AuditoriaCargarLocaciones() {
         loading(true, "Cargando usuarios disponibles...")
+
         let ruta = '{{ route('auditoria/buscar_locaciones', $inventario->id_almacen) }}'
+        if(this.id_auditoria != "") 
+            ruta = '{{ route('auditoria/buscar_locaciones', $inventario->id_almacen) }}?id_auditoria='+this.id_auditoria
+
         $.get(ruta, (response) => { this.auditoria_locaciones = response.data; loading(false)})
         .fail((error) => {toastr.error("Ocurrio un error"); loading(false)})
     }
@@ -494,6 +541,7 @@
         $("#btn-conteo-"+conteo).addClass('btn-active')
         $(".td-location-conteo").each(function(){ $(this).removeClass('td-active') });
         $("#conteo-tabla-estantes tbody").html("") 
+        if(this.conteo_locaciones.length > 0) ConteoEscogerLocacion(this.conteo_locaciones[0].id_locacion)
     }
 
     function ConteoConfigurarEstante(id_locacion, id_estante) {
@@ -573,6 +621,100 @@
             return true
         }
         return true
+    }
+
+    function ValidarFechas(auditoria_fecha_inicio, auditoria_fecha_fin, conteo_fecha_inicio, conteo_fecha_fin) {
+
+        if (auditoria_fecha_inicio == "") {
+            toastr.error("Debe seleccionar una fecha de inicio valida para la auditoria")
+            return false
+        }
+
+        if (auditoria_fecha_fin == "") {
+            toastr.error("Debe seleccionar una fecha fin valida para la auditoria")
+            return false
+        }
+
+        if(auditoria_fecha_inicio > auditoria_fecha_fin){
+            toastr.error("La fecha de inicio de la auditoria no puede ser mayor a la fecha fin")
+            return false
+        }
+
+        if(conteo_fecha_inicio < auditoria_fecha_fin){
+            toastr.error("La fecha de inicio del conteo no puede ser menor a la fecha fin de la auditoria")
+            return false
+        }
+
+        if(conteo_fecha_inicio > conteo_fecha_fin){
+            toastr.error("La fecha de inicio del conteo no puede ser mayor a la fecha fin")
+            return false
+        }
+        return true
+    }
+
+    function ValidarExistenciaAsignadosAuditoria() {
+        let existencia = false
+        this.auditoria_locaciones.forEach((locacion) => {
+            locacion.estantes.forEach((_estante) => {
+                if(_estante.encargado.id_usuario != 0) existencia = true
+            })
+        })
+        
+        if(!existencia) toastr.error("Debe existir por lo menos un auditor asignado en la auditoria para guardar los cambios")
+
+        return existencia
+    }
+
+
+    function GuardarCambios() {
+        let auditoria_fecha_inicio = $("#auditoria-fecha-inicio").val()
+        let auditoria_fecha_fin    = $("#auditoria-fecha-fin").val()
+        let conteo_fecha_inicio    = $("#conteo-fecha-inicio").val()
+        let conteo_fecha_fin       = $("#conteo-fecha-fin").val()
+
+        let id_auditoria = ""
+        if(ValidarFechas(auditoria_fecha_inicio, auditoria_fecha_fin, conteo_fecha_inicio, conteo_fecha_fin)){
+            if (ValidarExistenciaAsignadosAuditoria()) {
+                let auditoria = {
+                    'id_auditoria' : this.id_auditoria,
+                    'estado' : this.estado,
+                    'fecha_inicio' : auditoria_fecha_inicio, 
+                    'fecha_fin' : auditoria_fecha_fin, 
+                    'detalles' : this.auditoria_locaciones
+                }
+                let conteo = {
+                    'id_conteo' : this.id_conteo,
+                    'estado' : this.estado,
+                    'fecha_inicio' : conteo_fecha_inicio, 
+                    'fecha_fin' : conteo_fecha_fin, 
+                    'detalles' : this.conteo_locaciones
+                }
+
+                let url = "{{ route('auditoria/guardar') }}"
+                let id_inventario = {{ $inventario->id_inventario }};
+                let _token = $('input[name=_token]')[0].value
+                let request = {
+                  '_token' : _token,
+                  'id_inventario' : id_inventario,
+                  'auditoria' : auditoria,
+                  'conteo' : conteo
+                }
+                
+                loading(true, "Guardando cambios...")
+                $.post(url, request, (response) =>{
+                    if(!response.error){
+                      toastr.success(response.mensaje)
+                    }else{
+                      toastr.error(response.mensaje)
+                    }
+                    loading(false)
+                })
+                .fail((error) => {
+                    toastr.error("Ocurrio un error")
+                    loading(false)
+                })
+            }
+        }
     }
 
 
