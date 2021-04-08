@@ -9,4 +9,8 @@ class AuditoriaDetalle extends Model
 {
     protected $table = 'auditoria_detalle';
     protected $primaryKey = 'id_auditoria_detalle';
+
+    public function usuario(){
+      	return $this->belongsTo(Usuario::class, 'id_usuario');
+    }
 }

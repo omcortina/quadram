@@ -185,7 +185,7 @@
     function ActualizarTabla() {
       let tabla = ""
       this.inventarios.forEach((item) => {
-        let ruta_auditorias = "{{ config('global.servidor') }}/auditoria/gestion/"+item.id_inventario
+        let ruta_auditorias = "{{ config('global.servidor') }}/auditoria/listado/"+item.id_inventario
           tabla += '<tr>'+
                       '<td>'+item.almacen.nombre+'</td>'+
                       '<td>'+item.fecha_inicio+'</td>'+
