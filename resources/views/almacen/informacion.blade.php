@@ -138,9 +138,9 @@
                         })
                     }
                 })
-                feather.replace()
                 $("#bodytable_locacion").html(fila_locacion)
                 $("#bodytable_estante").html(fila_estante)
+                feather.replace()
             }
         })
     }
@@ -243,10 +243,11 @@
                                 "<td>"+estante.id_estante+"</td>"+
                                 "<td>"+estante.nombre+"</td>"+
                                 "<td>"+estante.locacion.nombre+"</td>"+
-                                "<td><center><span style='margin-right: 15px;'><i class='fa fa-plus'></i></span><span><i class='fa fa-list'></i></span></center></td>"
+                                "<td><center><span class='icons'><i data-feather='plus-circle'></i></span><span class='icons'><i data-feather='list'></i></span></center></td>"
                             "</tr>"
                 })
                 $("#bodytable_estante").html(fila)
+                feather.replace()
             }
         })
     }

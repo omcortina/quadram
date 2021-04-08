@@ -37,21 +37,6 @@
                                     </tr>
                                 </thead>
                                 <tbody id="bodytable">
-                                    {{--  @foreach ($almacenes as $almacen)
-                                        <tr>
-                                            <td>{{ $almacen->id_almacen }}</td>
-                                            <td>{{ $almacen->nombre }}</td>
-                                            <td>{{ $almacen->direccion }}</td>
-                                            <td>{{ $almacen->telefono }}</td>
-                                            <td>
-                                                @if ($almacen->estado == 1)
-                                                    <span style="color: #2dce89">Activo</span>
-                                                @else
-                                                <span style="color: #f5365c">Inactivo</span>
-                                                @endif
-                                            <td><a href="#">Ver información</a></td>
-                                        </tr>
-                                    @endforeach  --}}
                                 </tbody>
                             </table>
                         </div>
@@ -73,7 +58,8 @@
         Listado()
     })
 
-    function Listado(){
+    function Listado(_loading = true){
+        if(_loading) loading(true, 'Consultando almacenes...')
         let url = "{{ route('almacen/listado') }}"
         $.get(url, (response)=>{
             if(response.almacenes.length > 0){
@@ -89,10 +75,11 @@
                                 }else{
                                     fila += "<td><span style='color: #f5365c'>Inactivo</span></td>"
                                 }
-                                fila += "<td><a href='{{ config('global.servidor') }}/almacen/informacion/"+almacen.id_almacen+"'>Ver información</a></td>"+
+                                fila += "<td><span class='icons' href='{{ config('global.servidor') }}/almacen/informacion/"+almacen.id_almacen+"'><i data-feather=''></i></span></td>"+
                             "</tr>"
                 })
                 $("#bodytable").html(fila)
+                loading(false)
             }
         })
     }
