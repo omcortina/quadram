@@ -22,8 +22,14 @@ class Auditoria extends Model
       	return $this->belongsTo(Dominio::class, 'id_dominio_estado', 'id_dominio');
     }
 
-     public function conteo(){
-        return $this->belongsTo(Conteo::class, 'id_conteo');
+    public function conteos(){
+        return $this->hasMany(Conteo::class, 'id_auditoria');
+    }
+
+    public function conteo()
+    {
+       if(count($this->conteos) > 0) return $this->conteos[0];
+       return null;
     }
 
 }
