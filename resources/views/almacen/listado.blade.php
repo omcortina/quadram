@@ -75,7 +75,7 @@
                                 }else{
                                     fila += "<td><span style='color: #f5365c'>Inactivo</span></td>"
                                 }
-                                fila += "<td><span class='icons' href='{{ config('global.servidor') }}/almacen/informacion/"+almacen.id_almacen+"'><i data-feather=''></i></span></td>"+
+                                fila += "<td><span class='icons' href='{{ config('global.servidor') }}/almacen/informacion/"+almacen.id_almacen+"'><i data-feather='info'></i></span></td>"+
                             "</tr>"
                 })
                 $("#bodytable").html(fila)
