@@ -59,7 +59,7 @@ Route::post('inventario/guardar', [InventarioController::class, 'Guardar'])->nam
 Route::get('auditoria/listado/{id_inventario}', [AuditoriaController::class, 'Listado'])->name('auditoria/listado');
 Route::any('auditoria/gestion', [AuditoriaController::class, 'Gestion'])->name('auditoria/gestion');
 Route::get('auditoria/buscar_locaciones/{id_almacen}', [AuditoriaController::class, 'BuscarLocaciones'])->name('auditoria/buscar_locaciones');
-Route::post('auditoria/guardar', [AuditoriaController::class, 'Guardar'])->name('auditoria/guardar');
+Route::any('auditoria/guardar', [AuditoriaController::class, 'Guardar'])->name('auditoria/guardar');
 
 Route::post('api/login', [APIController::class, 'Login'])->name('api/login');
 Route::get('api/refreshToken/{token}', [APIController::class, 'RefreshToken']);

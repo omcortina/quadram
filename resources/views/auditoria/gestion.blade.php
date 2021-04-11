@@ -640,7 +640,7 @@
             return false
         }
 
-        if(conteo_fecha_inicio < auditoria_fecha_fin){
+        /*if(conteo_fecha_inicio < auditoria_fecha_fin){
             toastr.error("La fecha de inicio del conteo no puede ser menor a la fecha fin de la auditoria")
             return false
         }
@@ -648,7 +648,7 @@
         if(conteo_fecha_inicio > conteo_fecha_fin){
             toastr.error("La fecha de inicio del conteo no puede ser mayor a la fecha fin")
             return false
-        }
+        }*/
         return true
     }
 

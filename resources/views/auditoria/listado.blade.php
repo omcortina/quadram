@@ -64,7 +64,7 @@
                     @endif</td>
                   <td>
                     <center>
-                        <a class="icons" title="Editar"><i data-feather="edit"></i></a>
+                        <a class="icons" href="{{ route('auditoria/gestion') }}?inventario={{ $auditoria->id_inventario }}&auditoria={{ $auditoria->id_auditoria }}" title="Editar"><i data-feather="edit"></i></a>
                     </center>
                   </td>
                 </tr>
@@ -80,8 +80,6 @@
 
 <script>
     document.addEventListener("DOMContentLoaded", function(event) {
-        ReiniciarInventario()
-        BuscarInventarios()
         setFilter("filtro", "bodytable_auditorias")
     });
     
