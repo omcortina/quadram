@@ -9,6 +9,7 @@ use App\Models\Locacion;
 use App\Models\Usuario;
 use App\Models\Conteo;
 use App\Models\AuditoriaDetalle;
+use App\Models\SeguimientoAuditoria;
 use Illuminate\Support\Facades\DB;
 
 class AuditoriaController extends Controller
@@ -54,6 +55,7 @@ class AuditoriaController extends Controller
 
 				$encargado = [ 'id_usuario' => 0, 'nombre' => "No asignado" ];
 				$encargados_conteo = [];
+				$seguimientos = [];
 				if(isset($post->id_auditoria)){
 					$detalle_encargado = AuditoriaDetalle::where('id_auditoria', $post->id_auditoria)
 												 ->where('id_estante', $estante->id_estante)
@@ -63,16 +65,26 @@ class AuditoriaController extends Controller
 							'id_usuario' => $detalle_encargado->id_usuario, 
 							'nombre' => $detalle_encargado->usuario->nombre_completo()
 						];
+						//SE VALIDA SI TIENE SEGUIMIENTOS EL USUARIO
+						$seguimientos = SeguimientoAuditoria::all()
+										->where('estado', 1)
+										->where('id_auditoria_detalle', $detalle_encargado->id_auditoria_detalle);
 
 						//BUSCAMOS SI HAY ENCARGADOS SIGNADOS EN LOS CONTEOS DEL ESTANTE
+
 						
 					}
+
+					
 				}
+
+
 
 				$detalle['estantes'][] = (object)[
 					'id_estante' => $estante->id_estante,
 					'nombre' => $estante->nombre,
 					'encargado' => (object) $encargado,
+					'tiene_seguimientos' => count($seguimientos) > 0 ? true : false,
 					'encargados' => $encargados_conteo
 				];
 			}

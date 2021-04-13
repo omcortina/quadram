@@ -258,6 +258,9 @@
                         </select>
                     </div>
                 </div>
+                <div class="col-sm-12 text-right" id="auditoria-div-link-seguimiento" style="display: none;">
+                    <a id="auditoria-link-seguimiento" class="btn btn-sm btn-success" target="_blank">Ver seguimiento</a>
+                </div>
                 <div class="col-sm-12">
                     <div class="alert alert-danger" style="display: none;" id="alert-auditoria"></div>
                 </div>
@@ -299,6 +302,7 @@
                         </select>
                     </div>
                 </div>
+
                 <div class="col-sm-12">
                     <div class="alert alert-danger" style="display: none;" id="alert-conteo"></div>
                 </div>
@@ -385,6 +389,16 @@
             $('#auditoria-modal-encargado').val(estante.encargado.id_usuario).prop('selected', true);
         else
             $('#auditoria-modal-encargado').val(0).prop('selected', true);
+
+        if(estante.tiene_seguimientos){
+            $("#auditoria-modal-encargado").prop("disabled", true)
+            $("#auditoria-div-link-seguimiento").fadeIn()
+            $("#auditoria-link-seguimiento").prop("href", "google.com")
+        }else{
+            $("#auditoria-modal-encargado").prop("disabled", false)
+            $("#auditoria-div-link-seguimiento").fadeOut()
+            $("#auditoria-link-seguimiento").prop("href", "")
+        }
         $('#auditoria-modal-estante').val(estante.nombre)
         $('#ModalAuditoria').modal("show")
     }
@@ -640,7 +654,7 @@
             return false
         }
 
-        if(conteo_fecha_inicio < auditoria_fecha_fin){
+        /*if(conteo_fecha_inicio < auditoria_fecha_fin){
             toastr.error("La fecha de inicio del conteo no puede ser menor a la fecha fin de la auditoria")
             return false
         }
@@ -648,7 +662,7 @@
         if(conteo_fecha_inicio > conteo_fecha_fin){
             toastr.error("La fecha de inicio del conteo no puede ser mayor a la fecha fin")
             return false
-        }
+        }*/
         return true
     }
 

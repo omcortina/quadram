@@ -194,7 +194,7 @@
                       '<td><span class="text-'+EstadoColor(item.estado)+'">'+EstadoTexto(item.estado)+'</span></td>'+
                       '<td><center>'+
                         '<a class="icons" title="Editar" onclick="AbrirModal('+item.id_inventario+')"><i data-feather="edit"></i></a>'+
-                        '<a class="icons" title="Auditorias" target="_blank" href="'+ruta_auditorias+'"><i data-feather="clipboard"></i></a>'+
+                        '<a class="icons" title="Auditorias" href="'+ruta_auditorias+'"><i data-feather="clipboard"></i></a>'+
                       '</center></td>'+
                    '</tr>'
       })
