@@ -33,7 +33,7 @@
                                         <th scope="col">Dirección</th>
                                         <th scope="col">Teléfono</th>
                                         <th scope="col">Estado</th>
-                                        <th scope="col"></th>
+                                        <th scope="col">Acciones</th>
                                     </tr>
                                 </thead>
                                 <tbody id="bodytable">
@@ -75,10 +75,13 @@
                                 }else{
                                     fila += "<td><span style='color: #f5365c'>Inactivo</span></td>"
                                 }
-                                fila += "<td><span class='icons' href='{{ config('global.servidor') }}/almacen/informacion/"+almacen.id_almacen+"'><i data-feather='info'></i></span></td>"+
+                                fila += "<td><a class='icons' href='{{ config('global.servidor') }}/almacen/informacion/"+almacen.id_almacen+"'><i data-feather='info'></i></a></td>"+
                             "</tr>"
+
                 })
+
                 $("#bodytable").html(fila)
+                feather.replace()
                 loading(false)
             }
         })
