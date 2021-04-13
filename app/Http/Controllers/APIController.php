@@ -200,7 +200,12 @@ class APIController extends Controller
 					if (isset($post->id_fila)) {
 						if (isset($post->id_producto)) {
 							if(Producto::find($post->id_producto)){
-								$seguimiento = new SeguimientoAuditoria;
+								$seguimiento = SeguimientoAuditoria::where('id_auditoria_detalle', $post->id_auditoria_detalle)
+														->where('id_estante', $post->id_estante)
+														->where('id_fila_estante', $post->id_fila)
+														->where('id_producto', $producto)
+														->first();
+								if(is_null($seguimiento)) $seguimiento = new SeguimientoAuditoria;
 								$seguimiento->id_auditoria_detalle = $post->id_auditoria_detalle;
 								$seguimiento->id_estante = $post->id_estante;
 								$seguimiento->id_fila_estante = $post->id_fila;
