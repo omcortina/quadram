@@ -12,6 +12,6 @@ class VerifyCsrfToken extends Middleware
      * @var array
      */
     protected $except = [
-        "http://192.168.1.12:8000/api/login"
+        "http://172.25.48.1:8000/api/login"
     ];
 }
