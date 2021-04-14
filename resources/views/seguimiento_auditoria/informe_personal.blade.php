@@ -18,6 +18,11 @@
 
 @section('contenido')
 <style type="text/css">
+    .span-msg{
+            text-align: center;
+            margin-left: 10px;
+            font-size: small;
+    }
     .panel_stand p{
         font-size: smaller;
         margin-bottom: 0;
@@ -36,22 +41,30 @@
         position: absolute;
         right: 0;
     }
-    .td-location-auditoria{
+    .td-locacion .td-estante .td-fila .td-producto{
         padding-top: 19px !important;
         padding-bottom: 19px !important;
     }
-    .td-location-auditoria:hover{
+    .td-locacion:hover{
         cursor: pointer;
         background-color: aliceblue;
     }
-    .td-location-conteo{
-        padding-top: 19px !important;
-        padding-bottom: 19px !important;
-    }
-    .td-location-conteo:hover{
+
+    .td-estante:hover{
         cursor: pointer;
         background-color: aliceblue;
     }
+
+    .td-fila:hover{
+        cursor: pointer;
+        background-color: aliceblue;
+    }
+
+    .td-producto:hover{
+        cursor: pointer;
+        background-color: aliceblue;
+    }
+
     .td-active{
         background-color: #5e72e47d;
     }
@@ -69,6 +82,10 @@
     }
     .btn-active:hover{
         color: #fff;
+    }
+
+    .table-responsive{
+        max-height: 700px;
     }
     input[type="datetime-local"]{
         font-size: small;
@@ -96,48 +113,187 @@
                 </div><br>
                 <div class="row">
                     
-                    <div class="col-sm-4">
-                        <table class="table align-items-center table-flush" id="seguimiento-tabla-locaciones">
-                            <thead class="thead-light">
-                              <tr>
-                                <th scope="col"><center><b>Locación</b></center></th>
-                              </tr>
-                            </thead>
-                            <tbody></tbody>
-                        </table>
+                    <div class="col-sm-3">
+                        <div class="table-responsive">
+                            <table class="table align-items-center table-flush" id="seguimiento-tabla-locaciones">
+                                <thead class="thead-light">
+                                  <tr>
+                                    <th scope="col"><center><b>Locación</b></center></th>
+                                  </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
                     </div>
 
-                    <div class="col-sm-4">
-                        <table class="table align-items-center table-flush" id="seguimiento-tabla-estantes">
-                            <thead class="thead-light">
-                              <tr>
-                                <th scope="col" colspan="2"><center><b>Estantes</b></center></th>
-                              </tr>
-                            </thead>
-                            <tbody></tbody>
-                        </table>
+                    <div class="col-sm-3">
+                        <div class="table-responsive">
+                            <table class="table align-items-center table-flush" id="seguimiento-tabla-estantes">
+                                <thead class="thead-light">
+                                  <tr>
+                                    <th scope="col" colspan="2"><center><b>Estantes</b></center></th>
+                                  </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
                     </div>
 
-                    <div class="col-sm-4">
-                        <table class="table align-items-center table-flush" id="seguimiento-tabla-estantes">
-                            <thead class="thead-light">
-                              <tr>
-                                <th scope="col" colspan="2"><center><b>Produtos</b></center></th>
-                              </tr>
-                            </thead>
-                            <tbody></tbody>
-                        </table>
+                    <div class="col-sm-3">
+                        <div class="table-responsive">
+                            <table class="table align-items-center table-flush" id="seguimiento-tabla-filas">
+                                <thead class="thead-light">
+                                  <tr>
+                                    <th scope="col" colspan="2"><center><b>Filas</b></center></th>
+                                  </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-3">
+                        <div class="table-responsive">
+                            <table class="table align-items-center table-flush" id="seguimiento-tabla-productos">
+                                <thead class="thead-light">
+                                  <tr>
+                                    <th scope="col" colspan="2"><center><b>Produtos Encontrados</b></center></th>
+                                  </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
-
 @csrf
 
 <script>
+    var locaciones = []
+    function BuscarLocaciones() {
+        loading(true, "Consultando información...")
+        let url = "{{ route('api/getLocations') }}?usuario={{ $usuario->id_usuario }}&auditoria={{ $auditoria->id_auditoria }}"
+
+        $.get(url, (response) => {
+            console.log(response)
+            this.locaciones = response.locaciones
+            ActualizarLocaciones()
+            EstablecerEstanteBusqueda()
+            loading(false)
+        })
+        .fail((error) => {
+            loading(false)
+            toastr.error("Ocurrio un error")
+        })
+    }
+
+    function ActualizarLocaciones() {
+        let tabla = ""
+        this.locaciones.forEach((locacion) => {
+            tabla += '<tr>'+
+                        '<td id="td-locacion-'+locacion.id_locacion+'"'+
+                            'class="td-locacion"'+ 
+                            'onclick="ActualizarEstantes('+locacion.id_locacion+')">'+
+                            '<strong>'+locacion.nombre+'</strong>'+
+                        '</td>'+
+                    '</tr>'
+        })
+        if(tabla == "") tabla = "<center> <span class='span-msg'>No hay locaciones disponibles</span> </center>"
+        $("#seguimiento-tabla-locaciones tbody").html(tabla)
+        $("#seguimiento-tabla-estantes tbody").html("")
+        $("#seguimiento-tabla-filas tbody").html("")
+        $("#seguimiento-tabla-productos tbody").html("")
+    }
+
+
+    function ActualizarEstantes(id_locacion) {
+        ValidarActive('locacion', id_locacion)
+        let locacion = this.locaciones.find(element => element.id_locacion == id_locacion)
+        let tabla = ""
+        locacion.estantes.forEach((estante) => {
+            tabla += '<tr>'+
+                        '<td id="td-estante-'+estante.id_estante+'"'+
+                            'class="td-estante"'+ 
+                            'onclick="ActualizarFilas('+id_locacion+', '+estante.id_estante+')">'+
+                            '<strong>Estante '+estante.nombre+'</strong>'+
+                        '</td>'+
+                    '</tr>'
+        })
+        if(tabla == "") tabla = "<center> <span class='span-msg'>No hay estantes disponibles</span> </center>"
+        $("#seguimiento-tabla-estantes tbody").html(tabla)
+        $("#seguimiento-tabla-filas tbody").html("")
+        $("#seguimiento-tabla-productos tbody").html("")
+    }
+
+    function ActualizarFilas(id_locacion, id_estante) {
+        ValidarActive('estante', id_estante)
+        let locacion = this.locaciones.find(element => element.id_locacion == id_locacion)
+        let estante = locacion.estantes.find(element => element.id_estante == id_estante)
+        let tabla = ""
+        estante.filas.forEach((fila) => {
+            tabla += '<tr>'+
+                        '<td id="td-fila-'+fila.id_fila+'"'+
+                            'class="td-fila"'+ 
+                            'onclick="ActualizarProductos('+id_locacion+', '+id_estante+', '+fila.id_fila+')">'+
+                            '<strong>Fila '+fila.nombre+'</strong>'+
+                        '</td>'+
+                    '</tr>'
+        })
+        if(tabla == "") tabla = "<center> <span class='span-msg'>No hay estantes disponibles</span> </center>"
+        $("#seguimiento-tabla-filas tbody").html(tabla)
+        $("#seguimiento-tabla-productos tbody").html("")
+    }
+
+    function ActualizarProductos(id_locacion, id_estante, id_fila) {
+        ValidarActive('fila', id_fila)
+        let locacion = this.locaciones.find(element => element.id_locacion == id_locacion)
+        let estante = locacion.estantes.find(element => element.id_estante == id_estante)
+        let fila = estante.filas.find(element => element.id_fila == id_fila)
+        let tabla = ""
+        fila.productos.forEach((producto) => {
+            tabla += '<tr>'+
+                        '<td id="td-producto-'+producto.id_estante+'"'+
+                            'class="td-producto"'+ 
+                            'onclick="VerProducto('+id_locacion+', '+id_estante+', '+id_fila+', '+producto.id_producto+')">'+
+                            '<strong>'+producto.nombre+'</strong>'+
+                        '</td>'+
+                    '</tr>'
+        })
+        if(tabla == "") tabla = "<center> <span class='span-msg'>No hay productos disponibles</span> </center>"
+        $("#seguimiento-tabla-productos tbody").html(tabla)
+    }
+
+
+
+    function ValidarActive(tabla, id) {
+        $(".td-"+tabla).each(function(){ $(this).removeClass('td-active') });
+
+        let td = document.getElementById("td-"+tabla+"-"+id)
+        let is_active = td.classList.contains('td-active');
+        if(is_active){
+            $("#td-"+tabla+"-"+id).removeClass('td-active')
+        }
+        else{
+            $("#td-"+tabla+"-"+id).addClass('td-active')
+        }
+    }
+
     
+    function EstablecerEstanteBusqueda() {
+        @if ($estante != null)
+            let id_locacion = {{ $estante->id_locacion }};
+            let id_estante = {{ $estante->id_estante }};
+            this.ActualizarEstantes(id_locacion)
+            this.ActualizarFilas(id_locacion, id_estante)
+        @endif
+    }
+
+    document.addEventListener("DOMContentLoaded", function(event) {
+        BuscarLocaciones()
+    });
 </script>
 @endsection
 

@@ -26,7 +26,7 @@ class SeguimientoAuditoriaController extends Controller
     							    ->where('id_usuario', $usuario->id_usuario);
 
    			return view('seguimiento_auditoria.informe_personal', compact([
-   				'usuario', 'auditoria', 'estante', 'detalles']));
+   				'usuario', 'auditoria', 'estante']));
     	}
     }
 }

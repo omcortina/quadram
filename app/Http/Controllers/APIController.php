@@ -247,13 +247,12 @@ class APIController extends Controller
 							}
 							$locacion->estantes = $estantes;
 						}
-
 					$status_code = 200; $message = "OK";
 				}else{
 					$mensaje = "Usuario invalido";
 				}
 			}else{
-				$message = "Parametro [id] perteneciente al usuario no esta definido";
+				$message = "Parametro [auditoria] no esta definido";
 			}
 		}else{
 			$mensaje = "Favor verifique los parametros enviados";

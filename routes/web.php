@@ -72,3 +72,4 @@ Route::post('api/auditor/audits', [APIController::class, 'AuditoriasAuditor']);
 Route::post('api/auditor/saveTracing', [APIController::class, 'GuardarSeguimientoAuditoria']);
 Route::delete('api/auditor/deleteTracing', [APIController::class, 'BorrarSeguimientoAuditoria']);
 Route::post('api/auditor/getProductByBarcode', [APIController::class, 'BuscarProductoPorCodigoBarra']);
+Route::any('api/getLocations', [APIController::class, 'LocacionesAuditoriaAuditor'])->name('api/getLocations');
