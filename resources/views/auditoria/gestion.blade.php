@@ -393,7 +393,8 @@
         if(estante.tiene_seguimientos){
             $("#auditoria-modal-encargado").prop("disabled", true)
             $("#auditoria-div-link-seguimiento").fadeIn()
-            $("#auditoria-link-seguimiento").prop("href", "google.com")
+            let href = "{{ route('auditoria/seguimiento') }}?auditoria={{ $auditoria->id_auditoria }}&usuario="+estante.encargado.id_usuario+"&estante="+estante.id_estante
+            $("#auditoria-link-seguimiento").prop("href", href)
         }else{
             $("#auditoria-modal-encargado").prop("disabled", false)
             $("#auditoria-div-link-seguimiento").fadeOut()

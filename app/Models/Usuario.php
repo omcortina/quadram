@@ -36,15 +36,7 @@ class Usuario extends Model
 	}
 
 	public function obtenerImagen(){
-        $ruta_imagen = "";
-        if($this->id_dominio_tipo_usuario == 2){
-            $ruta_imagen = asset('design/assets/img/theme/team-4.jpg');
-        }
-
-        if($this->url_imagen != null and $this->url_imagen != ""){
-            $ruta_imagen = asset('images/users/'.$this->url_imagen);
-        }
-        return $ruta_imagen;
+        return $this->url_imagen != null ? asset('images/users/'.$this->url_imagen) : asset('images/user.png');
     }
 
     public function nombre_completo()

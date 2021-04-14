@@ -9,4 +9,8 @@ class SeguimientoAuditoria extends Model
 {
     protected $table = 'seguimiento_auditoria';
     protected $primaryKey = 'id_seguimiento_auditoria';
+
+    public function auditoria_detalle(){
+      	return $this->belongsTo(AuditoriaDetalle::class, 'id_auditoria_detalle');
+    }
 }
