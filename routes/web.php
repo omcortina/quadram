@@ -8,6 +8,7 @@ use App\Http\Controllers\InventarioController;
 use App\Http\Controllers\AuditoriaController;
 use App\Http\Controllers\LocacionController;
 use App\Http\Controllers\EstanteController;
+use App\Http\Controllers\SeguimientoAuditoriaController;
 use App\Http\Controllers\APIController;
 
 /*
@@ -61,6 +62,10 @@ Route::any('auditoria/gestion', [AuditoriaController::class, 'Gestion'])->name('
 Route::get('auditoria/buscar_locaciones/{id_almacen}', [AuditoriaController::class, 'BuscarLocaciones'])->name('auditoria/buscar_locaciones');
 Route::any('auditoria/guardar', [AuditoriaController::class, 'Guardar'])->name('auditoria/guardar');
 
+//SEGUIMIENTO AUDITORIA
+Route::any('auditoria/seguimiento', [SeguimientoAuditoriaController::class, 'Informe'])->name('auditoria/seguimiento');
+
+//API
 Route::post('api/login', [APIController::class, 'Login'])->name('api/login');
 Route::get('api/refreshToken/{token}', [APIController::class, 'RefreshToken']);
 Route::post('api/auditor/audits', [APIController::class, 'AuditoriasAuditor']);

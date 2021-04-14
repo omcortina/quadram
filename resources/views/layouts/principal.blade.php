@@ -69,6 +69,17 @@
            color: #5e72e4 !important;
            cursor: pointer;
         }
+
+        .avatar img {
+            width: 100%;
+            border-radius: .375rem;
+            width: 40px;
+            height: 40px;
+        }
+
+        .avatar{
+          background-color: transparent;
+        }
       </style>
     </head>
     
