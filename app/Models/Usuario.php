@@ -7,6 +7,11 @@ use Illuminate\Database\Eloquent\Model;
 
 class Usuario extends Model
 {
+    public $servidor;
+    public function __construct() {
+        $this->servidor = config('global.servidor');
+    }
+
     protected $table = 'usuario';
     protected $primaryKey = 'id_usuario';
 

@@ -56,7 +56,7 @@ class APIController extends Controller
 	}
 
 	public function RefreshToken($token)
-    {	
+    {
 		$status_code = 200;
 		$new_token = null;
     	$usuario = Usuario::where('api_token', $token)->first();
@@ -77,7 +77,7 @@ class APIController extends Controller
     {
     	$post = $request->all();
 		$status_code = 500;
-		$message = ""; 
+		$message = "";
 		$product = null;
 		if($post){
 			$post = (object) $post;
@@ -111,56 +111,56 @@ class APIController extends Controller
 			if (isset($post->id)) {
 				$usuario = Usuario::find($post->id);
 				if($usuario){
-					
+
 					//PRIMERO BUSCAMOS LAS AUDITORIAS CON RELACION A LOS DETALLES
-					$auditorias = DB::select("SELECT DISTINCT(a.id_auditoria) as id_auditoria, 
-													 a.fecha_inicio, 
+					$auditorias = DB::select("SELECT DISTINCT(a.id_auditoria) as id_auditoria,
+													 a.fecha_inicio,
 													 a.fecha_fin,
 													 al.nombre as almacen
-											  FROM auditoria a 
+											  FROM auditoria a
 											  LEFT JOIN auditoria_detalle ad USING(id_auditoria)
 											  LEFT JOIN inventario i USING(id_inventario)
-											  LEFT JOIN almacen al USING(id_almacen) 
+											  LEFT JOIN almacen al USING(id_almacen)
 											  WHERE ad.id_usuario = ".$usuario->id_usuario);
 
 					foreach ($auditorias as $auditoria) {
-						$locaciones = DB::select("SELECT DISTINCT(l.id_locacion) as id_locacion, 
+						$locaciones = DB::select("SELECT DISTINCT(l.id_locacion) as id_locacion,
 													 l.nombre
-											  FROM auditoria a 
-											  LEFT JOIN auditoria_detalle ad USING(id_auditoria) 
-											  LEFT JOIN estante e USING(id_estante) 
-											  LEFT JOIN locacion l USING(id_locacion) 
+											  FROM auditoria a
+											  LEFT JOIN auditoria_detalle ad USING(id_auditoria)
+											  LEFT JOIN estante e USING(id_estante)
+											  LEFT JOIN locacion l USING(id_locacion)
 											  WHERE ad.id_usuario = ".$usuario->id_usuario);
 
 						foreach ($locaciones as $locacion) {
-							$estantes = DB::select("SELECT DISTINCT(e.id_estante) as id_estante, 
+							$estantes = DB::select("SELECT DISTINCT(e.id_estante) as id_estante,
 													 e.nombre,
 													 ad.id_auditoria_detalle
-											  FROM auditoria a 
-											  LEFT JOIN auditoria_detalle ad USING(id_auditoria) 
-											  LEFT JOIN estante e USING(id_estante) 
+											  FROM auditoria a
+											  LEFT JOIN auditoria_detalle ad USING(id_auditoria)
+											  LEFT JOIN estante e USING(id_estante)
 											  WHERE e.id_locacion = ".$locacion->id_locacion."
 											  AND ad.id_usuario = ".$usuario->id_usuario);
 
 							foreach ($estantes as $estante) {
-								$filas = DB::select("SELECT id_fila_estante as id_fila, 
+								$filas = DB::select("SELECT id_fila_estante as id_fila,
 													 nombre
-											  FROM fila_estante 
+											  FROM fila_estante
 											  WHERE id_estante = ".$estante->id_estante);
 
 								//RECORREMOS LAS FILAS PARA BUSCAR SEGUIMIENTOS YA REALIZADOS POR EL USUARIO
 								foreach ($filas as $fila) {
-									$seguimientos = DB::select("SELECT s.id_seguimiento_auditoria, 
+									$seguimientos = DB::select("SELECT s.id_seguimiento_auditoria,
 													 p.id_producto,
 													 p.codigo,
 													 p.nombre,
 													 p.descripcion
 											  FROM seguimiento_auditoria s
-											  LEFT JOIN producto p USING(id_producto) 
+											  LEFT JOIN producto p USING(id_producto)
 											  WHERE s.id_fila_estante = ".$fila->id_fila."
 											  AND s.estado = 1
 											  AND s.id_auditoria_detalle = ".$estante->id_auditoria_detalle);
-									$fila->productos = $seguimientos;	
+									$fila->productos = $seguimientos;
 								}
 
 								$estante->filas = $filas;
@@ -193,6 +193,7 @@ class APIController extends Controller
     	$post = $request->all();
 		$status_code = 500;
 		$message = "";
+        $producto = new Producto;
 		if($post){
 			$post = (object) $post;
 			if(isset($post->id_auditoria_detalle)){
@@ -200,10 +201,12 @@ class APIController extends Controller
 					if (isset($post->id_fila)) {
 						if (isset($post->id_producto)) {
 							if(Producto::find($post->id_producto)){
+                                $producto = Producto::find($post->id_producto);
 								$seguimiento = SeguimientoAuditoria::where('id_auditoria_detalle', $post->id_auditoria_detalle)
 														->where('id_estante', $post->id_estante)
 														->where('id_fila_estante', $post->id_fila)
-														->where('id_producto', $producto)
+														->where('id_producto', $post->id_producto)
+                                                        ->where('estado', 1)
 														->first();
 								if(is_null($seguimiento)) $seguimiento = new SeguimientoAuditoria;
 								$seguimiento->id_auditoria_detalle = $post->id_auditoria_detalle;
@@ -211,7 +214,8 @@ class APIController extends Controller
 								$seguimiento->id_fila_estante = $post->id_fila;
 								$seguimiento->id_producto = $post->id_producto;
 								$seguimiento->save();
-								$message = "OK"; $status_code = 200;
+                                $producto->id_seguimiento_auditoria = $seguimiento->id_seguimiento_auditoria;
+								$message = "Producto agregado correctamente"; $status_code = 200;
 							}else{
 								$message = "El producto no es valido";
 							}
@@ -230,6 +234,7 @@ class APIController extends Controller
 		}
 
 		return response()->json([
+            'product' => $producto,
 			'message' => $message
 		], $status_code);
     }
