@@ -3,7 +3,7 @@
 namespace App\Http\Middleware;
 
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken as Middleware;
-
+use App\Models\Usuario;
 class VerifyCsrfToken extends Middleware
 {
     /**
@@ -12,6 +12,9 @@ class VerifyCsrfToken extends Middleware
      * @var array
      */
     protected $except = [
-        "http://192.168.1.12:8000/api/login"
+        "/api/login",
+        "/api/auditor/audits",
+        "/api/auditor/saveTracing",
+        "/api/auditor/deleteTracing"
     ];
 }
