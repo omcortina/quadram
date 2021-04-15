@@ -15,5 +15,6 @@ class VerifyCsrfToken extends Middleware
         "/api/login",
         "/api/auditor/audits",
         "/api/auditor/saveTracing",
+        "/api/auditor/deleteTracing"
     ];
 }

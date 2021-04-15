@@ -153,6 +153,7 @@ class APIController extends Controller
 								//RECORREMOS LAS FILAS PARA BUSCAR SEGUIMIENTOS YA REALIZADOS POR EL USUARIO
 								foreach ($filas as $fila) {
 									$seguimientos = DB::select("SELECT s.id_seguimiento_auditoria,
+                                                     s.id_fila_estante,
 													 p.id_producto,
 													 p.codigo,
 													 p.nombre,
@@ -292,6 +293,7 @@ class APIController extends Controller
 								$seguimiento->id_producto = $post->id_producto;
 								$seguimiento->save();
                                 $producto->id_seguimiento_auditoria = $seguimiento->id_seguimiento_auditoria;
+                                $producto->id_fila_estante = $seguimiento->id_fila_estante;
 								$message = "Producto agregado correctamente"; $status_code = 200;
 							}else{
 								$message = "El producto no es valido";
@@ -321,12 +323,18 @@ class APIController extends Controller
     	$post = $request->all();
 		$status_code = 500;
 		$message = "";
+        $producto = new Producto;
 		if($post){
 			$post = (object) $post;
 			if(isset($post->id_seguimiento_auditoria)){
 				$seguimiento = SeguimientoAuditoria::find($post->id_seguimiento_auditoria);
 				if($seguimiento){
 					$seguimiento->estado = 0;
+                    if(isset($post->id_producto)){
+                        $producto = Producto::find($post->id_producto);
+                    }
+                    $producto->id_seguimiento_auditoria = $post->id_seguimiento_auditoria;
+                    $producto->id_fila_estante = $seguimiento->id_fila_estante;
 					$seguimiento->save();
 					$message = "OK"; $status_code = 200;
 				}else{
@@ -338,7 +346,8 @@ class APIController extends Controller
 		}
 
 		return response()->json([
-			'message' => $message
+			'message' => $message,
+            'product' => $producto
 		], $status_code);
     }
 }
