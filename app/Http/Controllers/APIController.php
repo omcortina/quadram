@@ -121,7 +121,7 @@ class APIController extends Controller
 											  LEFT JOIN auditoria_detalle ad USING(id_auditoria)
 											  LEFT JOIN inventario i USING(id_inventario)
 											  LEFT JOIN almacen al USING(id_almacen)
-											  WHERE '$fecha_actual' BETWEEN fecha_inicio AND fecha_fin
+
 											  AND ad.id_usuario = ".$usuario->id_usuario);
 
 					foreach ($auditorias as $auditoria) {

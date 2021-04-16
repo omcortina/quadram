@@ -59,9 +59,9 @@
                     <div class="col-sm-6">
                         <div class="form-group">
                             <label><b>Locaciones</b></label>
-                            <div class="table-responsive">
+                            <div class="table-responsive" style="margin-top: 10px;">
                                 <!-- Projects table -->
-                                <table class="table align-items-center table-flush">
+                                <table class="table align-items-center table-flush" id="tabla_locacion">
                                     <thead class="thead-light">
                                         <tr>
                                             <th scope="col">Id</th>
@@ -70,7 +70,7 @@
                                         </tr>
                                     </thead>
                                     <tbody id="bodytable_locacion">
-                                        
+
                                     </tbody>
                                 </table>
                             </div>
@@ -79,9 +79,9 @@
                     <div class="col-sm-6">
                         <div class="form-group">
                             <label><b>Estantes</b></label>
-                            <div class="table-responsive">
+                            <div class="table-responsive" style="margin-top: 10px;">
                                 <!-- Projects table -->
-                                <table class="table align-items-center table-flush">
+                                <table class="table align-items-center table-flush" id="tabla_estante">
                                     <thead class="thead-light">
                                         <tr>
                                             <th scope="col">Id</th>
@@ -91,7 +91,7 @@
                                         </tr>
                                     </thead>
                                     <tbody id="bodytable_estante">
-                                        
+
                                     </tbody>
                                 </table>
                             </div>
@@ -144,7 +144,7 @@
             }
         })
     }
-    
+
     function AgregarLocacion(){
         let nombre_locacion = $("#nombre_locacion").val()
         let descripcion = $("#descripcion_locacion").val()
@@ -252,7 +252,7 @@
         })
     }
 </script>
-@endsection 
+@endsection
 
 
 <div class="modal" tabindex="-1" id="ModalNuevoEstante">
@@ -280,4 +280,4 @@
             </div>
         </div>
     </div>
-</div> 
+</div>
