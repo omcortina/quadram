@@ -121,8 +121,7 @@ class APIController extends Controller
 											  LEFT JOIN auditoria_detalle ad USING(id_auditoria)
 											  LEFT JOIN inventario i USING(id_inventario)
 											  LEFT JOIN almacen al USING(id_almacen)
-
-											  AND ad.id_usuario = ".$usuario->id_usuario);
+											  WHERE ad.id_usuario = ".$usuario->id_usuario);
 
 					foreach ($auditorias as $auditoria) {
 						$locaciones = DB::select("SELECT DISTINCT(l.id_locacion) as id_locacion,
