@@ -86,7 +86,7 @@ class APIController extends Controller
 				if($product){
 					$message = "OK"; $status_code = 200;
 				}else{
-					$message = "No se encontro un producto valido";
+					$message = "Producto no valido";
 				}
 			}else{
 				$message = "Parametro [codigo_barras] perteneciente al CB del producto no esta definido";
@@ -111,7 +111,7 @@ class APIController extends Controller
 			if (isset($post->id)) {
 				$usuario = Usuario::find($post->id);
 				if($usuario){
-
+					$fecha_actual = date('Y-m-d H:i').":00";
 					//PRIMERO BUSCAMOS LAS AUDITORIAS CON RELACION A LOS DETALLES
 					$auditorias = DB::select("SELECT DISTINCT(a.id_auditoria) as id_auditoria,
 													 a.fecha_inicio,
@@ -121,7 +121,8 @@ class APIController extends Controller
 											  LEFT JOIN auditoria_detalle ad USING(id_auditoria)
 											  LEFT JOIN inventario i USING(id_inventario)
 											  LEFT JOIN almacen al USING(id_almacen)
-											  WHERE ad.id_usuario = ".$usuario->id_usuario);
+											  WHERE '$fecha_actual' BETWEEN fecha_inicio AND fecha_fin
+											  AND ad.id_usuario = ".$usuario->id_usuario);
 
 					foreach ($auditorias as $auditoria) {
 						$locaciones = DB::select("SELECT DISTINCT(l.id_locacion) as id_locacion,
