@@ -175,7 +175,7 @@
     var locaciones = []
     function BuscarLocaciones() {
         loading(true, "Consultando información...")
-        let url = "{{ route('api/getLocations') }}?usuario={{ $usuario->id_usuario }}&auditoria={{ $auditoria->id_auditoria }}"
+        let url = "{{ route('api/auditor/getLocations') }}?usuario={{ $usuario->id_usuario }}&auditoria={{ $auditoria->id_auditoria }}"
 
         $.get(url, (response) => {
             console.log(response)

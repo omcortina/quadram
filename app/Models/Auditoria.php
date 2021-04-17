@@ -28,8 +28,7 @@ class Auditoria extends Model
 
     public function conteo()
     {
-       if(count($this->conteos) > 0) return $this->conteos[0];
-       return null;
+      return count($this->conteos) > 0 ? $this->conteos[0] : null;
     }
 
 }
