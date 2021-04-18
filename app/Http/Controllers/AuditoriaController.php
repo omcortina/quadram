@@ -152,7 +152,6 @@ class AuditoriaController extends Controller
 				$conteo->id_usuario = session('id_usuario');
 				$conteo->estado = $post->conteo->estado;
 				if($conteo->save()){
-
 					//ELIMINAMOS TODOS LOS DETALLES ANTIGUOS QUE NO TENGAN UN SEGUIMIENTO
 					DB::statement("DELETE FROM conteo_detalle WHERE id_conteo_detalle in (SELECT cd.id_auditoria_detalle FROM conteo_detalle cd LEFT JOIN seguimiento_conteo s USING(id_conteo_detalle) WHERE s.id_seguimiento_conteo IS NULL AND cd.id_conteo = ".$conteo->id_conteo.")");
 					foreach ($post->conteo->detalles as $detalle) {
@@ -187,6 +186,7 @@ class AuditoriaController extends Controller
 							}
 						}
 					}
+					$conteo->ActualizarConteoActual();
 					DB::commit();
 					$mensaje = "Cambios guardados exitosamente"; $error = false;
 				}else{

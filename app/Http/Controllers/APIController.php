@@ -347,10 +347,14 @@ class APIController extends Controller
 				$usuario = Usuario::find($post->id);
 				if($usuario){
 					$fecha_actual = date('Y-m-d H:i').":00";
+
+					$this->ActualizarConteosActuales($usuario->id_usuario);
+
 					//PRIMERO BUSCAMOS LOS CONTEOS CON RELACION A LOS DETALLES
 					$conteos = DB::select("SELECT DISTINCT(c.id_conteo) as id_conteo,
 													 c.fecha_inicio,
 													 c.fecha_fin,
+													 c.conteo_activo,
 													 al.nombre as almacen
 											  FROM conteo c
 											  LEFT JOIN auditoria a USING(id_auditoria)
@@ -358,9 +362,12 @@ class APIController extends Controller
 											  LEFT JOIN almacen al USING(id_almacen)
 											  LEFT JOIN conteo_detalle cd USING(id_conteo)
 											  WHERE cd.id_usuario = ".$usuario->id_usuario."
-											  AND cd.estado = 1");
+											  AND c.conteo_activo = cd.conteo");
+
+					//ACTUALIZAMOS LOS CONTEOS ACTUALES PARA SABER CUAL ESTA ACTIVO
 
 					foreach ($conteos as $conteo) {
+
 						$locaciones = DB::select("SELECT DISTINCT(l.id_locacion) as id_locacion,
 													 l.nombre
 											  FROM conteo c
@@ -368,6 +375,7 @@ class APIController extends Controller
 											  LEFT JOIN estante e USING(id_estante)
 											  LEFT JOIN locacion l USING(id_locacion)
 											  WHERE c.id_conteo = ".$conteo->id_conteo."
+											  AND cd.conteo = ".$conteo->conteo_activo."
 											  AND cd.id_usuario = ".$usuario->id_usuario);
 
 						foreach ($locaciones as $locacion) {
@@ -379,6 +387,7 @@ class APIController extends Controller
                                                         LEFT JOIN conteo_detalle cd USING(id_conteo)
                                                         LEFT JOIN estante e USING(id_estante)
                                                         WHERE c.id_conteo = ".$conteo->id_conteo."
+                                                        AND cd.conteo = ".$conteo->conteo_activo."
                                                         AND e.id_locacion = ".$locacion->id_locacion."
                                                         AND cd.id_usuario = ".$usuario->id_usuario);
 
@@ -401,6 +410,17 @@ class APIController extends Controller
 											  WHERE s.id_fila_estante = ".$fila->id_fila."
 											  AND s.estado = 1
 											  AND s.id_auditoria_detalle = ".$estante->id_auditoria_detalle);
+
+									foreach ($seguimientos as $seguimiento) {
+										$seguimientos_conteo = DB::select("SELECT * 
+															   FROM seguimiento_conteo sc
+															   WHERE sc.id_producto = ".$seguimiento->id_producto."
+															   AND sc.estado = 1
+															   AND sc.id_conteo_detalle = ".$estante->id_conteo_detalle."
+															   limit 1");
+										$seguimiento->id_seguimiento_conteo = count($seguimientos_conteo) > 0 ? $seguimientos_conteo[0]->id_seguimiento_conteo : null;
+									}
+
 									$fila->productos = $seguimientos;
 								}
 								$estante->filas = $filas;
@@ -426,5 +446,18 @@ class APIController extends Controller
 			'message' => $message,
 			'conteos' => $conteos
 		], $status_code);
+    }
+
+    public function ActualizarConteosActuales($id_usuario)
+    {
+    	$conteos = DB::select("SELECT DISTINCT(c.id_conteo) as id_conteo
+								  FROM conteo c
+								  LEFT JOIN conteo_detalle cd USING(id_conteo)
+								  WHERE cd.id_usuario = ".$id_usuario);
+		foreach ($conteos as $result) {
+			$result = (object) $result;
+			$conteo = Conteo::find($result->id_conteo);
+			$conteo->ActualizarConteoActual();
+		}
     }
 }
