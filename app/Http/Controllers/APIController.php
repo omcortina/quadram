@@ -418,7 +418,7 @@ class APIController extends Controller
 															   AND sc.estado = 1
 															   AND sc.id_conteo_detalle = ".$estante->id_conteo_detalle."
 															   limit 1");
-										$seguimiento->id_seguimiento_conteo = count($seguimientos_conteo) > 0 ? $seguimientos_conteo[0]->id_seguimiento_conteo : null;
+										$seguimiento->id_seguimiento_conteo = count($seguimientos_conteo) > 0 ? $seguimientos_conteo[0]->id_seguimiento_conteo : -1;
 									}
 
 									$fila->productos = $seguimientos;
