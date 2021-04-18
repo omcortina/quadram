@@ -404,8 +404,7 @@ class APIController extends Controller
 													 p.id_producto,
 													 p.codigo,
 													 p.nombre,
-													 p.descripcion,
-													 false as tiene_seguimiento
+													 p.descripcion
 											  FROM seguimiento_auditoria s
 											  LEFT JOIN producto p USING(id_producto)
 											  WHERE s.id_fila_estante = ".$fila->id_fila."
@@ -417,8 +416,9 @@ class APIController extends Controller
 															   FROM seguimiento_conteo sc
 															   WHERE sc.id_producto = ".$seguimiento->id_producto."
 															   AND sc.estado = 1
-															   AND sc.id_conteo_detalle = ".$estante->id_conteo_detalle);
-										$seguimiento->tiene_seguimiento = count($seguimientos_conteo) > 0 ? true : false;
+															   AND sc.id_conteo_detalle = ".$estante->id_conteo_detalle."
+															   limit 1");
+										$seguimiento->id_seguimiento_conteo = count($seguimientos_conteo) > 0 ? $seguimientos_conteo[0]->id_seguimiento_conteo : null;
 									}
 
 									$fila->productos = $seguimientos;
