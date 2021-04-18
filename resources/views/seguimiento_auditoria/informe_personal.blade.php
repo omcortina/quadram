@@ -112,21 +112,20 @@
                     </div>
                 </div><br>
                 <div class="row">
-                    
-                    <div class="col-sm-3">
+                    <div class="col-sm-4">
                         <div class="table-responsive">
                             <table class="table align-items-center table-flush" id="seguimiento-tabla-locaciones">
                                 <thead class="thead-light">
-                                  <tr>
+                                    <tr>
                                     <th scope="col"><center><b>Locación</b></center></th>
-                                  </tr>
+                                    </tr>
                                 </thead>
                                 <tbody></tbody>
                             </table>
                         </div>
                     </div>
 
-                    <div class="col-sm-3">
+                    <div class="col-sm-4">
                         <div class="table-responsive">
                             <table class="table align-items-center table-flush" id="seguimiento-tabla-estantes">
                                 <thead class="thead-light">
@@ -139,25 +138,12 @@
                         </div>
                     </div>
 
-                    <div class="col-sm-3">
+                    <div class="col-sm-4">
                         <div class="table-responsive">
                             <table class="table align-items-center table-flush" id="seguimiento-tabla-filas">
                                 <thead class="thead-light">
                                   <tr>
                                     <th scope="col" colspan="2"><center><b>Filas</b></center></th>
-                                  </tr>
-                                </thead>
-                                <tbody></tbody>
-                            </table>
-                        </div>
-                    </div>
-
-                    <div class="col-sm-3">
-                        <div class="table-responsive">
-                            <table class="table align-items-center table-flush" id="seguimiento-tabla-productos">
-                                <thead class="thead-light">
-                                  <tr>
-                                    <th scope="col" colspan="2"><center><b>Produtos Encontrados</b></center></th>
                                   </tr>
                                 </thead>
                                 <tbody></tbody>
@@ -195,7 +181,7 @@
         this.locaciones.forEach((locacion) => {
             tabla += '<tr>'+
                         '<td id="td-locacion-'+locacion.id_locacion+'"'+
-                            'class="td-locacion"'+ 
+                            'class="td-locacion"'+
                             'onclick="ActualizarEstantes('+locacion.id_locacion+')">'+
                             '<strong>'+locacion.nombre+'</strong>'+
                         '</td>'+
@@ -216,7 +202,7 @@
         locacion.estantes.forEach((estante) => {
             tabla += '<tr>'+
                         '<td id="td-estante-'+estante.id_estante+'"'+
-                            'class="td-estante"'+ 
+                            'class="td-estante"'+
                             'onclick="ActualizarFilas('+id_locacion+', '+estante.id_estante+')">'+
                             '<strong>Estante '+estante.nombre+'</strong>'+
                         '</td>'+
@@ -236,7 +222,7 @@
         estante.filas.forEach((fila) => {
             tabla += '<tr>'+
                         '<td id="td-fila-'+fila.id_fila+'"'+
-                            'class="td-fila"'+ 
+                            'class="td-fila"'+
                             'onclick="ActualizarProductos('+id_locacion+', '+id_estante+', '+fila.id_fila+')">'+
                             '<strong>Fila '+fila.nombre+'</strong>'+
                         '</td>'+
@@ -249,15 +235,16 @@
 
     function ActualizarProductos(id_locacion, id_estante, id_fila) {
         ValidarActive('fila', id_fila)
+        $("#ModalProductos").modal("show")
         let locacion = this.locaciones.find(element => element.id_locacion == id_locacion)
         let estante = locacion.estantes.find(element => element.id_estante == id_estante)
         let fila = estante.filas.find(element => element.id_fila == id_fila)
         let tabla = ""
         fila.productos.forEach((producto) => {
             tabla += '<tr>'+
+                        '<td>'+producto.codigo+'</td>'+
                         '<td id="td-producto-'+producto.id_estante+'"'+
-                            'class="td-producto"'+ 
-                            'onclick="VerProducto('+id_locacion+', '+id_estante+', '+id_fila+', '+producto.id_producto+')">'+
+                            'class="td-producto">'+
                             '<strong>'+producto.nombre+'</strong>'+
                         '</td>'+
                     '</tr>'
@@ -281,7 +268,7 @@
         }
     }
 
-    
+
     function EstablecerEstanteBusqueda() {
         @if ($estante != null)
             let id_locacion = {{ $estante->id_locacion }};
@@ -296,4 +283,35 @@
     });
 </script>
 @endsection
+
+<div class="modal" tabindex="-1" id="ModalProductos">
+    <div class="modal-dialog" style="max-width: 800px">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Listado productos auditados</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" onclick="$('#ModalProductos').modal('hide')"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="table-responsive">
+                            <table class="table align-items-center table-flush" id="seguimiento-tabla-productos">
+                                <thead class="thead-light">
+                                    <tr>
+                                        <th scope="col"><b>Código</b></th>
+                                        <th scope="col"><b>Nombre</b></th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="$('#ModalProductos').modal('hide')">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
 

@@ -81,7 +81,7 @@
                             <label><b>Estantes</b></label>
                             <div class="table-responsive" style="margin-top: 10px;">
                                 <!-- Projects table -->
-                                <table class="table align-items-center table-flush" id="tabla_estante">
+                                <table class=" table align-items-center table-flush" id="tabla_estante">
                                     <thead class="thead-light">
                                         <tr>
                                             <th scope="col">Id</th>
@@ -113,6 +113,22 @@
     $(document).ready(function(){
         $("#div_agregar_locacion").hide()
         ListadoLocacion()
+
+        setTimeout(()=>{
+            $("#tabla_locacion").DataTable({
+                "searching": false
+            })
+        }, 300)
+
+        setTimeout(()=>{
+            $("#tabla_estante").DataTable({
+                "searching": false,
+                "language" : {
+                    "url" : "{{asset('plugins/latino.json')}}"
+                }
+            })
+        }, 300)
+
     })
 
     function ListadoLocacion(){
