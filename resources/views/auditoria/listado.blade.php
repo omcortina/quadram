@@ -50,7 +50,7 @@
                   <td>{{ $inventario->almacen->nombre }}</td>
                   <td>{{ date('d/m/Y H:i', strtotime($auditoria->fecha_inicio)) }} hasta {{ date('d/m/Y H:i', strtotime($auditoria->fecha_fin)) }}</td>
                   <td>@if($auditoria->conteo()) 
-                    {{ date('d/m/Y H:i', strtotime($auditoria->conteo->fecha_inicio)) }} hasta {{ date('d/m/Y H:i', strtotime($auditoria->conteo->fecha_fin)) }}
+                    {{ date('d/m/Y H:i', strtotime($auditoria->conteo()->fecha_inicio)) }} hasta {{ date('d/m/Y H:i', strtotime($auditoria->conteo()->fecha_fin)) }}
                       @else
                        No definidas
                       @endif
