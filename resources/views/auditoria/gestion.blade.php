@@ -98,7 +98,7 @@
                     <div class="col-sm-6">
                         <div class="form-group">
                             <label>Fecha fin</label>
-                            <input id="auditoria-fecha-fin" type="datetime-local" class="form-control" 
+                            <input id="auditoria-fecha-fin" onchange="EstablecerFechaInicioConteo(this.value)" type="datetime-local" class="form-control" 
                                     min="{{ date('Y-m-d', strtotime($inventario->fecha_inicio)) }}T{{ date('H:i:s', strtotime($inventario->fecha_inicio)) }}"
                                     max="{{ date('Y-m-d', strtotime($inventario->fecha_fin)) }}T{{ date('H:i:s', strtotime($inventario->fecha_fin)) }}"
                                      value="{{ $auditoria->fecha_fin }}">
@@ -376,7 +376,11 @@
         if(this.id_auditoria != "") 
             ruta = '{{ route('auditoria/buscar_locaciones', $inventario->id_almacen) }}?id_auditoria='+this.id_auditoria
 
-        $.get(ruta, (response) => { this.auditoria_locaciones = response.data; loading(false)})
+        $.get(ruta, (response) => { 
+            this.auditoria_locaciones = response.data; 
+            this.conteo_locaciones = response.data; 
+            loading(false)
+        })
         .fail((error) => {toastr.error("Ocurrio un error"); loading(false)})
     }
 
@@ -518,6 +522,10 @@
         return encargados
     }
 
+    function EstablecerFechaInicioConteo(fecha) {
+        $("#conteo-fecha-inicio").val(fecha)
+    }
+
     function ConteoEscogerLocacion(id_locacion) {
         $(".td-location-conteo").each(function(){ $(this).removeClass('td-active') });
 
@@ -655,7 +663,7 @@
             return false
         }
 
-        /*if(conteo_fecha_inicio < auditoria_fecha_fin){
+        if(conteo_fecha_inicio < auditoria_fecha_fin){
             toastr.error("La fecha de inicio del conteo no puede ser menor a la fecha fin de la auditoria")
             return false
         }
@@ -663,7 +671,7 @@
         if(conteo_fecha_inicio > conteo_fecha_fin){
             toastr.error("La fecha de inicio del conteo no puede ser mayor a la fecha fin")
             return false
-        }*/
+        }
         return true
     }
 
@@ -714,15 +722,17 @@
                   'auditoria' : auditoria,
                   'conteo' : conteo
                 }
-                
+                let refresh = (this.id_auditoria == "" || this.id_conteo == "") ? true : false;
                 loading(true, "Guardando cambios...")
                 $.post(url, request, (response) =>{
+                    loading(false)
                     if(!response.error){
                       toastr.success(response.mensaje)
+                      if(refresh) locacion.reload()
                     }else{
                       toastr.error(response.mensaje)
                     }
-                    loading(false)
+                    
                 })
                 .fail((error) => {
                     toastr.error("Ocurrio un error")

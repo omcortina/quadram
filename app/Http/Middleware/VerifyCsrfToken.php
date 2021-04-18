@@ -16,6 +16,10 @@ class VerifyCsrfToken extends Middleware
         "/api/auditor/audits",
         "/api/auditor/saveTracing",
         "/api/auditor/deleteTracing",
-        "/api/auditor/getProductByBarcode"
+        "/api/auditor/getProductByBarcode",
+        "api/counter/counts",
+        "api/counter/saveTracin",
+        "api/counter/deleteTracing",
+        "api/counter/getProductByBarcode"
     ];
 }
