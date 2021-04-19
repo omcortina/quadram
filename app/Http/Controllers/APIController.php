@@ -11,6 +11,7 @@ use App\Models\Conteo;
 use App\Models\Producto;
 use App\Models\AuditoriaDetalle;
 use App\Models\SeguimientoAuditoria;
+use App\Models\SeguimientoConteo;
 use Illuminate\Support\Facades\DB;
 
 class APIController extends Controller
@@ -274,7 +275,6 @@ class APIController extends Controller
 								$seguimiento->id_producto = $post->id_producto;
 								$seguimiento->save();
                                 $producto->id_seguimiento_auditoria = $seguimiento->id_seguimiento_auditoria;
-                                $producto->id_fila_estante = $seguimiento->id_fila_estante;
 								$message = "Producto agregado correctamente"; $status_code = 200;
 							}else{
 								$message = "El producto no es valido";
@@ -311,11 +311,7 @@ class APIController extends Controller
 				$seguimiento = SeguimientoAuditoria::find($post->id_seguimiento_auditoria);
 				if($seguimiento){
 					$seguimiento->estado = 0;
-                    if(isset($post->id_producto)){
-                        $producto = Producto::find($post->id_producto);
-                    }
-                    $producto->id_seguimiento_auditoria = $post->id_seguimiento_auditoria;
-                    $producto->id_fila_estante = $seguimiento->id_fila_estante;
+                    $producto = $seguimiento->producto;
 					$seguimiento->save();
 					$message = "OK"; $status_code = 200;
 				}else{
@@ -460,4 +456,178 @@ class APIController extends Controller
 			$conteo->ActualizarConteoActual();
 		}
     }
+
+    public function LocacionesConteoContador(Request $request)
+    {
+    	$post = $request->all();
+    	$status_code = 500;
+		$message = "";
+		$data = null;
+		$locaciones = [];
+		if($post){
+			$post = (object) $post;
+			if (isset($post->usuario)) {
+				$usuario = Usuario::find($post->usuario);
+				if($usuario){
+					$fecha_actual = date('Y-m-d H:i').":00";
+					$this->ActualizarConteosActuales($usuario->id_usuario);
+					$conteo = Conteo::find($post->conteo);
+					$locaciones = DB::select("SELECT DISTINCT(l.id_locacion) as id_locacion,
+												 l.nombre
+										  FROM conteo c
+										  LEFT JOIN conteo_detalle cd USING(id_conteo)
+										  LEFT JOIN estante e USING(id_estante)
+										  LEFT JOIN locacion l USING(id_locacion)
+										  WHERE c.id_conteo = ".$conteo->id_conteo."
+										  AND cd.conteo = ".$conteo->conteo_activo."
+										  AND cd.id_usuario = ".$usuario->id_usuario);
+					foreach ($locaciones as $locacion) {
+						$estantes = DB::select("SELECT DISTINCT(e.id_estante) as id_estante,
+												 e.nombre,
+												 cd.id_conteo_detalle,
+												 cd.id_auditoria_detalle
+                                                    FROM conteo c
+                                                    LEFT JOIN conteo_detalle cd USING(id_conteo)
+                                                    LEFT JOIN estante e USING(id_estante)
+                                                    WHERE c.id_conteo = ".$conteo->id_conteo."
+                                                    AND cd.conteo = ".$conteo->conteo_activo."
+                                                    AND e.id_locacion = ".$locacion->id_locacion."
+                                                    AND cd.id_usuario = ".$usuario->id_usuario);
+
+						foreach ($estantes as $estante) {
+							$filas = DB::select("SELECT id_fila_estante as id_fila,
+												 nombre
+										  FROM fila_estante
+										  WHERE id_estante = ".$estante->id_estante);
+
+							//RECORREMOS LAS FILAS PARA BUSCAR SEGUIMIENTOS YA REALIZADOS POR EL AUDITOR
+							foreach ($filas as $fila) {
+								$seguimientos = DB::select("SELECT s.id_seguimiento_auditoria,
+                                                 s.id_fila_estante,
+												 p.id_producto,
+												 p.codigo,
+												 p.nombre,
+												 p.descripcion
+										  FROM seguimiento_auditoria s
+										  LEFT JOIN producto p USING(id_producto)
+										  WHERE s.id_fila_estante = ".$fila->id_fila."
+										  AND s.estado = 1
+										  AND s.id_auditoria_detalle = ".$estante->id_auditoria_detalle);
+
+								foreach ($seguimientos as $seguimiento) {
+									$seguimientos_conteo = DB::select("SELECT * 
+														   FROM seguimiento_conteo sc
+														   WHERE sc.id_producto = ".$seguimiento->id_producto."
+														   AND sc.estado = 1
+														   AND sc.id_conteo_detalle = ".$estante->id_conteo_detalle."
+														   limit 1");
+									$seguimiento->id_seguimiento_conteo = count($seguimientos_conteo) > 0 ? $seguimientos_conteo[0]->id_seguimiento_conteo : -1;
+								}
+
+								$fila->productos = $seguimientos;
+							}
+							$estante->filas = $filas;
+						}
+						$locacion->estantes = $estantes;
+					}
+					$status_code = 200; $message = "OK";
+				}else{
+					$mensaje = "Usuario invalido";
+				}
+			}else{
+				$message = "Parametro [id] perteneciente al usuario no esta definido";
+			}
+		}else{
+			$mensaje = "Favor verifique los parametros enviados";
+		}
+
+		return response()->json([
+			'message' => $message,
+			'locaciones' => $locaciones
+		], $status_code);
+    }
+
+    public function BorrarSeguimientoConteo(Request $request)
+    {
+    	$post = $request->all();
+		$status_code = 500;
+		$message = "";
+        $producto = new Producto;
+		if($post){
+			$post = (object) $post;
+			if(isset($post->id_seguimiento_conteo)){
+				$seguimiento = SeguimientoConteo::find($post->id_seguimiento_conteo);
+				if($seguimiento){
+					$seguimiento->estado = 0;
+					$seguimiento->save();
+					$producto = $seguimiento_conteo->producto;
+					$message = "OK"; $status_code = 200;
+				}else{
+					$message = "Seguimiento invalido";
+				}
+			}else{
+				$message = "Parametro [id_seguimiento_conteo] perteneciente al seguimiento previamente registrado no esta definido";
+			}
+		}
+
+		return response()->json([
+			'message' => $message,
+            'product' => $producto
+		], $status_code);
+    }
+
+    public function GuardarSeguimientoConteo(Request $request)
+    {
+    	$post = $request->all();
+		$status_code = 500;
+		$message = "";
+        $producto = new Producto;
+		if($post){
+			$post = (object) $post;
+			if(isset($post->id_conteo_detalle)){
+				if (isset($post->cantidad)) {
+					if (isset($post->fecha_vencimiento)) {
+						if (isset($post->lote)) {
+							if (isset($post->id_producto)) {
+								if(Producto::find($post->id_producto)){
+	                                $producto = Producto::find($post->id_producto);
+									$seguimiento = SeguimientoConteo::where('id_conteo_detalle', $post->id_conteo_detalle)
+															->where('id_producto', $post->id_producto)
+	                                                        ->where('estado', 1)
+															->first();
+									if(is_null($seguimiento)) $seguimiento = new SeguimientoConteo;
+									$seguimiento->id_conteo_detalle = $post->id_conteo_detalle;
+									$seguimiento->id_producto = $post->id_producto;
+									$seguimiento->cantidad = $post->cantidad;
+									$seguimiento->fecha_vencimiento = $post->fecha_vencimiento;
+									$seguimiento->lote = $post->lote;
+									$seguimiento->save();
+	                                $producto->id_seguimiento_conteo = $seguimiento->id_seguimiento_conteo;
+									$message = "Producto agregado correctamente"; $status_code = 200;
+								}else{
+									$message = "El producto no es valido";
+								}
+							}else{
+								$message = "Parametro [id_producto] perteneciente al producto contado no esta definido";
+							}
+						}else{
+							$message = "Parametro [lote] perteneciente al del producto contado no esta definido";
+						}
+					}else{
+						$message = "Parametro [fecha_vencimiento] perteneciente a la fecha de vencimiento del producto contado no esta definido";
+					}
+				}else{
+					$message = "Parametro [cantidad] perteneciente a la cantidad contada no esta definida";
+				}
+			}else{
+				$message = "Parametro [id_conteo_detalle] perteneciente al conteo detalle no esta definido";
+			}
+		}
+
+		return response()->json([
+            'product' => $producto,
+			'message' => $message
+		], $status_code);
+    }
+
 }

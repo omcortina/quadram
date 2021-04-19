@@ -9,4 +9,8 @@ class SeguimientoConteo extends Model
 {
     protected $table = 'seguimiento_conteo';
     protected $primaryKey = 'id_seguimiento_conteo';
+
+    public function producto(){
+      	return $this->belongsTo(Producto::class, 'id_producto');
+    }
 }
