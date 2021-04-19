@@ -13,4 +13,8 @@ class SeguimientoAuditoria extends Model
     public function auditoria_detalle(){
       	return $this->belongsTo(AuditoriaDetalle::class, 'id_auditoria_detalle');
     }
+
+    public function producto(){
+      	return $this->belongsTo(Producto::class, 'id_producto');
+    }
 }
