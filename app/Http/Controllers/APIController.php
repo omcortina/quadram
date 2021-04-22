@@ -408,7 +408,7 @@ class APIController extends Controller
 											  AND s.id_auditoria_detalle = ".$estante->id_auditoria_detalle);
 
 									foreach ($seguimientos as $seguimiento) {
-										$seguimientos_conteo = DB::select("SELECT * 
+										$seguimientos_conteo = DB::select("SELECT *
 															   FROM seguimiento_conteo sc
 															   WHERE sc.id_producto = ".$seguimiento->id_producto."
 															   AND sc.estado = 1
@@ -515,7 +515,7 @@ class APIController extends Controller
 										  AND s.id_auditoria_detalle = ".$estante->id_auditoria_detalle);
 
 								foreach ($seguimientos as $seguimiento) {
-									$seguimientos_conteo = DB::select("SELECT * 
+									$seguimientos_conteo = DB::select("SELECT *
 														   FROM seguimiento_conteo sc
 														   WHERE sc.id_producto = ".$seguimiento->id_producto."
 														   AND sc.estado = 1
@@ -560,8 +560,8 @@ class APIController extends Controller
 				if($seguimiento){
 					$seguimiento->estado = 0;
 					$seguimiento->save();
-					$producto = $seguimiento_conteo->producto;
-					$message = "OK"; $status_code = 200;
+					$producto = $seguimiento->producto;
+					$message = "Producto eliminado"; $status_code = 200;
 				}else{
 					$message = "Seguimiento invalido";
 				}

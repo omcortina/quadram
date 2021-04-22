@@ -15,26 +15,16 @@
         <link rel="stylesheet" href="{{asset('design/assets/vendor/nucleo/css/nucleo.css')}}" type="text/css">
         <link rel="stylesheet" href="{{asset('design/assets/vendor/@fortawesome/fontawesome-free/css/all.min.css')}}" type="text/css">
         <!-- Page plugins -->
+        <link rel="stylesheet" href="{{asset('design/assets/vendor/datatables.net-bs4/css/dataTables.bootstrap4.min.css')}}">
+        <link rel="stylesheet" href="{{asset('design/assets/vendor/datatables.net-buttons-bs4/css/buttons.bootstrap4.min.css')}}">
+        <link rel="stylesheet" href="{{asset('design/assets/vendor/datatables.net-select-bs4/css/select.bootstrap4.min.css')}}">
         <!-- Argon CSS -->
-        <link rel="stylesheet" href="{{ asset('loader/css-loader.css') }}">
-        <link rel="stylesheet" href="{{asset('design/assets/css/argon.css?v=1.2.0')}}" type="text/css">
+        <link rel="stylesheet" href="{{asset('design/assets/css/argon.css?v=1.1.0')}}" type="text/css">
+        <!-- Page plugins -->
+        <link rel="stylesheet" href="{{asset('loader/css-loader.css') }}">
         <link rel="stylesheet" href="{{asset('css/toastr.min.css')}}">
-        <link rel="stylesheet" href="{{asset('css/jquery.dataTables.min.css')}}">
+
         <script src="{{asset('design/assets/vendor/jquery/dist/jquery.min.js')}}"></script>
-        <script src="{{asset('design/assets/vendor/bootstrap/dist/js/bootstrap.bundle.min.js')}}"></script>
-        <script src="{{asset('design/assets/vendor/js-cookie/js.cookie.js')}}"></script>
-        <script src="{{asset('design/assets/vendor/jquery.scrollbar/jquery.scrollbar.min.js')}}"></script>
-        <script src="{{asset('design/assets/vendor/jquery-scroll-lock/dist/jquery-scrollLock.min.js')}}"></script>
-        <!-- Optional JS -->
-        <script src="{{asset('design/assets/vendor/chart.js/dist/Chart.min.js')}}"></script>
-        <script src="{{asset('design/assets/vendor/chart.js/dist/Chart.extension.js')}}"></script>
-        <!-- Argon JS -->
-        <script src="{{asset('design/assets/js/argon.js?v=1.2.0')}}"></script>
-        <script src="{{ asset('js/toastr.min.js') }}"></script>
-        <script src="{{ asset('js/jquery.dataTables.min.js') }}"></script>
-        <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
-
-
 
         <script>
             function loading(open = true,message = "Por favor espere...", timeout = null) {
@@ -114,6 +104,30 @@
         <script>
             setTimeout(()=>{ feather.replace() }, 1000)
         </script>
+
+
+        <script src="{{asset('design/assets/vendor/bootstrap/dist/js/bootstrap.bundle.min.js')}}"></script>
+        <script src="{{asset('design/assets/vendor/js-cookie/js.cookie.js')}}"></script>
+        <script src="{{asset('design/assets/vendor/jquery.scrollbar/jquery.scrollbar.min.js')}}"></script>
+        <script src="{{asset('design/assets/vendor/jquery-scroll-lock/dist/jquery-scrollLock.min.js')}}"></script>
+
+        <!-- Argon JS -->
+        <script src="{{ asset('js/toastr.min.js') }}"></script>
+        <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+
+        <!-- Optional JS -->
+        <script src="{{asset('design/assets/vendor/datatables.net/js/jquery.dataTables.min.js')}}"></script>
+        <script src="{{asset('design/assets/vendor/datatables.net-bs4/js/dataTables.bootstrap4.min.js')}}"></script>
+        <script src="{{asset('design/assets/vendor/datatables.net-buttons/js/dataTables.buttons.min.js')}}"></script>
+        <script src="{{asset('design/assets/vendor/datatables.net-buttons-bs4/js/buttons.bootstrap4.min.js')}}"></script>
+        <script src="{{asset('design/assets/vendor/datatables.net-buttons/js/buttons.html5.min.js')}}"></script>
+        <script src="{{asset('design/assets/vendor/datatables.net-buttons/js/buttons.flash.min.js')}}"></script>
+        <script src="{{asset('design/assets/vendor/datatables.net-buttons/js/buttons.print.min.js')}}"></script>
+        <script src="{{asset('design/assets/vendor/datatables.net-select/js/dataTables.select.min.js')}}"></script>
+        <!-- Argon JS -->
+        <script src="{{asset('design/assets/js/argon.js?v=1.1.0')}}"></script>
+        <!-- Demo JS - remove this in your project -->
+        <script src="{{asset('design/assets/js/demo.min.js')}}"></script>
     </body>
 
 </html>

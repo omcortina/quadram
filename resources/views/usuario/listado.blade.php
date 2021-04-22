@@ -33,7 +33,7 @@
                 <th scope="col">Apellidos</th>
                 <th scope="col">Telefono</th>
                 <th scope="col">Tipo usuario</th>
-                <th scope="col"></th>
+                <th scope="col"><center>Acciones</center></th>
               </tr>
             </thead>
             <tbody>

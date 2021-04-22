@@ -81,7 +81,7 @@
                             <label><b>Estantes</b></label>
                             <div class="table-responsive" style="margin-top: 10px;">
                                 <!-- Projects table -->
-                                <table class="table align-items-center table-flush" id="tabla_estante">
+                                <table class=" table align-items-center table-flush" id="tabla_estante">
                                     <thead class="thead-light">
                                         <tr>
                                             <th scope="col">Id</th>
@@ -113,9 +113,34 @@
     $(document).ready(function(){
         $("#div_agregar_locacion").hide()
         ListadoLocacion()
+        setTimeout(()=>{
+            $("#tabla_locacion").DataTable({
+                "searching": false,
+                language: {
+                    paginate: {
+                        next: '<span class="icons"><i style="margin-left:10px;" data-feather="chevron-right"></i></span>',
+                        previous: '<span class="icons"><i style="margin-left:10px;" data-feather="chevron-left"></i></span>'
+                    }
+                }
+            })
+        }, 300)
+
+        setTimeout(()=>{
+            $("#tabla_estante").DataTable({
+                "searching": false,
+                language : {
+                    paginate : {
+                        next : '<span class="icons"><i style="margin-left:10px;" data-feather="chevron-right"></i></span>',
+                        previous : '<span class="icons"><i style="margin-left:10px;" data-feather="chevron-left"></i></span>'
+                    }
+                }
+            })
+        }, 300)
+
     })
 
     function ListadoLocacion(){
+
         let url = "{{ route('locacion/listado', $almacen->id_almacen) }}"
         $.get(url, (response)=>{
             let fila_locacion = ""
