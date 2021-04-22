@@ -228,7 +228,7 @@
                         '</td>'+
                     '</tr>'
         })
-        if(tabla == "") tabla = "<center> <span class='span-msg'>No hay estantes disponibles</span> </center>"
+        if(tabla == "") tabla = "<center> <span class='span-msg'>No hay filas disponibles</span> </center>"
         $("#seguimiento-tabla-filas tbody").html(tabla)
         $("#seguimiento-tabla-productos tbody").html("")
     }

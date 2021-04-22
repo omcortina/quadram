@@ -22,7 +22,6 @@
         <link rel="stylesheet" href="{{asset('design/assets/css/argon.css?v=1.1.0')}}" type="text/css">
         <!-- Page plugins -->
         <link rel="stylesheet" href="{{asset('loader/css-loader.css') }}">
-        <link rel="stylesheet" href="{{asset('design/assets/css/argon.css?v=1.2.0')}}" type="text/css">
         <link rel="stylesheet" href="{{asset('css/toastr.min.css')}}">
 
         <script src="{{asset('design/assets/vendor/jquery/dist/jquery.min.js')}}"></script>
@@ -111,16 +110,9 @@
         <script src="{{asset('design/assets/vendor/js-cookie/js.cookie.js')}}"></script>
         <script src="{{asset('design/assets/vendor/jquery.scrollbar/jquery.scrollbar.min.js')}}"></script>
         <script src="{{asset('design/assets/vendor/jquery-scroll-lock/dist/jquery-scrollLock.min.js')}}"></script>
-        <!-- Optional JS -->
-        <script src="{{asset('design/assets/vendor/chart.js/dist/Chart.min.js')}}"></script>
-        <script src="{{asset('design/assets/vendor/chart.js/dist/Chart.extension.js')}}"></script>
+
         <!-- Argon JS -->
-        <script src="{{asset('design/assets/js/argon.js?v=1.2.0')}}"></script>
         <script src="{{ asset('js/toastr.min.js') }}"></script>
-        <script src="{{ asset('js/data-tables.min.js') }}"></script>
-        <script src="{{ asset('js/dataTables.bootstrap4.min.js') }}"></script>
-        <script src="{{ asset('js/dataTables.buttons.min.js') }}"></script>
-        <script src="{{ asset('js/dataTables.select.min.js') }}"></script>
         <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
 
         <!-- Optional JS -->

@@ -31,9 +31,9 @@
                             <select class="form-control" name="id_dominio_tipo_documento" id="tipo_documento">
                                 <option>Seleccione...</option>
                                 @foreach($tipos_documento as $tipo)
-                                    <option 
+                                    <option
                                     @if($usuario->id_dominio_tipo_documento == $tipo->id_dominio) selected @endif
-                                    value="{{ $tipo->id_dominio }}" 
+                                    value="{{ $tipo->id_dominio }}"
                                     >{{ $tipo->nombre }}</option>
                                 @endforeach
                             </select>
@@ -99,9 +99,9 @@
                             <select class="form-control" id="tipo_usuario" name="id_dominio_tipo_usuario">
                                 <option value>Selecione...</option>
                                 @foreach($tipos_usuario as $tipo)
-                                    <option 
+                                    <option
                                     @if($usuario->id_dominio_tipo_usuario == $tipo->id_dominio) selected @endif
-                                    value="{{ $tipo->id_dominio }}" 
+                                    value="{{ $tipo->id_dominio }}"
                                     >{{ $tipo->nombre }}</option>
                                 @endforeach
                             </select>
@@ -110,12 +110,14 @@
                 </div>
 
                 <div class="row">
-                    <div class="col-sm-12">
-                        <center>
-                            <button type="button" class="btn btn-success" onclick="GuardarUsuario()">Guardar</button>
-                            <button type="button" class="btn btn-info" onclick="AbrirModal()">Cambiar contraseña</button>
-                        </center>
+                    <div class="col-sm-3"></div>
+                    <div class="col-sm-3">
+                        <button type="button" style="width: 100%" class="btn btn-success" onclick="GuardarUsuario()">Guardar</button>
                     </div>
+                    <div class="col-sm-3">
+                        <button type="button" style="width: 100%" class="btn btn-info" onclick="AbrirModal()">Cambiar contraseña</button>
+                    </div>
+                    <div class="col-sm-3"></div>
                 </div>
 
                 {{ Form::close() }}

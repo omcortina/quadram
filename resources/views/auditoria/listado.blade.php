@@ -48,9 +48,9 @@
               @foreach($inventario->auditorias as $auditoria)
                 <tr>
                   <td>{{ $inventario->almacen->nombre }}</td>
-                  <td>{{ date('d/m/Y H:i', strtotime($auditoria->fecha_inicio)) }} hasta {{ date('d/m/Y H:i', strtotime($auditoria->fecha_fin)) }}</td>
-                  <td>@if($auditoria->conteo()) 
-                    {{ date('d/m/Y H:i', strtotime($auditoria->conteo()->fecha_inicio)) }} hasta {{ date('d/m/Y H:i', strtotime($auditoria->conteo()->fecha_fin)) }}
+                  <td>{{ date('d/m/Y', strtotime($auditoria->fecha_inicio)) }} hasta {{ date('d/m/Y', strtotime($auditoria->fecha_fin)) }}</td>
+                  <td>@if($auditoria->conteo())
+                    {{ date('d/m/Y', strtotime($auditoria->conteo()->fecha_inicio)) }} hasta {{ date('d/m/Y', strtotime($auditoria->conteo()->fecha_fin)) }}
                       @else
                        No definidas
                       @endif
@@ -82,5 +82,5 @@
     document.addEventListener("DOMContentLoaded", function(event) {
         setFilter("filtro", "bodytable_auditorias")
     });
-    
+
 </script>
