@@ -53,6 +53,11 @@ Route::get('locacion/estantes_por_locacion/{id_locacion}', [LocacionController::
 //ESTANTE
 Route::get('estante/listado', [EstanteController::class, 'Listado'])->name('estante/listado');
 Route::any('estante/guardar', [EstanteController::class, 'Guardar'])->name('estante/guardar');
+Route::get('estante/filas_por_estante/{id_estante}', [EstanteController::class, 'FilasPorEstante'])->name('estante/filas_por_estante');
+
+//FILA
+Route::get('fila/listado', [EstanteController::class, 'ListadoFilas'])->name('fila/listado');
+Route::any('fila/guardar', [EstanteController::class, 'GuardarFila'])->name('fila/guardar');
 
 //INVENTARIO
 Route::get('inventario/gestion', [InventarioController::class, 'Gestion'])->name('inventario/gestion');

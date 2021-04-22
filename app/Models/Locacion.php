@@ -17,10 +17,10 @@ class Locacion extends Model
     ];
 
     public function almacen(){
-      return $this->belongsTo(Almacen::class, 'id_almacen');
+        return $this->belongsTo(Almacen::class, 'id_almacen');
     }
 
     public function estantes(){
-      return $this->hasMany(Estante::class, 'id_locacion');
-  }
+        return $this->hasMany(Estante::class, 'id_locacion');
+    }
 }

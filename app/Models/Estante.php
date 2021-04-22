@@ -11,11 +11,16 @@ class Estante extends Model
     protected $primaryKey = 'id_estante';
     protected $fillable = [
     	'nombre',
-    	'id_locacion',
-      'estado'
+        'id_locacion',
+        'estado'
     ];
 
     public function locacion(){
       return $this->belongsTo(Locacion::class, 'id_locacion');
+    }
+
+    public function filas(){
+        $filas = FilaEstante::all()->where("estado", 1);
+        return $filas;
     }
 }

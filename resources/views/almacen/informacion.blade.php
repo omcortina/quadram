@@ -56,7 +56,7 @@
                 </div>
                 <hr>
                 <div class="row">
-                    <div class="col-sm-6">
+                    <div class="col-sm-4">
                         <div class="form-group">
                             <label><b>Locaciones</b></label>
                             <div class="table-responsive" style="margin-top: 10px;">
@@ -76,7 +76,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-sm-6">
+                    <div class="col-sm-4">
                         <div class="form-group">
                             <label><b>Estantes</b></label>
                             <div class="table-responsive" style="margin-top: 10px;">
@@ -86,11 +86,30 @@
                                         <tr>
                                             <th scope="col">Id</th>
                                             <th scope="col">Nombre</th>
-                                            <th scope="col">Locacion</th>
                                             <th scope="col" style="width: 60px;">Opciones</th>
                                         </tr>
                                     </thead>
                                     <tbody id="bodytable_estante">
+
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="form-group">
+                            <label><b>Filas</b></label>
+                            <div class="table-responsive" style="margin-top: 10px;">
+                                <!-- Projects table -->
+                                <table class=" table align-items-center table-flush" id="tabla_fila_estante">
+                                    <thead class="thead-light">
+                                        <tr>
+                                            <th scope="col">Id</th>
+                                            <th scope="col">Nombre</th>
+                                            <th scope="col" style="width: 60px;">Opciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="bodytable_fila_estante">
 
                                     </tbody>
                                 </table>
@@ -108,6 +127,13 @@
         "id_locacion" : null,
         "estado" : 1
     }
+
+    var fila = {
+        "nombre" : null,
+        "id_estante" : null,
+        "estado" : 1
+    }
+
     var locaciones = []
     var estantes = []
     $(document).ready(function(){
@@ -123,7 +149,7 @@
                     }
                 }
             })
-        }, 300)
+        }, 200)
 
         setTimeout(()=>{
             $("#tabla_estante").DataTable({
@@ -135,36 +161,38 @@
                     }
                 }
             })
-        }, 300)
+        }, 500)
+
+        setTimeout(()=>{
+            $("#tabla_fila_estante").DataTable({
+                "searching": false,
+                language : {
+                    paginate : {
+                        next : '<span class="icons"><i style="margin-left:10px;" data-feather="chevron-right"></i></span>',
+                        previous : '<span class="icons"><i style="margin-left:10px;" data-feather="chevron-left"></i></span>'
+                    }
+                }
+            })
+        }, 500)
 
     })
 
     function ListadoLocacion(){
-
         let url = "{{ route('locacion/listado', $almacen->id_almacen) }}"
         $.get(url, (response)=>{
             let fila_locacion = ""
             let fila_estante = ""
             if(response.locaciones.length > 0){
+                ConsultarEstantesPorLocacion(response.locaciones[0].id_locacion)
+                ConsultarFilasPorEstante(response.locaciones[0].estantes[0].id_estante)
                 response.locaciones.forEach((locacion)=>{
                     fila_locacion += "<tr>"+
                                         "<td>"+locacion.id_locacion+"</td>"+
                                         "<td>"+locacion.nombre+"</td>"+
-                                        "<td><center><span class='icons' onclick='ModalEstante("+locacion.id_locacion+")'><i data-feather='plus-circle'></i></span><span class='icons' onclick='ConsultarEstantesPorLocacion("+locacion.id_locacion+")'><i data-feather='box'></i></span></center></td>"
+                                        "<td><center><span class='icons' onclick='ModalEstante("+locacion.id_locacion+")'><i data-feather='plus-circle'></i></span><span class='icons' onclick='ConsultarEstantesPorLocacion("+locacion.id_locacion+")'><i data-feather='box'></i></span><span class='icons'><i data-feather='trash'></i></span></center></td>"
                                     "</tr>"
-                    if(locacion.estantes.length > 0){
-                        locacion.estantes.forEach((estante)=>{
-                            fila_estante += "<tr>"+
-                                                "<td>"+estante.id_estante+"</td>"+
-                                                "<td>"+estante.nombre+"</td>"+
-                                                "<td>"+estante.locacion.nombre+"</td>"+
-                                                "<td><center><span class='icons'><i data-feather='plus-circle'></i></span><span class='icons'><i data-feather='list'></i></span></center></td>"
-                                            "</tr>"
-                        })
-                    }
                 })
                 $("#bodytable_locacion").html(fila_locacion)
-                $("#bodytable_estante").html(fila_estante)
                 feather.replace()
             }
         })
@@ -210,8 +238,13 @@
         LimpiarModalEstante()
     }
 
+    function ModalFila(id_estante){
+        $("#ModalNuevaFila").modal("show")
+        $("#modal_id_estante").val(id_estante)
+    }
 
-    function EstablecerEstado() {
+
+    function EstablecerEstadoEstante() {
         if(this.estante.estado == 1) {
             $("#estante_estado").removeClass("btn-success")
             $("#estante_estado").addClass("btn-danger")
@@ -222,6 +255,20 @@
             $("#estante_estado").removeClass("btn-danger")
             $("#estante_estado").html("Activo")
             this.estante.estado = 1
+        }
+    }
+
+    function EstablecerEstadoFila(){
+        if(this.fila.estado == 1) {
+            $("#fila_estado").removeClass("btn-success")
+            $("#fila_estado").addClass("btn-danger")
+            $("#fila_estado").html("Inactivo")
+            this.fila.estado = 0
+        }else{
+            $("#fila_estado").addClass("btn-success")
+            $("#fila_estado").removeClass("btn-danger")
+            $("#fila_estado").html("Activo")
+            this.fila.estado = 1
         }
     }
 
@@ -253,6 +300,33 @@
         })
     }
 
+    function GuardarFila(){
+        let nombre_fila = $("#nombre_fila").val()
+        let id_estante = $("#modal_id_estante").val()
+        if($.trim(nombre_fila) == ""){
+            toastr.error("El nombre es obligatorio")
+            return false
+        }
+        this.fila.nombre = nombre_fila
+        this.fila.id_estante = id_estante
+        let token = $('input[name=_token]')[0].value
+        let request = {
+            "_token" : token,
+            "fila" : this.fila
+        }
+        let url = "{{ route('fila/guardar') }}"
+        $.post(url, request, (response)=>{
+            if(response.error == false){
+                toastr.success(response.mensaje)
+                return false
+            }else{
+                toastr.error(response.mensaje)
+                return false
+            }
+        })
+
+    }
+
     function LimpiarModalEstante(){
         $("#nombre_estante").val(null)
     }
@@ -263,15 +337,31 @@
             let fila = "";
             if(response.estantes.length > 0){
                 response.estantes.forEach((estante)=>{
-                    $("#bodytable_estante").html(fila)
                     fila += "<tr>"+
                                 "<td>"+estante.id_estante+"</td>"+
                                 "<td>"+estante.nombre+"</td>"+
-                                "<td>"+estante.locacion.nombre+"</td>"+
-                                "<td><center><span class='icons'><i data-feather='plus-circle'></i></span><span class='icons'><i data-feather='list'></i></span></center></td>"
+                                "<td><center><span class='icons' onclick='ModalFila("+estante.id_estante+")'><i data-feather='plus-circle'></i></span><span class='icons' onclick='ConsultarFilasPorEstante("+estante.id_estante+")'><i data-feather='list'></i></span><span class='icons'><i data-feather='trash'></i></span></center></td>"
                             "</tr>"
                 })
                 $("#bodytable_estante").html(fila)
+                feather.replace()
+            }
+        })
+    }
+
+    function ConsultarFilasPorEstante(id_estante){
+        let url = "{{ config('global.servidor') }}/estante/filas_por_estante/"+id_estante
+        $.get(url, (response)=>{
+            let item = "";
+            if(response.filas.length > 0){
+                response.filas.forEach((fila)=>{
+                    item += "<tr>"+
+                                "<td>"+fila.id_fila_estante+"</td>"+
+                                "<td>"+fila.nombre+"</td>"+
+                                "<td><center><span class='icons'><i data-feather='trash'></i></span></center></td>"
+                            "</tr>"
+                })
+                $("#bodytable_fila_estante").html(item)
                 feather.replace()
             }
         })
@@ -296,12 +386,39 @@
                 </div>
 
                 <div class="col-sm-12 text-right">
-                    <span id="estante_estado" onclick="EstablecerEstado()" class="btn btn-sm btn-success">Activo</span>
+                    <span id="estante_estado" onclick="EstablecerEstadoEstante()" class="btn btn-sm btn-success">Activo</span>
                 </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="$('#ModalNuevoEstante').modal('hide')">Cerrar</button>
                 <button type="button" class="btn btn-primary" onclick="GuardarEstante()">Guardar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal" tabindex="-1" id="ModalNuevaFila">
+    <div class="modal-dialog modal-dialog-centered" style="max-width: 400px">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Nueva fila</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" onclick="$('#ModalNuevaFila').modal('hide')"></button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="modal_id_estante">
+                <div class="col-sm-12">
+                    <div class="form-group">
+                        <input type="text" class="form-control" id="nombre_fila" placeholder="Nombre">
+                    </div>
+                </div>
+
+                <div class="col-sm-12 text-right">
+                    <span id="fila_estado" onclick="EstablecerEstadoFila()" class="btn btn-sm btn-success">Activo</span>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="$('#ModalNuevaFila').modal('hide')">Cerrar</button>
+                <button type="button" class="btn btn-primary" onclick="GuardarFila()">Guardar</button>
             </div>
         </div>
     </div>

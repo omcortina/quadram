@@ -56,7 +56,7 @@
             cursor: pointer;
             }
             .icons svg{
-            margin-right: 10px;
+            margin-right: 8px;
             width: 18px;
             height: 18px;
             color: #5e72e4 !important;
