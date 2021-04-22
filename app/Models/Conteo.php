@@ -11,6 +11,10 @@ class Conteo extends Model
     protected $table = 'conteo';
     protected $primaryKey = 'id_conteo';
 
+    public function auditoria(){
+      	return $this->belongsTo(Auditoria::class, 'id_auditoria');
+    }
+
     public function ActualizarConteoActual()
     {
     	$seguimientos_auditoria = DB::select("SELECT *

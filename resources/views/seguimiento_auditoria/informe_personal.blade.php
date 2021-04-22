@@ -243,11 +243,12 @@
         fila.productos.forEach((producto) => {
             tabla += '<tr>'+
                         '<td>'+producto.codigo+'</td>'+
-                        '<td id="td-producto-'+producto.id_estante+'"'+
-                            'class="td-producto">'+
-                            '<strong>'+producto.nombre+'</strong>'+
-                        '</td>'+
-                    '</tr>'
+                        '<td><strong>'+producto.nombre+'</strong></td>'+
+                        '<td>'+(producto.id_seguimiento_auditoria == -1 ? "Sin contar" : producto.seguimiento.created_at)+'</td>'
+            if(producto.id_seguimiento_auditoria != -1){
+                tabla += '<td><center><span onclick="BorrarSeguimientoAuditoria('+producto.id_seguimiento_auditoria+')"><i class="fa fa-trash"></i></span></center></td>'
+            }     
+            tabla +=   '</tr>'
         })
         if(tabla == "") tabla = "<center> <span class='span-msg'>No hay productos disponibles</span> </center>"
         $("#seguimiento-tabla-productos tbody").html(tabla)
@@ -278,6 +279,23 @@
         @endif
     }
 
+    function BorrarSeguimientoAuditoria(id_seguimiento_auditoria) {
+        let confirmacion = confirm("¿Seguro que desea eliminar este seguimiento?")
+        if (confirmacion) {
+            let url = "{{ route('api/auditor/deleteTracing') }}"
+            let request = {'id_seguimiento_auditoria' : id_seguimiento_auditoria}
+            loading(true, "Borrando registro...")
+            $.ajax({
+                url : url,
+                type : 'DELETE',
+                data : request,
+                success: function (response) {
+                    location.reload()
+                }
+            });
+        }
+    }
+
     document.addEventListener("DOMContentLoaded", function(event) {
         BuscarLocaciones()
     });
@@ -300,6 +318,8 @@
                                     <tr>
                                         <th scope="col"><b>Código</b></th>
                                         <th scope="col"><b>Nombre</b></th>
+                                        <th scope="col"><b>Realización</b></th>
+                                        <th scope="col"></th>
                                     </tr>
                                 </thead>
                                 <tbody></tbody>

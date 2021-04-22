@@ -583,7 +583,7 @@
         if(encargado.tiene_seguimientos){
             $("#conteo-modal-encargado").prop("disabled", true)
             $("#conteo-div-link-seguimiento").fadeIn()
-            let href = "{{ route('auditoria/seguimiento') }}?conteo={{ $conteo->id_conteo }}&usuario="+encargado.id_usuario+"&estante="+estante.id_estante
+            let href = "{{ route('conteo/seguimiento') }}?conteo={{ $conteo->id_conteo }}&usuario="+encargado.id_usuario+"&estante="+estante.id_estante+"&num_conteo="+encargado.conteo
             $("#conteo-link-seguimiento").prop("href", href)
         }else{
             $("#conteo-modal-encargado").prop("disabled", false)

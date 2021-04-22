@@ -25,6 +25,7 @@
         <link rel="stylesheet" href="{{asset('css/toastr.min.css')}}">
 
         <script src="{{asset('design/assets/vendor/jquery/dist/jquery.min.js')}}"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 
         <script>
             function loading(open = true,message = "Por favor espere...", timeout = null) {

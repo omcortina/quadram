@@ -9,6 +9,7 @@ use App\Http\Controllers\AuditoriaController;
 use App\Http\Controllers\LocacionController;
 use App\Http\Controllers\EstanteController;
 use App\Http\Controllers\SeguimientoAuditoriaController;
+use App\Http\Controllers\SeguimientoConteoController;
 use App\Http\Controllers\APIController;
 
 /*
@@ -67,17 +68,19 @@ Route::any('auditoria/guardar', [AuditoriaController::class, 'Guardar'])->name('
 
 //SEGUIMIENTO AUDITORIA
 Route::any('auditoria/seguimiento', [SeguimientoAuditoriaController::class, 'Informe'])->name('auditoria/seguimiento');
+Route::any('conteo/seguimiento', [SeguimientoConteoController::class, 'Informe'])->name('conteo/seguimiento');
+
 
 //API
 Route::post('api/login', [APIController::class, 'Login'])->name('api/login');
 Route::post('api/auditor/audits', [APIController::class, 'Auditorias']);
 Route::post('api/auditor/saveTracing', [APIController::class, 'GuardarSeguimientoAuditoria']);
-Route::delete('api/auditor/deleteTracing', [APIController::class, 'BorrarSeguimientoAuditoria']);
+Route::delete('api/auditor/deleteTracing', [APIController::class, 'BorrarSeguimientoAuditoria'])->name('api/auditor/deleteTracing');
 Route::any('api/auditor/getLocations', [APIController::class, 'LocacionesAuditoriaAuditor'])->name('api/auditor/getLocations');
 
 Route::post('api/getProductByBarcode', [APIController::class, 'BuscarProductoPorCodigoBarra']);
 
 Route::post('api/counter/counts', [APIController::class, 'Conteos']);
 Route::post('api/counter/saveTracing', [APIController::class, 'GuardarSeguimientoConteo']);
-Route::delete('api/counter/deleteTracing', [APIController::class, 'BorrarSeguimientoConteo']);
+Route::delete('api/counter/deleteTracing', [APIController::class, 'BorrarSeguimientoConteo'])->name('api/counter/deleteTracing');
 Route::any('api/counter/getLocations', [APIController::class, 'LocacionesConteoContador'])->name('api/counter/getLocations');

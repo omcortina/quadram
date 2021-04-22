@@ -224,6 +224,18 @@ class APIController extends Controller
 											  WHERE s.id_fila_estante = ".$fila->id_fila."
 											  AND s.estado = 1
 											  AND s.id_auditoria_detalle = ".$estante->id_auditoria_detalle);
+
+									foreach ($seguimientos as $seguimiento) {
+									$seguimientos_auditoria = DB::select("SELECT *
+														   FROM seguimiento_auditoria sa
+														   WHERE sa.id_producto = ".$seguimiento->id_producto."
+														   AND sa.estado = 1
+														   AND sa.id_auditoria_detalle = ".$estante->id_auditoria_detalle."
+														   limit 1");
+										$seguimiento->id_seguimiento_auditoria = count($seguimientos_auditoria) > 0 ? $seguimientos_auditoria[0]->id_seguimiento_auditoria : -1;
+										$seguimiento->seguimiento = count($seguimientos_auditoria) > 0 ? $seguimientos_auditoria[0] : (object)[];
+									}
+
 									$fila->productos = $seguimientos;
 								}
 
@@ -472,6 +484,7 @@ class APIController extends Controller
 					$fecha_actual = date('Y-m-d H:i').":00";
 					$this->ActualizarConteosActuales($usuario->id_usuario);
 					$conteo = Conteo::find($post->conteo);
+					$num_conteo = isset($post->num_conteo) ? $post->num_conteo : $conteo->conteo_activo;
 					$locaciones = DB::select("SELECT DISTINCT(l.id_locacion) as id_locacion,
 												 l.nombre
 										  FROM conteo c
@@ -479,7 +492,7 @@ class APIController extends Controller
 										  LEFT JOIN estante e USING(id_estante)
 										  LEFT JOIN locacion l USING(id_locacion)
 										  WHERE c.id_conteo = ".$conteo->id_conteo."
-										  AND cd.conteo = ".$conteo->conteo_activo."
+										  AND cd.conteo = ".$num_conteo."
 										  AND cd.id_usuario = ".$usuario->id_usuario);
 					foreach ($locaciones as $locacion) {
 						$estantes = DB::select("SELECT DISTINCT(e.id_estante) as id_estante,
@@ -522,6 +535,7 @@ class APIController extends Controller
 														   AND sc.id_conteo_detalle = ".$estante->id_conteo_detalle."
 														   limit 1");
 									$seguimiento->id_seguimiento_conteo = count($seguimientos_conteo) > 0 ? $seguimientos_conteo[0]->id_seguimiento_conteo : -1;
+									$seguimiento->seguimiento = count($seguimientos_conteo) > 0 ? $seguimientos_conteo[0] : (object)[];
 								}
 
 								$fila->productos = $seguimientos;
