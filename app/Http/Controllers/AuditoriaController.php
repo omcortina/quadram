@@ -11,6 +11,7 @@ use App\Models\Usuario;
 use App\Models\AuditoriaDetalle;
 use App\Models\ConteoDetalle;
 use App\Models\SeguimientoAuditoria;
+use App\Models\SeguimientoConteo;
 use Illuminate\Support\Facades\DB;
 
 class AuditoriaController extends Controller
@@ -77,11 +78,19 @@ class AuditoriaController extends Controller
 						$detalles_conteos = ConteoDetalle::all()
 												->where('id_auditoria_detalle', $detalle_encargado->id_auditoria_detalle);
 						foreach ($detalles_conteos as $detalle_conteo) {
+							//SE VALIDA SI TIENE SEGUIMIENTOS EL USUARIO
+							$seguimientos_conteo = SeguimientoConteo::all()
+										->where('estado', 1)
+										->where('id_conteo_detalle', $detalle_conteo->id_conteo_detalle);
+
 							$encargados_conteo[] = (object)[
 								'id_usuario' => $detalle_conteo->id_usuario, 
 								'nombre' => $detalle_conteo->usuario->nombre_completo(),
-								'conteo' => $detalle_conteo->conteo
+								'conteo' => $detalle_conteo->conteo,
+								'tiene_seguimientos' => count($seguimientos_conteo) > 0 ? true : false,
 							];
+
+							
 						}	
 					}
 				}

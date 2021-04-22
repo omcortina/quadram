@@ -302,7 +302,9 @@
                         </select>
                     </div>
                 </div>
-
+                <div class="col-sm-12 text-right" id="conteo-div-link-seguimiento" style="display: none;">
+                    <a id="conteo-link-seguimiento" class="btn btn-sm btn-success" target="_blank">Ver seguimiento</a>
+                </div>
                 <div class="col-sm-12">
                     <div class="alert alert-danger" style="display: none;" id="alert-conteo"></div>
                 </div>
@@ -577,6 +579,18 @@
             $('#conteo-modal-encargado').val(encargado.id_usuario).prop('selected', true);
         else
             $('#conteo-modal-encargado').val(0).prop('selected', true);
+
+        if(encargado.tiene_seguimientos){
+            $("#conteo-modal-encargado").prop("disabled", true)
+            $("#conteo-div-link-seguimiento").fadeIn()
+            let href = "{{ route('auditoria/seguimiento') }}?conteo={{ $conteo->id_conteo }}&usuario="+encargado.id_usuario+"&estante="+estante.id_estante
+            $("#conteo-link-seguimiento").prop("href", href)
+        }else{
+            $("#conteo-modal-encargado").prop("disabled", false)
+            $("#conteo-div-link-seguimiento").fadeOut()
+            $("#conteo-link-seguimiento").prop("href", "")
+        }
+
         $('#conteo-modal-estante').val(estante.nombre)
         $('#ModalConteo').modal("show")
     }
