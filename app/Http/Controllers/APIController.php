@@ -225,6 +225,18 @@ class APIController extends Controller
 											  WHERE s.id_fila_estante = ".$fila->id_fila."
 											  AND s.estado = 1
 											  AND s.id_auditoria_detalle = ".$estante->id_auditoria_detalle);
+
+									foreach ($seguimientos as $seguimiento) {
+									$seguimientos_auditoria = DB::select("SELECT *
+														   FROM seguimiento_auditoria sa
+														   WHERE sa.id_producto = ".$seguimiento->id_producto."
+														   AND sa.estado = 1
+														   AND sa.id_auditoria_detalle = ".$estante->id_auditoria_detalle."
+														   limit 1");
+										$seguimiento->id_seguimiento_auditoria = count($seguimientos_auditoria) > 0 ? $seguimientos_auditoria[0]->id_seguimiento_auditoria : -1;
+										$seguimiento->seguimiento = count($seguimientos_auditoria) > 0 ? $seguimientos_auditoria[0] : (object)[];
+									}
+
 									$fila->productos = $seguimientos;
 								}
 
@@ -473,6 +485,7 @@ class APIController extends Controller
 					$fecha_actual = date('Y-m-d H:i').":00";
 					$this->ActualizarConteosActuales($usuario->id_usuario);
 					$conteo = Conteo::find($post->conteo);
+					$num_conteo = isset($post->num_conteo) ? $post->num_conteo : $conteo->conteo_activo;
 					$locaciones = DB::select("SELECT DISTINCT(l.id_locacion) as id_locacion,
 												 l.nombre
 										  FROM conteo c
@@ -480,7 +493,7 @@ class APIController extends Controller
 										  LEFT JOIN estante e USING(id_estante)
 										  LEFT JOIN locacion l USING(id_locacion)
 										  WHERE c.id_conteo = ".$conteo->id_conteo."
-										  AND cd.conteo = ".$conteo->conteo_activo."
+										  AND cd.conteo = ".$num_conteo."
 										  AND cd.id_usuario = ".$usuario->id_usuario);
 					foreach ($locaciones as $locacion) {
 						$estantes = DB::select("SELECT DISTINCT(e.id_estante) as id_estante,
@@ -523,6 +536,7 @@ class APIController extends Controller
 														   AND sc.id_conteo_detalle = ".$estante->id_conteo_detalle."
 														   limit 1");
 									$seguimiento->id_seguimiento_conteo = count($seguimientos_conteo) > 0 ? $seguimientos_conteo[0]->id_seguimiento_conteo : -1;
+									$seguimiento->seguimiento = count($seguimientos_conteo) > 0 ? $seguimientos_conteo[0] : (object)[];
 								}
 
 								$fila->productos = $seguimientos;
@@ -586,39 +600,44 @@ class APIController extends Controller
 		if($post){
 			$post = (object) $post;
 			if(isset($post->id_conteo_detalle)){
-				if (isset($post->cantidad)) {
-					if (isset($post->fecha_vencimiento)) {
-						if (isset($post->lote)) {
-							if (isset($post->id_producto)) {
-								if(Producto::find($post->id_producto)){
-	                                $producto = Producto::find($post->id_producto);
-									$seguimiento = SeguimientoConteo::where('id_conteo_detalle', $post->id_conteo_detalle)
-															->where('id_producto', $post->id_producto)
-	                                                        ->where('estado', 1)
-															->first();
-									if(is_null($seguimiento)) $seguimiento = new SeguimientoConteo;
-									$seguimiento->id_conteo_detalle = $post->id_conteo_detalle;
-									$seguimiento->id_producto = $post->id_producto;
-									$seguimiento->cantidad = $post->cantidad;
-									$seguimiento->fecha_vencimiento = $post->fecha_vencimiento;
-									$seguimiento->lote = $post->lote;
-									$seguimiento->save();
-	                                $producto->id_seguimiento_conteo = $seguimiento->id_seguimiento_conteo;
-									$message = "Producto agregado correctamente"; $status_code = 200;
+				if (isset($post->id_fila)) {
+					if (isset($post->cantidad)) {
+						if (isset($post->fecha_vencimiento)) {
+							if (isset($post->lote)) {
+								if (isset($post->id_producto)) {
+									if(Producto::find($post->id_producto)){
+		                                $producto = Producto::find($post->id_producto);
+										$seguimiento = SeguimientoConteo::where('id_conteo_detalle', $post->id_conteo_detalle)
+																->where('id_producto', $post->id_producto)
+		                                                        ->where('estado', 1)
+																->first();
+										if(is_null($seguimiento)) $seguimiento = new SeguimientoConteo;
+										$seguimiento->id_conteo_detalle = $post->id_conteo_detalle;
+										$seguimiento->id_producto = $post->id_producto;
+										$seguimiento->cantidad = $post->cantidad;
+										$seguimiento->fecha_vencimiento = $post->fecha_vencimiento;
+										$seguimiento->lote = $post->lote;
+										$seguimiento->id_fila_estante = $post->id_fila;
+										$seguimiento->save();
+		                                $producto->id_seguimiento_conteo = $seguimiento->id_seguimiento_conteo;
+										$message = "Producto agregado correctamente"; $status_code = 200;
+									}else{
+										$message = "El producto no es valido";
+									}
 								}else{
-									$message = "El producto no es valido";
+									$message = "Parametro [id_producto] perteneciente al producto contado no esta definido";
 								}
 							}else{
-								$message = "Parametro [id_producto] perteneciente al producto contado no esta definido";
+								$message = "Parametro [lote] perteneciente al del producto contado no esta definido";
 							}
 						}else{
-							$message = "Parametro [lote] perteneciente al del producto contado no esta definido";
+							$message = "Parametro [fecha_vencimiento] perteneciente a la fecha de vencimiento del producto contado no esta definido";
 						}
 					}else{
-						$message = "Parametro [fecha_vencimiento] perteneciente a la fecha de vencimiento del producto contado no esta definido";
+						$message = "Parametro [cantidad] perteneciente a la cantidad contada no esta definida";
 					}
 				}else{
-					$message = "Parametro [cantidad] perteneciente a la cantidad contada no esta definida";
+					$message = "Parametro [id_fila] perteneciente a la fila donde se encuentra el producto contado no esta definido";
 				}
 			}else{
 				$message = "Parametro [id_conteo_detalle] perteneciente al conteo detalle no esta definido";

@@ -17,4 +17,8 @@ class AuditoriaDetalle extends Model
     public function auditoria(){
       	return $this->belongsTo(Auditoria::class, 'id_auditoria');
     }
+
+    public function estante(){
+      	return $this->belongsTo(Estante::class, 'id_estante');
+    }
 }

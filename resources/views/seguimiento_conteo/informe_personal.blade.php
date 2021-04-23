@@ -3,13 +3,13 @@
 @section('breadcumb')
 <div class="row align-items-center py-4">
     <div class="col-lg-9">
-        <h6 class="h2 text-white d-inline-block mb-0">Seguimiento de auditoria</h6>
+        <h6 class="h2 text-white d-inline-block mb-0">Seguimiento de conteo</h6>
         <nav aria-label="breadcrumb" class="d-none d-md-inline-block ml-md-4">
         <ol class="breadcrumb breadcrumb-links breadcrumb-dark">
             <li class="breadcrumb-item"><a href="#"><i class="fas fa-user"></i></a></li>
-            <li class="breadcrumb-item"><a onclick="history.go(-1)">Auditoria</a></li>
-            <li class="breadcrumb-item active" aria-current="page">Almacen - {{ $auditoria->inventario->almacen->nombre }}</li>
-            <li class="breadcrumb-item active" aria-current="page">{{ date("d/m/Y H:i", strtotime($auditoria->fecha_inicio)) }} hasta {{ date("d/m/Y H:i", strtotime($auditoria->fecha_fin)) }}</li>
+            <li class="breadcrumb-item"><a onclick="history.go(-1)">Conteo</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Almacen - {{ $conteo->auditoria->inventario->almacen->nombre }}</li>
+            <li class="breadcrumb-item active" aria-current="page">{{ date("d/m/Y H:i", strtotime($conteo->fecha_inicio)) }} hasta {{ date("d/m/Y H:i", strtotime($conteo->fecha_fin)) }}</li>
         </ol>
         </nav>
     </div>
@@ -97,7 +97,7 @@
             <div class="card-header border-0">
                 <div class="row">
                     <div class="col-sm-12">
-                        <h3>Informe de seguimiento de auditoria</h3>
+                        <h3>Informe de seguimiento de conteo</h3>
                         <div>
                             <div class="media align-items-center">
                               <span class="avatar avatar-sm rounded">
@@ -161,7 +161,11 @@
     var locaciones = []
     function BuscarLocaciones() {
         loading(true, "Consultando información...")
-        let url = "{{ route('api/auditor/getLocations') }}?usuario={{ $usuario->id_usuario }}&auditoria={{ $auditoria->id_auditoria }}"
+        let num_conteo = ""
+        @if ($num_conteo != null)
+            num_conteo = "&num_conteo={{ $num_conteo }}"
+        @endif
+        let url = "{{ route('api/counter/getLocations') }}?usuario={{ $usuario->id_usuario }}&conteo={{ $conteo->id_conteo }}"+num_conteo
 
         $.get(url, (response) => {
             console.log(response)
@@ -196,41 +200,45 @@
 
 
     function ActualizarEstantes(id_locacion) {
-        ValidarActive('locacion', id_locacion)
-        let locacion = this.locaciones.find(element => element.id_locacion == id_locacion)
-        let tabla = ""
-        locacion.estantes.forEach((estante) => {
-            tabla += '<tr>'+
-                        '<td id="td-estante-'+estante.id_estante+'"'+
-                            'class="td-estante"'+
-                            'onclick="ActualizarFilas('+id_locacion+', '+estante.id_estante+')">'+
-                            '<strong>Estante '+estante.nombre+'</strong>'+
-                        '</td>'+
-                    '</tr>'
-        })
-        if(tabla == "") tabla = "<center> <span class='span-msg'>No hay estantes disponibles</span> </center>"
-        $("#seguimiento-tabla-estantes tbody").html(tabla)
-        $("#seguimiento-tabla-filas tbody").html("")
-        $("#seguimiento-tabla-productos tbody").html("")
+        if (this.locaciones.length > 0) {
+            ValidarActive('locacion', id_locacion)
+            let locacion = this.locaciones.find(element => element.id_locacion == id_locacion)
+            let tabla = ""
+            locacion.estantes.forEach((estante) => {
+                tabla += '<tr>'+
+                            '<td id="td-estante-'+estante.id_estante+'"'+
+                                'class="td-estante"'+
+                                'onclick="ActualizarFilas('+id_locacion+', '+estante.id_estante+')">'+
+                                '<strong>Estante '+estante.nombre+'</strong>'+
+                            '</td>'+
+                        '</tr>'
+            })
+            if(tabla == "") tabla = "<center> <span class='span-msg'>No hay estantes disponibles</span> </center>"
+            $("#seguimiento-tabla-estantes tbody").html(tabla)
+            $("#seguimiento-tabla-filas tbody").html("")
+            $("#seguimiento-tabla-productos tbody").html("")
+        }
     }
 
     function ActualizarFilas(id_locacion, id_estante) {
-        ValidarActive('estante', id_estante)
-        let locacion = this.locaciones.find(element => element.id_locacion == id_locacion)
-        let estante = locacion.estantes.find(element => element.id_estante == id_estante)
-        let tabla = ""
-        estante.filas.forEach((fila) => {
-            tabla += '<tr>'+
-                        '<td id="td-fila-'+fila.id_fila+'"'+
-                            'class="td-fila"'+
-                            'onclick="ActualizarProductos('+id_locacion+', '+id_estante+', '+fila.id_fila+')">'+
-                            '<strong>Fila '+fila.nombre+'</strong>'+
-                        '</td>'+
-                    '</tr>'
-        })
-        if(tabla == "") tabla = "<center> <span class='span-msg'>No hay filas disponibles</span> </center>"
-        $("#seguimiento-tabla-filas tbody").html(tabla)
-        $("#seguimiento-tabla-productos tbody").html("")
+        if (this.locaciones.length > 0) {
+            ValidarActive('estante', id_estante)
+            let locacion = this.locaciones.find(element => element.id_locacion == id_locacion)
+            let estante = locacion.estantes.find(element => element.id_estante == id_estante)
+            let tabla = ""
+            estante.filas.forEach((fila) => {
+                tabla += '<tr>'+
+                            '<td id="td-fila-'+fila.id_fila+'"'+
+                                'class="td-fila"'+
+                                'onclick="ActualizarProductos('+id_locacion+', '+id_estante+', '+fila.id_fila+')">'+
+                                '<strong>Fila '+fila.nombre+'</strong>'+
+                            '</td>'+
+                        '</tr>'
+            })
+            if(tabla == "") tabla = "<center> <span class='span-msg'>No hay filas disponibles</span> </center>"
+            $("#seguimiento-tabla-filas tbody").html(tabla)
+            $("#seguimiento-tabla-productos tbody").html("")
+        }
     }
 
     function ActualizarProductos(id_locacion, id_estante, id_fila) {
@@ -243,29 +251,36 @@
         fila.productos.forEach((producto) => {
             tabla += '<tr>'+
                         '<td>'+producto.codigo+'</td>'+
-                        '<td><strong>'+producto.nombre+'</strong></td>'+
-                        '<td>'+(producto.id_seguimiento_auditoria == -1 ? "Sin contar" : producto.seguimiento.created_at)+'</td>'
-            if(producto.id_seguimiento_auditoria != -1){
-                tabla += '<td><center><span onclick="BorrarSeguimientoAuditoria('+producto.id_seguimiento_auditoria+')"><i class="fa fa-trash"></i></span></center></td>'
-            }     
-            tabla +=   '</tr>'
+                        '<td>'+
+                            '<strong>'+producto.nombre+'</strong>'+
+                        '</td>'+
+                        '<td class="text-right">'+(producto.id_seguimiento_conteo == -1 ? "Sin contar" : producto.seguimiento.cantidad)+'</td>'+
+                        '<td>'+(producto.id_seguimiento_conteo == -1 ? "Sin contar" : producto.seguimiento.lote)+'</td>'+
+                        '<td>'+(producto.id_seguimiento_conteo == -1 ? "Sin contar" : producto.seguimiento.fecha_vencimiento)+'</td>'+
+                        '<td>'+(producto.id_seguimiento_conteo == -1 ? "Sin contar" : producto.seguimiento.created_at)+'</td>'+
+                    '</tr>'
         })
         if(tabla == "") tabla = "<center> <span class='span-msg'>No hay productos disponibles</span> </center>"
+        let contados = fila.productos.filter(item => item.id_seguimiento_conteo != -1)
+        let info = contados.length + " de "+ fila.productos.length
+        $("#info_conteo").html(info)
         $("#seguimiento-tabla-productos tbody").html(tabla)
     }
 
 
 
     function ValidarActive(tabla, id) {
-        $(".td-"+tabla).each(function(){ $(this).removeClass('td-active') });
+        if (this.locaciones.length > 0) {
+            $(".td-"+tabla).each(function(){ $(this).removeClass('td-active') });
 
-        let td = document.getElementById("td-"+tabla+"-"+id)
-        let is_active = td.classList.contains('td-active');
-        if(is_active){
-            $("#td-"+tabla+"-"+id).removeClass('td-active')
-        }
-        else{
-            $("#td-"+tabla+"-"+id).addClass('td-active')
+            let td = document.getElementById("td-"+tabla+"-"+id)
+            let is_active = td.classList.contains('td-active');
+            if(is_active){
+                $("#td-"+tabla+"-"+id).removeClass('td-active')
+            }
+            else{
+                $("#td-"+tabla+"-"+id).addClass('td-active')
+            }
         }
     }
 
@@ -279,47 +294,35 @@
         @endif
     }
 
-    function BorrarSeguimientoAuditoria(id_seguimiento_auditoria) {
-        let confirmacion = confirm("¿Seguro que desea eliminar este seguimiento?")
-        if (confirmacion) {
-            let url = "{{ route('api/auditor/deleteTracing') }}"
-            let request = {'id_seguimiento_auditoria' : id_seguimiento_auditoria}
-            loading(true, "Borrando registro...")
-            $.ajax({
-                url : url,
-                type : 'DELETE',
-                data : request,
-                success: function (response) {
-                    location.reload()
-                }
-            });
-        }
-    }
-
     document.addEventListener("DOMContentLoaded", function(event) {
         BuscarLocaciones()
     });
 </script>
 @endsection
 
-<div class="modal" tabindex="-1" id="ModalProductos">
-    <div class="modal-dialog" style="max-width: 800px">
+<div class="modal bd-example-modal-lg" tabindex="-1" id="ModalProductos">
+    <div class="modal-dialog modal-lg" >
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Listado productos auditados</h5>
+                <h5 class="modal-title">Listado productos contados</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" onclick="$('#ModalProductos').modal('hide')"></button>
             </div>
             <div class="modal-body">
                 <div class="row">
+                    <div class="col-sm-12 mb-2" style="text-align: right;">
+                        <b>Productos contados:</b> <span id="info_conteo"></span>
+                    </div>
                     <div class="col-sm-12">
                         <div class="table-responsive">
                             <table class="table align-items-center table-flush" id="seguimiento-tabla-productos">
                                 <thead class="thead-light">
                                     <tr>
                                         <th scope="col"><b>Código</b></th>
-                                        <th scope="col"><b>Nombre</b></th>
+                                        <th scope="col"><b>Producto</b></th>
+                                        <th scope="col"><b>Cantidad</b></th>
+                                        <th scope="col"><b>Lote</b></th>
+                                        <th scope="col"><b>Vencimiento</b></th>
                                         <th scope="col"><b>Realización</b></th>
-                                        <th scope="col"></th>
                                     </tr>
                                 </thead>
                                 <tbody></tbody>
