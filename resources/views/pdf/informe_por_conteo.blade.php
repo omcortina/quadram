@@ -6,7 +6,7 @@
 		.table{
 			width: 100%;
 			font-family : "Calibri, sans-serif";
-			font-size: 12px;
+			font-size: 10px;
 			border: 1px solid #000;
 		}
 		.table td, th{
@@ -30,8 +30,8 @@
 <body>
 	<table cellpadding="0" cellspacing="0" class="table-head" border="1">
 		<tr>
-			<td rowspan="3" width="75%"><center><h2>INFORME DE CONTEO #{{ $num_conteo }}</h2></center></td>
-			<td><b>Fecha: </b>{{ date('d/m/Y', strtotime($conteo->created_at)) }}</td>
+			<td rowspan="3" width="65%"><center><h2>INFORME DE CONTEO #{{ $num_conteo }}</h2></center></td>
+			<td><b>Supervisor: </b>{{ $conteo->auditoria->usuario->nombre_completo() }}</td>
 		</tr>
 		<tr><td><b>Almacen: </b>{{ $conteo->auditoria->inventario->almacen->nombre }}</td></tr>
 		<tr><td><b>Auditoria: #</b>{{ $conteo->id_auditoria }}</td></tr>
@@ -57,6 +57,9 @@
 				<td><center>{{ $item->conteo_detalle->auditoria_detalle->estante->nombre }}</center></td>
 				<td><center>{{ $item->fila->nombre }}</center></td>
 				<td><center>{{ $item->producto->codigo }} - {{ ucfirst(strtolower($item->producto->nombre)) }}</center></td>
+				<td><center>{{ $item->cantidad }}</center></td>
+				<td><center>{{ $item->lote }}</center></td>
+				<td><center>{{ date('d/m/Y', strtotime($item->fecha_vencimiento)) }}</center></td>
 				<td><center>{{ date('d/m/Y H:i', strtotime($item->created_at)) }}</center></td>
 			</tr>
 		@endforeach

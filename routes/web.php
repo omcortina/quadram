@@ -6,11 +6,13 @@ use App\Http\Controllers\ProductoController;
 use App\Http\Controllers\AlmacenController;
 use App\Http\Controllers\InventarioController;
 use App\Http\Controllers\AuditoriaController;
+use App\Http\Controllers\ConteoController;
 use App\Http\Controllers\LocacionController;
 use App\Http\Controllers\EstanteController;
 use App\Http\Controllers\SeguimientoAuditoriaController;
 use App\Http\Controllers\SeguimientoConteoController;
 use App\Http\Controllers\APIController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -74,7 +76,7 @@ Route::any('auditoria/informe/{id_auditoria}', [AuditoriaController::class, 'Imp
 //SEGUIMIENTO AUDITORIA
 Route::any('auditoria/seguimiento', [SeguimientoAuditoriaController::class, 'Informe'])->name('auditoria/seguimiento');
 Route::any('conteo/seguimiento', [SeguimientoConteoController::class, 'Informe'])->name('conteo/seguimiento');
-Route::any('conteo/informe/{id_conteo}', [SeguimientoConteoController::class, 'Imprimir'])->name('conteo/informe');
+Route::any('conteo/informe/{id_conteo}', [ConteoController::class, 'Imprimir'])->name('conteo/informe');
 
 
 //API

@@ -82,12 +82,12 @@
         <div class="card">
             <div class="card-header border-0">
                 <div class="row">
-                    <div class="col-sm-6">
+                    <div class="col-sm-4">
                         <h3><b>Auditoria</b></h3>
                     </div>
-                    <div class="col-sm-6 text-right">
+                    <div class="col-sm-8 text-right">
                         @if ($auditoria->id_auditoria)
-                            <a href="{{ route('auditoria/informe', $auditoria->id_auditoria) }}" target="_blank" class="btn btn-danger w-50"> <i data-feather="file-text"></i> Informe de auditoria</a>
+                            <a href="{{ route('auditoria/informe', $auditoria->id_auditoria) }}" target="_blank" class="btn btn-danger"> <i data-feather="file-text"></i> Informe de auditoria</a>
                         @endif
                     </div>
                     <div class="col-sm-6">
@@ -151,12 +151,12 @@
         <div class="card">
             <div class="card-header border-0">
                 <div class="row">
-                    <div class="col-sm-6">
+                    <div class="col-sm-4">
                         <h3><b>Conteo</b></h3>
                     </div>
-                    <div class="col-sm-6 text-right">
+                    <div class="col-sm-8 text-right">
                         @if ($conteo->id_conteo)
-                            <a href="{{ route('conteo/informe', $conteo->id_conteo, $conteo->id_conteo) }}" target="_blank" class="btn btn-danger w-50"> <i data-feather="file-text"></i> Informe de conteo</a>
+                            <a href="{{ route('conteo/informe', $conteo->id_conteo, $conteo->id_conteo) }}" target="_blank" class="btn btn-danger"> <i data-feather="file-text"></i> Informe de conteo</a>
                         @endif
                     </div>
                     <div class="col-sm-6">
@@ -203,13 +203,10 @@
                     </div>
                 </div><br>
                 <div class="row">
-                    <div class="col-sm-8"></div>
-                    <div class="col-sm-4">
-                        <center>
+                    <div class="col-sm-12 text-right">
                             @if ($conteo->id_conteo)
-                                <a onclick="InformePorConteo()" target="_blank" class="btn btn-danger w-50"> <i data-feather="file-text"></i> Informe por conteo</a>
+                                <a onclick="InformePorConteo()" target="_blank" class="btn btn-danger"> <i data-feather="file-text"></i> Informe por conteo</a>
                             @endif
-                        </center>
                     </div>
                 </div>
                 <div class="row">
