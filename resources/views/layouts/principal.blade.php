@@ -64,6 +64,14 @@
             cursor: pointer;
             }
 
+            .icons-btn svg{
+                margin-right: 5px;
+                width: 18px;
+                height: 18px;
+                color: #fff !important;
+                cursor: pointer;
+            }
+
             .avatar img {
                 width: 100%;
                 border-radius: .375rem;
