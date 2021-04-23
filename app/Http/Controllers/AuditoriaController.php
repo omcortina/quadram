@@ -215,4 +215,23 @@ class AuditoriaController extends Controller
 			'error' => $error
 		]);
 	}
+
+	public function Imprimir($id_auditoria)
+	{
+		$seguimientos = [];
+		$auditoria = Auditoria::find($id_auditoria);
+		$sql = "SELECT sa.id_seguimiento_auditoria 
+				FROM seguimiento_auditoria sa
+				LEFT JOIN auditoria_detalle ad USING(id_auditoria_detalle)
+				WHERE ad.estado = 1 AND sa.estado = 1
+				AND ad.id_auditoria = $id_auditoria
+				ORDER BY ad.id_auditoria_detalle, id_fila_estante ASC";
+		foreach (DB::select($sql) as $result) {
+			$seguimientos[] = SeguimientoAuditoria::find($result->id_seguimiento_auditoria);
+		}
+		$pdf = \PDF::loadView('pdf.informe_general_auditoria', compact([
+			'seguimientos', 'auditoria'
+		]));
+    	return $pdf->stream('Informe general de auditoria.pdf');
+	}
 }

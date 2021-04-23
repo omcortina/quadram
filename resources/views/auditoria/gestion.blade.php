@@ -82,8 +82,13 @@
         <div class="card">
             <div class="card-header border-0">
                 <div class="row">
-                    <div class="col-sm-12">
+                    <div class="col-sm-6">
                         <h3><b>Auditoria</b></h3>
+                    </div>
+                    <div class="col-sm-6 text-right">
+                        @if ($auditoria->id_auditoria)
+                            <a href="{{ route('auditoria/informe', $auditoria->id_auditoria) }}" target="_blank" class="btn btn-danger w-50"> <i data-feather="file-text"></i> Informe de auditoria</a>
+                        @endif
                     </div>
                     <div class="col-sm-6">
                         <div class="form-group">
@@ -146,8 +151,13 @@
         <div class="card">
             <div class="card-header border-0">
                 <div class="row">
-                    <div class="col-sm-12">
+                    <div class="col-sm-6">
                         <h3><b>Conteo</b></h3>
+                    </div>
+                    <div class="col-sm-6 text-right">
+                        @if ($conteo->id_conteo)
+                            <a href="{{ route('conteo/informe', $conteo->id_conteo, $conteo->id_conteo) }}" target="_blank" class="btn btn-danger w-50"> <i data-feather="file-text"></i> Informe de conteo</a>
+                        @endif
                     </div>
                     <div class="col-sm-6">
                         <div class="form-group">
@@ -192,6 +202,16 @@
                         </center>
                     </div>
                 </div><br>
+                <div class="row">
+                    <div class="col-sm-8"></div>
+                    <div class="col-sm-4">
+                        <center>
+                            @if ($conteo->id_conteo)
+                                <a onclick="InformePorConteo()" target="_blank" class="btn btn-danger w-50"> <i data-feather="file-text"></i> Informe por conteo</a>
+                            @endif
+                        </center>
+                    </div>
+                </div>
                 <div class="row">
                     <div class="col-sm-6">
                         <table class="table align-items-center table-flush" id="conteo-tabla-locaciones">
@@ -325,6 +345,12 @@
     var conteo_locaciones = []
     var conteo_actual = 1
     var estado = 1
+
+    function InformePorConteo() {
+        let url = "{{ route('conteo/informe', $conteo->id_conteo) }}?conteo="+this.conteo_actual
+        window.open(url, '_blank');
+    }
+
     function EstablecerEstado() {
         if(this.estado == 1) {
             $("#auditoria_estado").removeClass("btn-success")

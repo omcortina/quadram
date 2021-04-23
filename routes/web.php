@@ -65,10 +65,12 @@ Route::get('auditoria/listado/{id_inventario}', [AuditoriaController::class, 'Li
 Route::any('auditoria/gestion', [AuditoriaController::class, 'Gestion'])->name('auditoria/gestion');
 Route::get('auditoria/buscar_locaciones/{id_almacen}', [AuditoriaController::class, 'BuscarLocaciones'])->name('auditoria/buscar_locaciones');
 Route::any('auditoria/guardar', [AuditoriaController::class, 'Guardar'])->name('auditoria/guardar');
+Route::any('auditoria/informe/{id_auditoria}', [AuditoriaController::class, 'Imprimir'])->name('auditoria/informe');
 
 //SEGUIMIENTO AUDITORIA
 Route::any('auditoria/seguimiento', [SeguimientoAuditoriaController::class, 'Informe'])->name('auditoria/seguimiento');
 Route::any('conteo/seguimiento', [SeguimientoConteoController::class, 'Informe'])->name('conteo/seguimiento');
+Route::any('conteo/informe/{id_conteo}', [SeguimientoConteoController::class, 'Imprimir'])->name('conteo/informe');
 
 
 //API

@@ -599,39 +599,43 @@ class APIController extends Controller
 		if($post){
 			$post = (object) $post;
 			if(isset($post->id_conteo_detalle)){
-				if (isset($post->cantidad)) {
-					if (isset($post->fecha_vencimiento)) {
-						if (isset($post->lote)) {
-							if (isset($post->id_producto)) {
-								if(Producto::find($post->id_producto)){
-	                                $producto = Producto::find($post->id_producto);
-									$seguimiento = SeguimientoConteo::where('id_conteo_detalle', $post->id_conteo_detalle)
-															->where('id_producto', $post->id_producto)
-	                                                        ->where('estado', 1)
-															->first();
-									if(is_null($seguimiento)) $seguimiento = new SeguimientoConteo;
-									$seguimiento->id_conteo_detalle = $post->id_conteo_detalle;
-									$seguimiento->id_producto = $post->id_producto;
-									$seguimiento->cantidad = $post->cantidad;
-									$seguimiento->fecha_vencimiento = $post->fecha_vencimiento;
-									$seguimiento->lote = $post->lote;
-									$seguimiento->save();
-	                                $producto->id_seguimiento_conteo = $seguimiento->id_seguimiento_conteo;
-									$message = "Producto agregado correctamente"; $status_code = 200;
+				if (isset($post->id_fila)) {
+					if (isset($post->cantidad)) {
+						if (isset($post->fecha_vencimiento)) {
+							if (isset($post->lote)) {
+								if (isset($post->id_producto)) {
+									if(Producto::find($post->id_producto)){
+		                                $producto = Producto::find($post->id_producto);
+										$seguimiento = SeguimientoConteo::where('id_conteo_detalle', $post->id_conteo_detalle)
+																->where('id_producto', $post->id_producto)
+		                                                        ->where('estado', 1)
+																->first();
+										if(is_null($seguimiento)) $seguimiento = new SeguimientoConteo;
+										$seguimiento->id_conteo_detalle = $post->id_conteo_detalle;
+										$seguimiento->id_producto = $post->id_producto;
+										$seguimiento->cantidad = $post->cantidad;
+										$seguimiento->fecha_vencimiento = $post->fecha_vencimiento;
+										$seguimiento->lote = $post->lote;
+										$seguimiento->save();
+		                                $producto->id_seguimiento_conteo = $seguimiento->id_seguimiento_conteo;
+										$message = "Producto agregado correctamente"; $status_code = 200;
+									}else{
+										$message = "El producto no es valido";
+									}
 								}else{
-									$message = "El producto no es valido";
+									$message = "Parametro [id_producto] perteneciente al producto contado no esta definido";
 								}
 							}else{
-								$message = "Parametro [id_producto] perteneciente al producto contado no esta definido";
+								$message = "Parametro [lote] perteneciente al del producto contado no esta definido";
 							}
 						}else{
-							$message = "Parametro [lote] perteneciente al del producto contado no esta definido";
+							$message = "Parametro [fecha_vencimiento] perteneciente a la fecha de vencimiento del producto contado no esta definido";
 						}
 					}else{
-						$message = "Parametro [fecha_vencimiento] perteneciente a la fecha de vencimiento del producto contado no esta definido";
+						$message = "Parametro [cantidad] perteneciente a la cantidad contada no esta definida";
 					}
 				}else{
-					$message = "Parametro [cantidad] perteneciente a la cantidad contada no esta definida";
+					$message = "Parametro [id_fila] perteneciente a la fila donde se encuentra el producto contado no esta definido";
 				}
 			}else{
 				$message = "Parametro [id_conteo_detalle] perteneciente al conteo detalle no esta definido";
