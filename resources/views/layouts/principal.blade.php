@@ -74,6 +74,10 @@
             .avatar{
             background-color: transparent;
             }
+
+            .btn-danger{
+                color: white !important;
+            }
         </style>
     </head>
 

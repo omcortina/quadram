@@ -17,4 +17,8 @@ class SeguimientoConteo extends Model
     public function producto(){
       	return $this->belongsTo(Producto::class, 'id_producto');
     }
+
+    public function fila(){
+      	return $this->belongsTo(FilaEstante::class, 'id_fila_estante');
+    }
 }

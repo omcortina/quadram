@@ -6,7 +6,7 @@
 		.table{
 			width: 100%;
 			font-family : "Calibri, sans-serif";
-			font-size: 12px;
+			font-size: 10px;
 			border: 1px solid #000;
 		}
 		.table td, th{
@@ -57,6 +57,9 @@
 				<td><center>{{ $item->conteo_detalle->auditoria_detalle->estante->nombre }}</center></td>
 				<td><center>{{ $item->fila->nombre }}</center></td>
 				<td><center>{{ $item->producto->codigo }} - {{ ucfirst(strtolower($item->producto->nombre)) }}</center></td>
+				<td><center>{{ $item->cantidad }}</center></td>
+				<td><center>{{ $item->lote }}</center></td>
+				<td><center>{{ date('d/m/Y', strtotime($item->fecha_vencimiento)) }}</center></td>
 				<td><center>{{ date('d/m/Y H:i', strtotime($item->created_at)) }}</center></td>
 			</tr>
 		@endforeach
