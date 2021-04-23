@@ -87,23 +87,23 @@
                     </div>
                     <div class="col-sm-8 text-right">
                         @if ($auditoria->id_auditoria)
-                            <a href="{{ route('auditoria/informe', $auditoria->id_auditoria) }}" target="_blank" class="btn btn-danger"> <i data-feather="file-text"></i> Informe de auditoria</a>
+                            <a href="{{ route('auditoria/informe', $auditoria->id_auditoria) }}" target="_blank" class="btn btn-danger" style="font-size: 13px !important;"> <i data-feather="file-text"></i> Informe de auditoria</a>
                         @endif
                     </div>
-                    <div class="col-sm-6">
+                    <div class="col-sm-6" style="margin-top: 20px;">
                         <div class="form-group">
                             <label>Fecha incio</label>
-                            <input id="auditoria-fecha-inicio"  type="datetime-local" class="form-control" 
+                            <input id="auditoria-fecha-inicio"  type="datetime-local" class="form-control"
                                     min="{{ date('Y-m-d', strtotime($inventario->fecha_inicio)) }}T{{ date('H:i:s', strtotime($inventario->fecha_inicio)) }}"
                                     max="{{ date('Y-m-d', strtotime($inventario->fecha_fin)) }}T{{ date('H:i:s', strtotime($inventario->fecha_fin)) }}"
                                      value="{{ $auditoria->fecha_inicio }}">
                         </div>
                     </div>
 
-                    <div class="col-sm-6">
+                    <div class="col-sm-6" style="margin-top: 20px;">
                         <div class="form-group">
                             <label>Fecha fin</label>
-                            <input id="auditoria-fecha-fin" onchange="EstablecerFechaInicioConteo(this.value)" type="datetime-local" class="form-control" 
+                            <input id="auditoria-fecha-fin" onchange="EstablecerFechaInicioConteo(this.value)" type="datetime-local" class="form-control"
                                     min="{{ date('Y-m-d', strtotime($inventario->fecha_inicio)) }}T{{ date('H:i:s', strtotime($inventario->fecha_inicio)) }}"
                                     max="{{ date('Y-m-d', strtotime($inventario->fecha_fin)) }}T{{ date('H:i:s', strtotime($inventario->fecha_fin)) }}"
                                      value="{{ $auditoria->fecha_fin }}">
@@ -121,8 +121,8 @@
                             <tbody>
                                 @foreach($inventario->almacen->locaciones as $locacion)
                                     <tr>
-                                        <td id="td-locacion-auditoria-{{ $locacion->id_locacion }}" 
-                                            class="td-location-auditoria" 
+                                        <td id="td-locacion-auditoria-{{ $locacion->id_locacion }}"
+                                            class="td-location-auditoria"
                                             onclick="AuditoriaEscogerLocacion({{ $locacion->id_locacion }})">
                                             <strong>{{ $locacion->nombre }}</strong>
                                         </td>
@@ -156,23 +156,23 @@
                     </div>
                     <div class="col-sm-8 text-right">
                         @if ($conteo->id_conteo)
-                            <a href="{{ route('conteo/informe', $conteo->id_conteo, $conteo->id_conteo) }}" target="_blank" class="btn btn-danger"> <i data-feather="file-text"></i> Informe de conteo</a>
+                            <a href="{{ route('conteo/informe', $conteo->id_conteo, $conteo->id_conteo) }}" target="_blank" class="btn btn-danger" style="font-size: 13px !important;"><i data-feather="file-text"></i> Informe de conteo</a>
                         @endif
                     </div>
-                    <div class="col-sm-6">
+                    <div class="col-sm-6" style="margin-top: 10px;">
                         <div class="form-group">
                             <label>Fecha incio</label>
-                            <input id="conteo-fecha-inicio" type="datetime-local" class="form-control" 
+                            <input id="conteo-fecha-inicio" type="datetime-local" class="form-control"
                                     min="{{ date('Y-m-d', strtotime($inventario->fecha_inicio)) }}T{{ date('H:i:s', strtotime($inventario->fecha_inicio)) }}"
                                     max="{{ date('Y-m-d', strtotime($inventario->fecha_fin)) }}T{{ date('H:i:s', strtotime($inventario->fecha_fin)) }}"
                                     value="{{ $conteo->fecha_inicio }}">
                         </div>
                     </div>
 
-                    <div class="col-sm-6">
+                    <div class="col-sm-6" style="margin-top: 10px;">
                         <div class="form-group">
                             <label>Fecha fin</label>
-                            <input id="conteo-fecha-fin" type="datetime-local" class="form-control" 
+                            <input id="conteo-fecha-fin" type="datetime-local" class="form-control"
                                     min="{{ date('Y-m-d', strtotime($inventario->fecha_inicio)) }}T{{ date('H:i:s', strtotime($inventario->fecha_inicio)) }}"
                                     max="{{ date('Y-m-d', strtotime($inventario->fecha_fin)) }}T{{ date('H:i:s', strtotime($inventario->fecha_fin)) }}"
                                     value="{{ $conteo->fecha_fin }}">
@@ -205,11 +205,11 @@
                 <div class="row">
                     <div class="col-sm-12 text-right">
                             @if ($conteo->id_conteo)
-                                <a onclick="InformePorConteo()" target="_blank" class="btn btn-danger"> <i data-feather="file-text"></i> Informe por conteo</a>
+                                <a onclick="InformePorConteo()" target="_blank" class="btn btn-danger" style="font-size: 13px !important;"> <i data-feather="file-text"></i> Informe por conteo</a>
                             @endif
                     </div>
                 </div>
-                <div class="row">
+                <div class="row" style="margin-top: 20px;">
                     <div class="col-sm-6">
                         <table class="table align-items-center table-flush" id="conteo-tabla-locaciones">
                             <thead class="thead-light">
@@ -251,7 +251,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">Auditoria del estante</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" 
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
                         onclick='$("#ModalAuditoria").modal("hide")'></button>
             </div>
             <div class="modal-body">
@@ -295,7 +295,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">Conteo del estante</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" 
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
                         onclick='$("#ModalConteo").modal("hide")'></button>
             </div>
             <div class="modal-body">
@@ -390,20 +390,20 @@
                         '</td>'+
                     '</tr>'
         })
-        $("#auditoria-tabla-estantes tbody").html(tabla)   
+        $("#auditoria-tabla-estantes tbody").html(tabla)
         ConteoActualizarTablaLocaciones(id_locacion)
     }
 
     function AuditoriaCargarLocaciones() {
-        loading(true, "Cargando usuarios disponibles...")
+        loading(true, "Cargando información...")
 
         let ruta = '{{ route('auditoria/buscar_locaciones', $inventario->id_almacen) }}'
-        if(this.id_auditoria != "") 
+        if(this.id_auditoria != "")
             ruta = '{{ route('auditoria/buscar_locaciones', $inventario->id_almacen) }}?id_auditoria='+this.id_auditoria
 
-        $.get(ruta, (response) => { 
-            this.auditoria_locaciones = response.data; 
-            this.conteo_locaciones = response.data; 
+        $.get(ruta, (response) => {
+            this.auditoria_locaciones = response.data;
+            this.conteo_locaciones = response.data;
             loading(false)
         })
         .fail((error) => {toastr.error("Ocurrio un error"); loading(false)})
@@ -469,7 +469,7 @@
             })
         })
         if(estante){
-            return estante.encargado.id_usuario == 0 ? false : true 
+            return estante.encargado.id_usuario == 0 ? false : true
         }else{
             return true
         }
@@ -483,7 +483,7 @@
             })
         })
         if(estante){
-            return estante.encargados.find(element => element.id_usuario != 0) ? false : true 
+            return estante.encargados.find(element => element.id_usuario != 0) ? false : true
         }else{
             return true
         }
@@ -499,7 +499,7 @@
                 if(agregar_locacion == true && estante.encargado.id_usuario != 0){
                     tabla += '<tr>'+
                                 '<td id="td-locacion-conteo-'+locacion.id_locacion+'"'+
-                                    'class="td-location-conteo"'+ 
+                                    'class="td-location-conteo"'+
                                     'onclick="ConteoEscogerLocacion('+locacion.id_locacion+')">'+
                                     '<strong>'+locacion.nombre+'</strong>'+
                                 '</td>'+
@@ -542,7 +542,7 @@
 
             encargados.push(encargado)
         }
-        
+
 
         return encargados
     }
@@ -580,7 +580,7 @@
                         '</td>'+
                     '</tr>'
         })
-        $("#conteo-tabla-estantes tbody").html(tabla)   
+        $("#conteo-tabla-estantes tbody").html(tabla)
     }
 
     function EscogerConteo(conteo) {
@@ -588,7 +588,7 @@
         $(".btn-conteo").each(function(){ $(this).removeClass('btn-active') });
         $("#btn-conteo-"+conteo).addClass('btn-active')
         $(".td-location-conteo").each(function(){ $(this).removeClass('td-active') });
-        $("#conteo-tabla-estantes tbody").html("") 
+        $("#conteo-tabla-estantes tbody").html("")
         if(this.conteo_locaciones.length > 0) ConteoEscogerLocacion(this.conteo_locaciones[0].id_locacion)
     }
 
@@ -649,9 +649,9 @@
                             encargado.nombre = usuario
                             locacion.estantes.splice(posicion, 1, estante)
                         }
-                       
+
                     })
-                    
+
                 }
                 posicion++
             })
@@ -673,7 +673,7 @@
             if(estante != null){
                 console.log(estante)
                 let conteo_comparacion = this.conteo_actual == 1 ? 2 : 1
-                return estante.encargados.find(element => element.id_usuario == id_usuario && element.conteo == conteo_comparacion) ? false : true 
+                return estante.encargados.find(element => element.id_usuario == id_usuario && element.conteo == conteo_comparacion) ? false : true
             }else{
                 return true
             }
@@ -719,7 +719,7 @@
                 if(_estante.encargado.id_usuario != 0) existencia = true
             })
         })
-        
+
         if(!existencia) toastr.error("Debe existir por lo menos un auditor asignado en la auditoria para guardar los cambios")
 
         return existencia
@@ -738,15 +738,15 @@
                 let auditoria = {
                     'id_auditoria' : this.id_auditoria,
                     'estado' : this.estado,
-                    'fecha_inicio' : auditoria_fecha_inicio, 
-                    'fecha_fin' : auditoria_fecha_fin, 
+                    'fecha_inicio' : auditoria_fecha_inicio,
+                    'fecha_fin' : auditoria_fecha_fin,
                     'detalles' : this.auditoria_locaciones
                 }
                 let conteo = {
                     'id_conteo' : this.id_conteo,
                     'estado' : this.estado,
-                    'fecha_inicio' : conteo_fecha_inicio, 
-                    'fecha_fin' : conteo_fecha_fin, 
+                    'fecha_inicio' : conteo_fecha_inicio,
+                    'fecha_fin' : conteo_fecha_fin,
                     'detalles' : this.conteo_locaciones
                 }
 
@@ -769,7 +769,7 @@
                     }else{
                       toastr.error(response.mensaje)
                     }
-                    
+
                 })
                 .fail((error) => {
                     toastr.error("Ocurrio un error")
