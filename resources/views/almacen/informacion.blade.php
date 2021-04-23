@@ -161,7 +161,7 @@
                     }
                 }
             })
-        }, 500)
+        }, 300)
 
         setTimeout(()=>{
             $("#tabla_fila_estante").DataTable({
@@ -173,7 +173,7 @@
                     }
                 }
             })
-        }, 500)
+        }, 300)
 
     })
 
@@ -184,7 +184,10 @@
             let fila_estante = ""
             if(response.locaciones.length > 0){
                 ConsultarEstantesPorLocacion(response.locaciones[0].id_locacion)
-                ConsultarFilasPorEstante(response.locaciones[0].estantes[0].id_estante)
+                if(response.locaciones[0].estantes.length > 0){
+                    ConsultarFilasPorEstante(response.locaciones[0].estantes[0].id_estante)
+                }
+
                 response.locaciones.forEach((locacion)=>{
                     fila_locacion += "<tr>"+
                                         "<td>"+locacion.id_locacion+"</td>"+

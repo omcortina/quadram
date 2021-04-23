@@ -20,7 +20,6 @@ class Estante extends Model
     }
 
     public function filas(){
-        $filas = FilaEstante::all()->where("estado", 1);
-        return $filas;
+        return $this->hasMany(FilaEstante::class, 'id_estante');
     }
 }

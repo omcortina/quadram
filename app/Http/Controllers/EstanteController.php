@@ -72,9 +72,15 @@ class EstanteController extends Controller
 
     public function FilasPorEstante($id_estante){
         $estante = Estante::findOrFail($id_estante);
-        $filas = $estante->filas();
+        $filas = $estante->filas;
+        $nuevas_filas = [];
+        foreach ($filas as $fila) {
+            if($fila->estado == 1){
+                array_push($nuevas_filas, $fila);
+            }
+        }
         return response()->json([
-            "filas" => $filas
+            "filas" => $nuevas_filas
         ]);
     }
 }

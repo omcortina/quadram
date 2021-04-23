@@ -55,8 +55,9 @@ class LocacionController extends Controller
         $estantes = $locacion->estantes;
         $nuevos_estantes = [];
         foreach ($estantes as $estante) {
-            $estante->locacion;
-            array_push($nuevos_estantes, $estante);
+            if($estante->estado == 1){
+                array_push($nuevos_estantes, $estante);
+            }
         }
         return response()->json([
             "estantes" => $nuevos_estantes

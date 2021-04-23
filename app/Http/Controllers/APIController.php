@@ -18,6 +18,7 @@ class APIController extends Controller
 {
 	public function Login(Request $request)
 	{
+        set_time_limit(9999);
 		$post = $request->all();
 		$token = null;
 		$user = null;
