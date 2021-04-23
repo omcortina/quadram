@@ -616,6 +616,7 @@ class APIController extends Controller
 										$seguimiento->cantidad = $post->cantidad;
 										$seguimiento->fecha_vencimiento = $post->fecha_vencimiento;
 										$seguimiento->lote = $post->lote;
+										$seguimiento->id_fila_estante = $post->id_fila;
 										$seguimiento->save();
 		                                $producto->id_seguimiento_conteo = $seguimiento->id_seguimiento_conteo;
 										$message = "Producto agregado correctamente"; $status_code = 200;
