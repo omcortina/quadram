@@ -93,7 +93,5 @@ Route::post('api/counter/counts', [APIController::class, 'Conteos']);
 Route::post('api/counter/saveTracing', [APIController::class, 'GuardarSeguimientoConteo']);
 Route::delete('api/counter/deleteTracing', [APIController::class, 'BorrarSeguimientoConteo'])->name('api/counter/deleteTracing');
 Route::any('api/counter/getLocations', [APIController::class, 'LocacionesConteoContador'])->name('api/counter/getLocations');
-<<<<<<< HEAD
-=======
 Route::post('api/counter/countsHistory', [APIController::class, 'HistorialConteos'])->name('api/counter/countsHistory');
->>>>>>> GestionAuditoria
+
