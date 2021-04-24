@@ -724,12 +724,15 @@ class APIController extends Controller
 		                                $producto = Producto::find($post->id_producto);
 										$seguimiento = SeguimientoConteo::where('id_conteo_detalle', $post->id_conteo_detalle)
 																->where('id_producto', $post->id_producto)
+																->where('lote', $post->lote)
+																->where('fecha_vencimiento', $post->fecha_vencimiento)
+																->where('id_fila_estante', $post->id_fila)
 		                                                        ->where('estado', 1)
 																->first();
 										if(is_null($seguimiento)) $seguimiento = new SeguimientoConteo;
 										$seguimiento->id_conteo_detalle = $post->id_conteo_detalle;
 										$seguimiento->id_producto = $post->id_producto;
-										$seguimiento->cantidad = $post->cantidad;
+										$seguimiento->cantidad = $seguimiento->cantidad + $post->cantidad;
 										$seguimiento->fecha_vencimiento = $post->fecha_vencimiento;
 										$seguimiento->lote = $post->lote;
 										$seguimiento->id_fila_estante = $post->id_fila;
