@@ -344,8 +344,10 @@
     var estado = 1
 
     function InformePorConteo() {
-        let url = "{{ route('conteo/informe', $conteo->id_conteo) }}?conteo="+this.conteo_actual
-        window.open(url, '_blank');
+        @if ($conteo->id_conteo)
+            let url = "{{ route('conteo/informe', $conteo->id_conteo) }}?conteo="+this.conteo_actual
+            window.open(url, '_blank');
+        @endif
     }
 
     function EstablecerEstado() {
