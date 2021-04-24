@@ -518,7 +518,7 @@ class APIController extends Controller
 											  AND s.estado = 1
 											  AND s.id_auditoria_detalle = ".$estante->id_auditoria_detalle);
 
-									if ($conteo->conteo_activo != 3) {
+									if ($conteo->conteo_activo != 4) {
 										foreach ($seguimientos as $seguimiento) {
 											$seguimientos_conteo = DB::select("SELECT *
 																   FROM seguimiento_conteo sc
