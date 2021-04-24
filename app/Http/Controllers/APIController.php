@@ -488,6 +488,7 @@ class APIController extends Controller
 						foreach ($locaciones as $locacion) {
 							$estantes = DB::select("SELECT DISTINCT(e.id_estante) as id_estante,
 													 e.nombre,
+													 cd.finalizo,
 													 cd.id_conteo_detalle,
 													 cd.id_auditoria_detalle
                                                         FROM conteo c
