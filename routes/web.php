@@ -81,6 +81,7 @@ Route::post('api/auditor/audits', [APIController::class, 'Auditorias']);
 Route::post('api/auditor/saveTracing', [APIController::class, 'GuardarSeguimientoAuditoria']);
 Route::delete('api/auditor/deleteTracing', [APIController::class, 'BorrarSeguimientoAuditoria'])->name('api/auditor/deleteTracing');
 Route::any('api/auditor/getLocations', [APIController::class, 'LocacionesAuditoriaAuditor'])->name('api/auditor/getLocations');
+Route::post('api/auditor/auditHistory', [APIController::class, 'HistorialAuditorias'])->name('api/auditor/auditHistory');
 
 Route::post('api/getProductByBarcode', [APIController::class, 'BuscarProductoPorCodigoBarra']);
 
@@ -88,3 +89,4 @@ Route::post('api/counter/counts', [APIController::class, 'Conteos']);
 Route::post('api/counter/saveTracing', [APIController::class, 'GuardarSeguimientoConteo']);
 Route::delete('api/counter/deleteTracing', [APIController::class, 'BorrarSeguimientoConteo'])->name('api/counter/deleteTracing');
 Route::any('api/counter/getLocations', [APIController::class, 'LocacionesConteoContador'])->name('api/counter/getLocations');
+Route::post('api/counter/countsHistory', [APIController::class, 'HistorialConteos'])->name('api/counter/countsHistory');
