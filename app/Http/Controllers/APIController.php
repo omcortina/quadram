@@ -505,9 +505,9 @@ class APIController extends Controller
 
 								//RECORREMOS LAS FILAS PARA BUSCAR SEGUIMIENTOS YA REALIZADOS POR EL AUDITOR
 								foreach ($filas as $fila) {
-									$seguimientos = DB::select("SELECT s.id_seguimiento_auditoria,
-                                                     s.id_fila_estante,
-													 p.id_producto,
+									$seguimientos = DB::select("SELECT DISTINCT(p.id_producto) as id_producto,
+													 s.id_seguimiento_auditoria,
+                                                     s.id_fila_estante,													 
 													 p.codigo,
 													 p.nombre,
 													 p.descripcion
@@ -522,10 +522,8 @@ class APIController extends Controller
 															   FROM seguimiento_conteo sc
 															   WHERE sc.id_producto = ".$seguimiento->id_producto."
 															   AND sc.estado = 1
-															   AND sc.id_conteo_detalle = ".$estante->id_conteo_detalle."
-															   limit 1");
-										$seguimiento->id_seguimiento_conteo = count($seguimientos_conteo) > 0 ? $seguimientos_conteo[0]->id_seguimiento_conteo : -1;
-										$seguimiento->seguimiento = count($seguimientos_conteo) > 0 ? $seguimientos_conteo[0] : (object)[];
+															   AND sc.id_conteo_detalle = ".$estante->id_conteo_detalle);
+										$seguimiento->seguimientos = $seguimientos_conteo;
 									}
 
 									$fila->productos = $seguimientos;
