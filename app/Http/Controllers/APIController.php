@@ -735,6 +735,11 @@ class APIController extends Controller
 										$seguimiento->id_fila_estante = $post->id_fila;
 										$seguimiento->save();
 		                                $producto->id_seguimiento_conteo = $seguimiento->id_seguimiento_conteo;
+		                                $producto->seguimientos = DB::select("SELECT *
+													   FROM seguimiento_conteo sc
+													   WHERE sc.id_producto = ".$producto->id_producto."
+													   AND sc.estado = 1
+													   AND sc.id_conteo_detalle = ".$seguimiento->id_conteo_detalle);
 										$message = "Producto agregado correctamente"; $status_code = 200;
 									}else{
 										$message = "El producto no es valido";
