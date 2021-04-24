@@ -505,7 +505,8 @@ class APIController extends Controller
 
 								//RECORREMOS LAS FILAS PARA BUSCAR SEGUIMIENTOS YA REALIZADOS POR EL AUDITOR
 								foreach ($filas as $fila) {
-									$seguimientos = DB::select("SELECT DISTINCT(p.id_producto) as id_producto,
+									
+										$seguimientos = DB::select("SELECT DISTINCT(p.id_producto) as id_producto,
 													 s.id_seguimiento_auditoria,
                                                      s.id_fila_estante,													 
 													 p.codigo,
@@ -517,14 +518,28 @@ class APIController extends Controller
 											  AND s.estado = 1
 											  AND s.id_auditoria_detalle = ".$estante->id_auditoria_detalle);
 
-									foreach ($seguimientos as $seguimiento) {
-										$seguimientos_conteo = DB::select("SELECT *
-															   FROM seguimiento_conteo sc
-															   WHERE sc.id_producto = ".$seguimiento->id_producto."
-															   AND sc.estado = 1
-															   AND sc.id_conteo_detalle = ".$estante->id_conteo_detalle);
-										$seguimiento->seguimientos = $seguimientos_conteo;
+									if ($conteo->conteo_activo != 3) {
+										foreach ($seguimientos as $seguimiento) {
+											$seguimientos_conteo = DB::select("SELECT *
+																   FROM seguimiento_conteo sc
+																   WHERE sc.id_producto = ".$seguimiento->id_producto."
+																   AND sc.estado = 1
+																   AND sc.id_conteo_detalle = ".$estante->id_conteo_detalle);
+											$seguimiento->seguimientos = $seguimientos_conteo;
+										}
+									}else{
+										//BUSCAMOS LOS SEGUIMIENTOS CONTEO POR PRODUCTO, LOTE Y VENCIMIENTO PARA VER SUS CANTIDADES
+
+										foreach ($seguimientos as $seguimiento) {
+											$seguimientos_conteo_1 = DB::select("SELECT *
+																   FROM seguimiento_conteo sc
+																   WHERE sc.id_producto = ".$seguimiento->id_producto."
+																   AND sc.estado = 1
+																   AND sc.id_conteo_detalle = ".$estante->id_conteo_detalle);
+											$seguimiento->seguimientos = $seguimientos_conteo;
+										}
 									}
+									
 
 									$fila->productos = $seguimientos;
 								}
@@ -532,10 +547,8 @@ class APIController extends Controller
 							}
 							$locacion->estantes = $estantes;
 						}
-
 						$conteo->locaciones = $locaciones;
 					}
-
 					$status_code = 200; $message = "OK";
 				}else{
 					$mensaje = "Usuario invalido";
@@ -673,6 +686,11 @@ class APIController extends Controller
 					$seguimiento->estado = 0;
 					$seguimiento->save();
 					$producto = $seguimiento->producto;
+					$producto->seguimientos = DB::select("SELECT *
+													   FROM seguimiento_conteo sc
+													   WHERE sc.id_producto = ".$producto->id_producto."
+													   AND sc.estado = 1
+													   AND sc.id_conteo_detalle = ".$seguimiento->id_conteo_detalle);
 					$message = "Producto eliminado"; $status_code = 200;
 				}else{
 					$message = "Seguimiento invalido";
