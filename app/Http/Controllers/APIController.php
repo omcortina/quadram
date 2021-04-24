@@ -83,6 +83,8 @@ class APIController extends Controller
 		], $status_code);
     }
 
+
+    //AUDITORIAS
     public function Auditorias(Request $request)
     {
     	$post = $request->all();
@@ -105,7 +107,8 @@ class APIController extends Controller
 											  LEFT JOIN auditoria_detalle ad USING(id_auditoria)
 											  LEFT JOIN inventario i USING(id_inventario)
 											  LEFT JOIN almacen al USING(id_almacen)
-											  WHERE ad.id_usuario = ".$usuario->id_usuario);
+											  WHERE '$fecha_actual' BETWEEN a.fecha_inicio AND a.fecha_fin
+											  AND ad.id_usuario = ".$usuario->id_usuario);
 
 					foreach ($auditorias as $auditoria) {
 						$locaciones = DB::select("SELECT DISTINCT(l.id_locacion) as id_locacion,
@@ -341,6 +344,99 @@ class APIController extends Controller
 		], $status_code);
     }
 
+    public function HistorialAuditorias(Request $request)
+    {
+    	$post = $request->all();
+    	$status_code = 500;
+		$message = "";
+		$data = null;
+		$auditorias = [];
+		if($post){
+			$post = (object) $post;
+			if (isset($post->id)) {
+				$usuario = Usuario::find($post->id);
+				if($usuario){
+					$fecha_actual = date('Y-m-d H:i').":00";
+					//PRIMERO BUSCAMOS LAS AUDITORIAS CON RELACION A LOS DETALLES
+					$auditorias = DB::select("SELECT DISTINCT(a.id_auditoria) as id_auditoria,
+													 a.fecha_inicio,
+													 a.fecha_fin,
+													 al.nombre as almacen
+											  FROM auditoria a
+											  LEFT JOIN auditoria_detalle ad USING(id_auditoria)
+											  LEFT JOIN inventario i USING(id_inventario)
+											  LEFT JOIN almacen al USING(id_almacen)
+											  WHERE a.fecha_fin < '$fecha_actual'
+											  AND ad.id_usuario = ".$usuario->id_usuario);
+
+					foreach ($auditorias as $auditoria) {
+						$locaciones = DB::select("SELECT DISTINCT(l.id_locacion) as id_locacion,
+													 l.nombre
+											  FROM auditoria a
+											  LEFT JOIN auditoria_detalle ad USING(id_auditoria)
+											  LEFT JOIN estante e USING(id_estante)
+											  LEFT JOIN locacion l USING(id_locacion)
+											  WHERE a.id_auditoria = ".$auditoria->id_auditoria."
+											  AND ad.id_usuario = ".$usuario->id_usuario);
+
+						foreach ($locaciones as $locacion) {
+							$estantes = DB::select("SELECT DISTINCT(e.id_estante) as id_estante,
+													 e.nombre,
+													 ad.id_auditoria_detalle
+                                                        FROM auditoria a
+                                                        LEFT JOIN auditoria_detalle ad USING(id_auditoria)
+                                                        LEFT JOIN estante e USING(id_estante)
+                                                        WHERE a.id_auditoria = ".$auditoria->id_auditoria."
+                                                        AND e.id_locacion = ".$locacion->id_locacion."
+                                                        AND ad.id_usuario = ".$usuario->id_usuario);
+
+							foreach ($estantes as $estante) {
+								$filas = DB::select("SELECT id_fila_estante as id_fila,
+													 nombre
+											  FROM fila_estante
+											  WHERE id_estante = ".$estante->id_estante);
+
+								//RECORREMOS LAS FILAS PARA BUSCAR SEGUIMIENTOS YA REALIZADOS POR EL USUARIO
+								foreach ($filas as $fila) {
+									$seguimientos = DB::select("SELECT s.id_seguimiento_auditoria,
+                                                     s.id_fila_estante,
+													 p.id_producto,
+													 p.codigo,
+													 p.nombre,
+													 p.descripcion
+											  FROM seguimiento_auditoria s
+											  LEFT JOIN producto p USING(id_producto)
+											  WHERE s.id_fila_estante = ".$fila->id_fila."
+											  AND s.estado = 1
+											  AND s.id_auditoria_detalle = ".$estante->id_auditoria_detalle);
+									$fila->productos = $seguimientos;
+								}
+
+								$estante->filas = $filas;
+							}
+							$locacion->estantes = $estantes;
+						}
+
+						$auditoria->locaciones = $locaciones;
+					}
+
+					$status_code = 200; $message = "OK";
+				}else{
+					$mensaje = "Usuario invalido";
+				}
+			}else{
+				$message = "Parametro [id] perteneciente al usuario no esta definido";
+			}
+		}else{
+			$mensaje = "Favor verifique los parametros enviados";
+		}
+
+		return response()->json([
+			'message' => $message,
+			'auditorias' => $auditorias
+		], $status_code);
+    }
+
 
     //CONTEO
     public function Conteos(Request $request)
@@ -371,6 +467,7 @@ class APIController extends Controller
 											  LEFT JOIN almacen al USING(id_almacen)
 											  LEFT JOIN conteo_detalle cd USING(id_conteo)
 											  WHERE cd.id_usuario = ".$usuario->id_usuario."
+											  AND '$fecha_actual' BETWEEN c.fecha_inicio AND c.fecha_fin
 											  AND c.conteo_activo = cd.conteo");
 
 					//ACTUALIZAMOS LOS CONTEOS ACTUALES PARA SABER CUAL ESTA ACTIVO
@@ -428,6 +525,7 @@ class APIController extends Controller
 															   AND sc.id_conteo_detalle = ".$estante->id_conteo_detalle."
 															   limit 1");
 										$seguimiento->id_seguimiento_conteo = count($seguimientos_conteo) > 0 ? $seguimientos_conteo[0]->id_seguimiento_conteo : -1;
+										$seguimiento->seguimiento = count($seguimientos_conteo) > 0 ? $seguimientos_conteo[0] : (object)[];
 									}
 
 									$fila->productos = $seguimientos;
@@ -521,7 +619,8 @@ class APIController extends Controller
 												 p.id_producto,
 												 p.codigo,
 												 p.nombre,
-												 p.descripcion
+												 p.descripcion,
+												 '' as seguimiento
 										  FROM seguimiento_auditoria s
 										  LEFT JOIN producto p USING(id_producto)
 										  WHERE s.id_fila_estante = ".$fila->id_fila."
@@ -647,6 +746,123 @@ class APIController extends Controller
 		return response()->json([
             'product' => $producto,
 			'message' => $message
+		], $status_code);
+    }
+
+    public function HistorialConteos(Request $request)
+    {
+    	$post = $request->all();
+    	$status_code = 500;
+		$message = "";
+		$data = null;
+		$conteos = [];
+		if($post){
+			$post = (object) $post;
+			if (isset($post->id)) {
+				$usuario = Usuario::find($post->id);
+				if($usuario){
+					$fecha_actual = date('Y-m-d H:i').":00";
+
+					$this->ActualizarConteosActuales($usuario->id_usuario);
+
+					//PRIMERO BUSCAMOS LOS CONTEOS CON RELACION A LOS DETALLES
+					$conteos = DB::select("SELECT DISTINCT(c.id_conteo) as id_conteo,
+													 cd.conteo as num_conteo,
+													 c.fecha_inicio,
+													 c.fecha_fin,
+													 c.conteo_activo,
+													 al.nombre as almacen
+											  FROM conteo c
+											  LEFT JOIN auditoria a USING(id_auditoria)
+											  LEFT JOIN inventario i USING(id_inventario)
+											  LEFT JOIN almacen al USING(id_almacen)
+											  LEFT JOIN conteo_detalle cd USING(id_conteo)
+											  WHERE c.fecha_fin < '$fecha_actual'
+											  AND c.conteo_activo = cd.conteo
+											  AND cd.id_usuario = ".$usuario->id_usuario);
+
+					//ACTUALIZAMOS LOS CONTEOS ACTUALES PARA SABER CUAL ESTA ACTIVO
+
+					foreach ($conteos as $conteo) {
+
+						$locaciones = DB::select("SELECT DISTINCT(l.id_locacion) as id_locacion,
+													 l.nombre
+											  FROM conteo c
+											  LEFT JOIN conteo_detalle cd USING(id_conteo)
+											  LEFT JOIN estante e USING(id_estante)
+											  LEFT JOIN locacion l USING(id_locacion)
+											  WHERE c.id_conteo = ".$conteo->id_conteo."
+											  AND cd.conteo = ".$conteo->conteo_activo."
+											  AND cd.id_usuario = ".$usuario->id_usuario);
+
+						foreach ($locaciones as $locacion) {
+							$estantes = DB::select("SELECT DISTINCT(e.id_estante) as id_estante,
+													 e.nombre,
+													 cd.id_conteo_detalle,
+													 cd.id_auditoria_detalle
+                                                        FROM conteo c
+                                                        LEFT JOIN conteo_detalle cd USING(id_conteo)
+                                                        LEFT JOIN estante e USING(id_estante)
+                                                        WHERE c.id_conteo = ".$conteo->id_conteo."
+                                                        AND cd.conteo = ".$conteo->conteo_activo."
+                                                        AND e.id_locacion = ".$locacion->id_locacion."
+                                                        AND cd.id_usuario = ".$usuario->id_usuario);
+
+							foreach ($estantes as $estante) {
+								$filas = DB::select("SELECT id_fila_estante as id_fila,
+													 nombre
+											  FROM fila_estante
+											  WHERE id_estante = ".$estante->id_estante);
+
+								//RECORREMOS LAS FILAS PARA BUSCAR SEGUIMIENTOS YA REALIZADOS POR EL AUDITOR
+								foreach ($filas as $fila) {
+									$seguimientos = DB::select("SELECT s.id_seguimiento_auditoria,
+                                                     s.id_fila_estante,
+													 p.id_producto,
+													 p.codigo,
+													 p.nombre,
+													 p.descripcion
+											  FROM seguimiento_auditoria s
+											  LEFT JOIN producto p USING(id_producto)
+											  WHERE s.id_fila_estante = ".$fila->id_fila."
+											  AND s.estado = 1
+											  AND s.id_auditoria_detalle = ".$estante->id_auditoria_detalle);
+
+									foreach ($seguimientos as $seguimiento) {
+										$seguimientos_conteo = DB::select("SELECT *
+															   FROM seguimiento_conteo sc
+															   WHERE sc.id_producto = ".$seguimiento->id_producto."
+															   AND sc.estado = 1
+															   AND sc.id_conteo_detalle = ".$estante->id_conteo_detalle."
+															   limit 1");
+										$seguimiento->id_seguimiento_conteo = count($seguimientos_conteo) > 0 ? $seguimientos_conteo[0]->id_seguimiento_conteo : -1;
+										$seguimiento->seguimiento = count($seguimientos_conteo) > 0 ? $seguimientos_conteo[0] : (object)[];
+									}
+
+									$fila->productos = $seguimientos;
+								}
+								$estante->filas = $filas;
+							}
+							$locacion->estantes = $estantes;
+						}
+
+						$conteo->locaciones = $locaciones;
+					}
+
+					$status_code = 200; $message = "OK";
+				}else{
+					$mensaje = "Usuario invalido";
+				}
+			}else{
+				$message = "Parametro [id] perteneciente al usuario no esta definido";
+			}
+		}else{
+			$mensaje = "Favor verifique los parametros enviados";
+		}
+
+		return response()->json([
+			'message' => $message,
+			'conteos' => $conteos
 		], $status_code);
     }
 
