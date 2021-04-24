@@ -17,25 +17,25 @@ class Conteo extends Model
 
     public function ActualizarConteoActual()
     {
-        $detalles_conteo_1 = ConteoDetalle::where('id_conteo', $this->id_conteo)
-                                          ->where('estado', 1)
-                                          ->where('conteo', 1)
-                                          ->first();
-        $detalles_conteo_2 = ConteoDetalle::where('id_conteo', $this->id_conteo)
-                                          ->where('estado', 1)
-                                          ->where('conteo', 2)
-                                          ->first();
+        $detalles_conteo_1 = ConteoDetalle::all()
+                                        ->where('id_conteo', $this->id_conteo)
+                                        ->where('estado', 1)
+                                        ->where('conteo', 1);
+        $detalles_conteo_2 = ConteoDetalle::all()
+                                        ->where('id_conteo', $this->id_conteo)
+                                        ->where('estado', 1)
+                                        ->where('conteo', 2);
 
-        $detalles_finalizados_conteo_1 = ConteoDetalle::where('id_conteo', $this->id_conteo)
-                                          ->where('estado', 1)
-                                          ->where('conteo', 1)
-                                          ->where('finalizo', 1)
-                                          ->first();
-        $detalles_finalizados_conteo_2 = ConteoDetalle::where('id_conteo', $this->id_conteo)
-                                          ->where('estado', 1)
-                                          ->where('conteo', 2)
-                                          ->where('finalizo', 1)
-                                          ->first();
+        $detalles_finalizados_conteo_1 = ConteoDetalle::all()
+                                        ->where('id_conteo', $this->id_conteo)
+                                        ->where('estado', 1)
+                                        ->where('conteo', 1)
+                                        ->where('finalizo', 1);
+        $detalles_finalizados_conteo_2 = ConteoDetalle::all()
+                                        ->where('id_conteo', $this->id_conteo)
+                                        ->where('estado', 1)
+                                        ->where('conteo', 2)
+                                        ->where('finalizo', 1);
         $this->conteo_activo = 1;
         if (count($detalles_finalizados_conteo_1) >= count($detalles_conteo_1)) $this->conteo_activo = 2;
         if (count($detalles_finalizados_conteo_2) >= count($detalles_conteo_2)) $this->conteo_activo = 3;
