@@ -17,4 +17,8 @@ class ConteoDetalle extends Model
     public function auditoria_detalle(){
       	return $this->belongsTo(AuditoriaDetalle::class, 'id_auditoria_detalle');
     }
+
+    public function conteo(){
+      	return $this->belongsTo(Conteo::class, 'id_conteo');
+    }
 }

@@ -10,6 +10,7 @@ use App\Models\Usuario;
 use App\Models\Conteo;
 use App\Models\Producto;
 use App\Models\AuditoriaDetalle;
+use App\Models\ConteoDetalle;
 use App\Models\SeguimientoAuditoria;
 use App\Models\SeguimientoConteo;
 use Illuminate\Support\Facades\DB;
@@ -524,6 +525,7 @@ class APIController extends Controller
 																   FROM seguimiento_conteo sc
 																   WHERE sc.id_producto = ".$seguimiento->id_producto."
 																   AND sc.estado = 1
+																   AND sc.id_fila_estante = ".$fila->id_fila."
 																   AND sc.id_conteo_detalle = ".$estante->id_conteo_detalle);
 											$seguimiento->seguimientos = $seguimientos_conteo;
 										}
@@ -743,6 +745,8 @@ class APIController extends Controller
 													   WHERE sc.id_producto = ".$producto->id_producto."
 													   AND sc.estado = 1
 													   AND sc.id_conteo_detalle = ".$seguimiento->id_conteo_detalle);
+
+
 										$message = "Producto agregado correctamente"; $status_code = 200;
 									}else{
 										$message = "El producto no es valido";
@@ -822,6 +826,7 @@ class APIController extends Controller
 						foreach ($locaciones as $locacion) {
 							$estantes = DB::select("SELECT DISTINCT(e.id_estante) as id_estante,
 													 e.nombre,
+													 cd.finalizo
 													 cd.id_conteo_detalle,
 													 cd.id_auditoria_detalle
                                                         FROM conteo c
@@ -887,6 +892,47 @@ class APIController extends Controller
 		return response()->json([
 			'message' => $message,
 			'conteos' => $conteos
+		], $status_code);
+    }
+
+    public function FinalizarConteo(Request $request)
+    {
+    	$post = $request->all();
+		$status_code = 500;
+		$message = "";
+        $producto = new Producto;
+		if($post){
+			$post = (object) $post;
+			if(isset($post->id_conteo_detalle)){
+				$detalle = ConteoDetalle::find($post->id_conteo_detalle);
+				if($detalle){
+					//VALIDAMOS QUE SE CUENTEN TODOS LOS PRODUCTOS ASIGNADOS A LA AUDITORIA
+					$seguimientos_auditoria = DB::select("SELECT DISTINCT(s.id_producto) as id_producto
+														  FROM seguimiento_auditoria s
+														  WHERE s.estado = 1
+														  AND s.id_auditoria_detalle = ".$detalle->id_auditoria_detalle);
+
+					$seguimientos_conteo    = DB::select("SELECT DISTINCT(sc.id_producto) as id_producto
+														  FROM seguimiento_conteo sc
+														  WHERE sc.estado = 1
+														  AND sc.id_conteo_detalle = ".$detalle->id_conteo_detalle);
+					if(count($seguimientos_conteo) >= count($seguimientos_auditoria)){
+						$detalle->finalizo = 1;
+						$detalle->save();
+						$this->ActualizarConteosActuales($detalle->id_usuario);
+						$status_code = 200; $message = "OK";
+					}else{
+						$message = "No se puede finalizar el conteo de este estante debido a que no se han contado todos los productos previamente auditados";
+					}
+				}else{
+					$message = "Conteo detalle invalido";
+				}
+			}else{
+				$message = "Parametro [id_conteo_detalle] perteneciente al conteo previamente registrado no esta definido";
+			}
+		}
+		return response()->json([
+			'message' => $message
 		], $status_code);
     }
 
