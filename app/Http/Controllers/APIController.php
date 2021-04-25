@@ -922,7 +922,7 @@ class APIController extends Controller
 						$detalle->finalizo = 1;
 						$detalle->save();
 						$this->ActualizarConteosActuales($detalle->id_usuario);
-						$status_code = 200; $message = "OK";
+						$status_code = 200; $message = "Finalización exitosa";
 					}else{
 						$message = "No se puede finalizar el conteo de este estante debido a que no se han contado todos los productos previamente auditados";
 					}
