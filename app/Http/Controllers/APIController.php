@@ -538,6 +538,7 @@ class APIController extends Controller
 																   FROM seguimiento_conteo sc
 																   WHERE sc.id_producto = ".$seguimiento->id_producto."
 																   AND sc.estado = 1
+																   AND sc.id_fila_estante = ".$fila->id_fila."
 																   AND sc.id_conteo_detalle = ".$estante->id_conteo_detalle);
 											$seguimiento->seguimientos = $seguimientos_conteo;
 										}
