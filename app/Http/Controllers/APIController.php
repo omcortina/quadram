@@ -512,6 +512,7 @@ class APIController extends Controller
 													 s.id_seguimiento_auditoria,
                                                      s.id_fila_estante,													 
 													 p.codigo,
+													 p.codigo_barras,
 													 p.nombre,
 													 p.descripcion
 											  FROM seguimiento_auditoria s
