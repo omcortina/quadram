@@ -537,7 +537,10 @@ class APIController extends Controller
 																p.codigo,
 																p.codigo_barras,
 																p.nombre,
-																p.descripcion 
+																p.descripcion,
+																sc.cantidad,
+																sc.fecha_vencimiento,
+																sc.lote
 															  	FROM seguimiento_conteo sc
 															  	LEFT JOIN producto p USING(id_producto)
 															  	LEFT JOIN conteo_detalle cd USING(id_conteo_detalle)
@@ -552,6 +555,9 @@ class APIController extends Controller
 																p.codigo_barras,
 																p.nombre,
 																p.descripcion 
+																sc.cantidad,
+																sc.fecha_vencimiento,
+																sc.lote 
 																FROM seguimiento_conteo sc
 																LEFT JOIN producto p USING(id_producto)
 																LEFT JOIN conteo_detalle cd USING(id_conteo_detalle)
@@ -563,8 +569,8 @@ class APIController extends Controller
 										foreach (DB::select($seguimientos_conteo_1) as $conteo_1) { $conteo_1 = (object) $conteo_1;
 											$encontro = false;
 											foreach (DB::select($seguimientos_conteo_2) as $conteo_2) { $conteo_2 = (object) $conteo_2;
-												if ($conteo_1->id_producto 		 == $conteo_2->id_producto
-													$conteo_1->lote 	   		 == $conteo_2->lote
+												if ($conteo_1->id_producto 		 == $conteo_2->id_producto and
+													$conteo_1->lote 	   		 == $conteo_2->lote and
 													$conteo_1->fecha_vencimiento == $conteo_2->fecha_vencimiento
 												) {
 													$encontro = true;
@@ -574,6 +580,9 @@ class APIController extends Controller
 														$producto['codigo_barras'] = $conteo_2->codigo_barras;
 														$producto['nombre'] = $conteo_2->nombre;
 														$producto['descripcion'] = $conteo_2->descripcion;
+														$producto['cantidad'] = $conteo_2->cantidad;
+														$producto['fecha_vencimiento'] = $conteo_2->fecha_vencimiento;
+														$producto['lote'] = $conteo_2->lote;
 														$seguimientos_conteo = DB::select("SELECT *
 																   FROM seguimiento_conteo sc
 																   LEFT JOIN conteo_detalle cd USING(id_conteo_detalle)
@@ -589,19 +598,22 @@ class APIController extends Controller
 											}
 											if(!$encontro){
 												$producto['id_fila_estante'] = $fila->id_fila;												 
-												$producto['codigo'] = $conteo_2->codigo;
-												$producto['codigo_barras'] = $conteo_2->codigo_barras;
-												$producto['nombre'] = $conteo_2->nombre;
-												$producto['descripcion'] = $conteo_2->descripcion;
+												$producto['codigo'] = $conteo_1->codigo;
+												$producto['codigo_barras'] = $conteo_1->codigo_barras;
+												$producto['nombre'] = $conteo_1->nombre;
+												$producto['descripcion'] = $conteo_1->descripcion;
+												$producto['cantidad'] = $conteo_1->cantidad;
+												$producto['fecha_vencimiento'] = $conteo_1->fecha_vencimiento;
+												$producto['lote'] = $conteo_1->lote;
 												$seguimientos_conteo = DB::select("SELECT *
-																   FROM seguimiento_conteo sc
-																   LEFT JOIN conteo_detalle cd USING(id_conteo_detalle)
-																   LEFT JOIN producto p USING(id_producto)
-																   WHERE sc.id_producto = ".$conteo_1->id_producto."
-																   AND sc.estado = 1
-																   AND cd.conteo = 3
-																   AND sc.id_fila_estante = ".$fila->id_fila."
-																   AND sc.id_conteo_detalle = ".$estante->id_conteo_detalle);
+															   FROM seguimiento_conteo sc
+															   LEFT JOIN conteo_detalle cd USING(id_conteo_detalle)
+															   LEFT JOIN producto p USING(id_producto)
+															   WHERE sc.id_producto = ".$conteo_1->id_producto."
+															   AND sc.estado = 1
+															   AND cd.conteo = 3
+															   AND sc.id_fila_estante = ".$fila->id_fila."
+															   AND sc.id_conteo_detalle = ".$estante->id_conteo_detalle);
 												$producto['seguimientos'] = $seguimientos_conteo;
 												$seguimientos[] = (object) $producto;
 											}
