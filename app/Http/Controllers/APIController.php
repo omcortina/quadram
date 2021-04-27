@@ -532,92 +532,8 @@ class APIController extends Controller
 											$seguimiento->seguimientos = $seguimientos_conteo;
 										}
 									}else{
-										$seguimientos_conteo_1 = "SELECT DISTINCT(p.id_producto) as id_producto,
-			                                                    sc.id_fila_estante,													 
-																p.codigo,
-																p.codigo_barras,
-																p.nombre,
-																p.descripcion,
-																sc.cantidad,
-																sc.fecha_vencimiento,
-																sc.lote
-															  	FROM seguimiento_conteo sc
-															  	LEFT JOIN producto p USING(id_producto)
-															  	LEFT JOIN conteo_detalle cd USING(id_conteo_detalle)
-															  	WHERE cd.id_conteo_detalle = $estante->id_conteo_detalle
-															  	AND cd.conteo = 1
-															  	AND sc.id_fila_estante = $fila->id_fila
-															  	AND sc.estado = 1";
 
-										$seguimientos_conteo_2 = "SELECT DISTINCT(p.id_producto) as id_producto,
-			                                                    sc.id_fila_estante,													 
-																p.codigo,
-																p.codigo_barras,
-																p.nombre,
-																p.descripcion 
-																sc.cantidad,
-																sc.fecha_vencimiento,
-																sc.lote 
-																FROM seguimiento_conteo sc
-																LEFT JOIN producto p USING(id_producto)
-																LEFT JOIN conteo_detalle cd USING(id_conteo_detalle)
-																WHERE cd.id_conteo_detalle = $estante->id_conteo_detalle
-																AND cd.conteo = 2
-																AND sc.id_fila_estante = $fila->id_fila
-																AND sc.estado = 1";
-										$seguimientos = [];
-										foreach (DB::select($seguimientos_conteo_1) as $conteo_1) { $conteo_1 = (object) $conteo_1;
-											$encontro = false;
-											foreach (DB::select($seguimientos_conteo_2) as $conteo_2) { $conteo_2 = (object) $conteo_2;
-												if ($conteo_1->id_producto 		 == $conteo_2->id_producto and
-													$conteo_1->lote 	   		 == $conteo_2->lote and
-													$conteo_1->fecha_vencimiento == $conteo_2->fecha_vencimiento
-												) {
-													$encontro = true;
-													if ($conteo_1->cantidad != $conteo_2->cantidad) {
-														$producto['id_fila_estante'] = $fila->id_fila;												 
-														$producto['codigo'] = $conteo_2->codigo;
-														$producto['codigo_barras'] = $conteo_2->codigo_barras;
-														$producto['nombre'] = $conteo_2->nombre;
-														$producto['descripcion'] = $conteo_2->descripcion;
-														$producto['cantidad'] = $conteo_2->cantidad;
-														$producto['fecha_vencimiento'] = $conteo_2->fecha_vencimiento;
-														$producto['lote'] = $conteo_2->lote;
-														$seguimientos_conteo = DB::select("SELECT *
-																   FROM seguimiento_conteo sc
-																   LEFT JOIN conteo_detalle cd USING(id_conteo_detalle)
-																   WHERE sc.id_producto = ".$conteo_2->id_producto."
-																   AND sc.estado = 1
-																   AND cd.conteo = 3
-																   AND sc.id_fila_estante = ".$fila->id_fila."
-																   AND sc.id_conteo_detalle = ".$estante->id_conteo_detalle);
-														$producto['seguimientos'] = $seguimientos_conteo;
-														$seguimientos[] = (object) $producto;
-													}
-												}
-											}
-											if(!$encontro){
-												$producto['id_fila_estante'] = $fila->id_fila;												 
-												$producto['codigo'] = $conteo_1->codigo;
-												$producto['codigo_barras'] = $conteo_1->codigo_barras;
-												$producto['nombre'] = $conteo_1->nombre;
-												$producto['descripcion'] = $conteo_1->descripcion;
-												$producto['cantidad'] = $conteo_1->cantidad;
-												$producto['fecha_vencimiento'] = $conteo_1->fecha_vencimiento;
-												$producto['lote'] = $conteo_1->lote;
-												$seguimientos_conteo = DB::select("SELECT *
-															   FROM seguimiento_conteo sc
-															   LEFT JOIN conteo_detalle cd USING(id_conteo_detalle)
-															   LEFT JOIN producto p USING(id_producto)
-															   WHERE sc.id_producto = ".$conteo_1->id_producto."
-															   AND sc.estado = 1
-															   AND cd.conteo = 3
-															   AND sc.id_fila_estante = ".$fila->id_fila."
-															   AND sc.id_conteo_detalle = ".$estante->id_conteo_detalle);
-												$producto['seguimientos'] = $seguimientos_conteo;
-												$seguimientos[] = (object) $producto;
-											}
-										}
+										$seguimientos = $this->ProductosConteo3($conteo, $fila);
 									}
 									$fila->productos = $seguimientos;
 								}
@@ -642,6 +558,151 @@ class APIController extends Controller
 			'message' => $message,
 			'conteos' => $conteos
 		], $status_code);
+    }
+
+    public function ProductosConteo3($conteo, $fila)
+    {
+    	$seguimientos = [];
+		$seguimientos_conteo_1 = "SELECT DISTINCT(p.id_producto) as id_producto,
+                                sc.id_fila_estante,													 
+								p.codigo,
+								p.codigo_barras,
+								p.nombre,
+								p.descripcion,
+								sc.cantidad,
+								sc.fecha_vencimiento,
+								sc.lote
+							  	FROM seguimiento_conteo sc
+							  	LEFT JOIN producto p USING(id_producto)
+							  	LEFT JOIN conteo_detalle cd USING(id_conteo_detalle)
+							  	WHERE cd.id_conteo = $conteo->id_conteo
+							  	AND cd.conteo = 1
+							  	AND sc.id_fila_estante = $fila->id_fila
+							  	AND sc.estado = 1";
+		
+
+		$seguimientos_conteo_2 = "SELECT DISTINCT(p.id_producto) as id_producto,
+                                sc.id_fila_estante,													 
+								p.codigo,
+								p.codigo_barras,
+								p.nombre,
+								p.descripcion,
+								sc.cantidad,
+								sc.fecha_vencimiento,
+								sc.lote 
+								FROM seguimiento_conteo sc
+								LEFT JOIN producto p USING(id_producto)
+								LEFT JOIN conteo_detalle cd USING(id_conteo_detalle)
+								WHERE cd.id_conteo = $conteo->id_conteo
+								AND cd.conteo = 2
+								AND sc.id_fila_estante = $fila->id_fila
+								AND sc.estado = 1";
+
+		//RECORREMOS TODOS LOS PRODUCTOS DEL PRIMER CONTEO Y MIRAMOS SI ESTAN EN IGUAL CANTIDAD EN EL SEGUNDO CONTEO
+    	foreach (DB::select($seguimientos_conteo_1) as $conteo_1) { $conteo_1 = (object) $conteo_1;
+			$encontro = false;
+			foreach (DB::select($seguimientos_conteo_2) as $conteo_2) { $conteo_2 = (object) $conteo_2;
+				if ($conteo_1->id_producto 		 == $conteo_2->id_producto and
+					$conteo_1->lote 	   		 == $conteo_2->lote and
+					$conteo_1->fecha_vencimiento == $conteo_2->fecha_vencimiento
+				) {
+					//ESTA VARIABLE PERMITIRA SABER SI EL PRODUCTO EXISTE EN AMBOS CONTEOS SI SOLO EXISTE EN EL PRIMER CONTEO DEBE SER VERIFICADO EN EL TERCER CONTEO
+					$encontro = true;
+					if ($conteo_1->cantidad != $conteo_2->cantidad) {
+						$producto['id_fila_estante'] = $fila->id_fila;												 
+						$producto['codigo'] = $conteo_2->codigo;
+						$producto['codigo_barras'] = $conteo_2->codigo_barras;
+						$producto['nombre'] = $conteo_2->nombre;
+						$producto['descripcion'] = $conteo_2->descripcion;
+						$producto['cantidad_1'] = $conteo_1->cantidad;
+						$producto['cantidad_2'] = $conteo_2->cantidad;
+						$producto['diferencia'] = $conteo_2->cantidad > $conteo_1->cantidad ? $conteo_2->cantidad - $conteo_1->cantidad : $conteo_1->cantidad - $conteo_2->cantidad;
+						$producto['fecha_vencimiento'] = $conteo_2->fecha_vencimiento;
+						$producto['lote'] = $conteo_2->lote;
+						$seguimientos_conteo = DB::select("SELECT *
+								   FROM seguimiento_conteo sc
+								   LEFT JOIN conteo_detalle cd USING(id_conteo_detalle)
+								   WHERE sc.id_producto = ".$conteo_2->id_producto."
+								   AND sc.estado = 1
+								   AND cd.conteo = 3
+								   AND sc.lote = '".$producto['lote']."'
+							   	   AND sc.fecha_vencimiento = '".$producto['fecha_vencimiento']."'
+								   AND sc.id_fila_estante = ".$fila->id_fila."
+								   AND cd.id_conteo = ".$conteo->id_conteo);
+						$producto['seguimientos'] = $seguimientos_conteo;
+						$seguimientos[] = (object) $producto;
+					}
+				}
+			}
+			if(!$encontro){
+				$producto['id_fila_estante'] = $fila->id_fila;												 
+				$producto['codigo'] = $conteo_1->codigo;
+				$producto['codigo_barras'] = $conteo_1->codigo_barras;
+				$producto['nombre'] = $conteo_1->nombre;
+				$producto['descripcion'] = $conteo_1->descripcion;
+				$producto['cantidad'] = $conteo_1->cantidad;
+				$producto['cantidad_1'] = $conteo_1->cantidad;
+				$producto['cantidad_2'] = 0;
+				$producto['diferencia'] = $conteo_1->cantidad;
+				$producto['fecha_vencimiento'] = $conteo_1->fecha_vencimiento;
+				$producto['lote'] = $conteo_1->lote;
+				$seguimientos_conteo = DB::select("SELECT *
+							   FROM seguimiento_conteo sc
+							   LEFT JOIN conteo_detalle cd USING(id_conteo_detalle)
+							   LEFT JOIN producto p USING(id_producto)
+							   WHERE sc.id_producto = ".$conteo_1->id_producto."
+							   AND sc.estado = 1
+							   AND cd.conteo = 3
+							   AND sc.lote = '".$producto['lote']."'
+							   AND sc.fecha_vencimiento = '".$producto['fecha_vencimiento']."'
+							   AND sc.id_fila_estante = ".$fila->id_fila."
+							   AND cd.id_conteo = ".$conteo->id_conteo);
+				$producto['seguimientos'] = $seguimientos_conteo;
+				$seguimientos[] = (object) $producto;
+			}
+		}
+
+		//AHORA REVISAMOS DEL 2 CONTEO CUAL SEGUIMIENTO NO ESTA EN EL PRIMERO
+    	foreach (DB::select($seguimientos_conteo_2) as $conteo_2) { $conteo_2 = (object) $conteo_2;
+			//ESTA VARIABLE PERMITIRA SABER SI EL PRODUCTO EXISTE EN AMBOS CONTEOS SI SOLO EXISTE EN EL SEGUNDO CONTEO DEBE SER VERIFICADO EN EL TERCER CONTEO
+			$encontro = false;
+			foreach (DB::select($seguimientos_conteo_1) as $conteo_1) { $conteo_1 = (object) $conteo_1;
+				if ($conteo_1->id_producto 		 == $conteo_2->id_producto and
+					$conteo_1->lote 	   		 == $conteo_2->lote and
+					$conteo_1->fecha_vencimiento == $conteo_2->fecha_vencimiento
+				) {
+					$encontro = true;
+				}
+			}
+			if(!$encontro){
+				$producto['id_fila_estante'] = $fila->id_fila;												 
+				$producto['codigo'] = $conteo_2->codigo;
+				$producto['codigo_barras'] = $conteo_2->codigo_barras;
+				$producto['nombre'] = $conteo_2->nombre;
+				$producto['descripcion'] = $conteo_2->descripcion;
+				$producto['cantidad'] = $conteo_2->cantidad;
+				$producto['cantidad_1'] = 0;
+				$producto['cantidad_2'] = $conteo_2->cantidad;
+				$producto['diferencia'] = $conteo_2->cantidad;
+				$producto['fecha_vencimiento'] = $conteo_2->fecha_vencimiento;
+				$producto['lote'] = $conteo_2->lote;
+				$seguimientos_conteo = DB::select("SELECT *
+							   FROM seguimiento_conteo sc
+							   LEFT JOIN conteo_detalle cd USING(id_conteo_detalle)
+							   LEFT JOIN producto p USING(id_producto)
+							   WHERE sc.id_producto = ".$conteo_2->id_producto."
+							   AND sc.estado = 1
+							   AND cd.conteo = 3
+							   AND sc.lote = '".$producto['lote']."'
+							   AND sc.fecha_vencimiento = '".$producto['fecha_vencimiento']."'
+							   AND sc.id_fila_estante = ".$fila->id_fila."
+							   AND cd.id_conteo = ".$conteo->id_conteo);
+				$producto['seguimientos'] = $seguimientos_conteo;
+				$seguimientos[] = (object) $producto;
+			}
+		}
+
+		return $seguimientos;
     }
 
     public function ActualizarConteosActuales($id_usuario)
