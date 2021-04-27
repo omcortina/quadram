@@ -461,7 +461,8 @@ class APIController extends Controller
 													 c.fecha_inicio,
 													 c.fecha_fin,
 													 c.conteo_activo,
-													 al.nombre as almacen
+													 al.nombre as almacen,
+													 0 as historico
 											  FROM conteo c
 											  LEFT JOIN auditoria a USING(id_auditoria)
 											  LEFT JOIN inventario i USING(id_inventario)
@@ -946,7 +947,8 @@ class APIController extends Controller
 													 c.fecha_inicio,
 													 c.fecha_fin,
 													 c.conteo_activo,
-													 al.nombre as almacen
+													 al.nombre as almacen,
+													 1 as historico
 											  FROM conteo c
 											  LEFT JOIN auditoria a USING(id_auditoria)
 											  LEFT JOIN inventario i USING(id_inventario)
