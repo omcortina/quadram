@@ -507,7 +507,7 @@ class APIController extends Controller
 
 								//RECORREMOS LAS FILAS PARA BUSCAR SEGUIMIENTOS YA REALIZADOS POR EL AUDITOR
 								foreach ($filas as $fila) {
-									
+									if ($conteo->conteo_activo != 3) {
 										$seguimientos = DB::select("SELECT DISTINCT(p.id_producto) as id_producto,
 													 s.id_seguimiento_auditoria,
                                                      s.id_fila_estante,													 
@@ -521,7 +521,7 @@ class APIController extends Controller
 											  AND s.estado = 1
 											  AND s.id_auditoria_detalle = ".$estante->id_auditoria_detalle);
 
-									if ($conteo->conteo_activo != 4) {
+									
 										foreach ($seguimientos as $seguimiento) {
 											$seguimientos_conteo = DB::select("SELECT *
 																   FROM seguimiento_conteo sc
@@ -532,20 +532,81 @@ class APIController extends Controller
 											$seguimiento->seguimientos = $seguimientos_conteo;
 										}
 									}else{
-										//BUSCAMOS LOS SEGUIMIENTOS CONTEO POR PRODUCTO, LOTE Y VENCIMIENTO PARA VER SUS CANTIDADES
+										$seguimientos_conteo_1 = "SELECT DISTINCT(p.id_producto) as id_producto,
+			                                                    sc.id_fila_estante,													 
+																p.codigo,
+																p.codigo_barras,
+																p.nombre,
+																p.descripcion 
+															  	FROM seguimiento_conteo sc
+															  	LEFT JOIN producto p USING(id_producto)
+															  	LEFT JOIN conteo_detalle cd USING(id_conteo_detalle)
+															  	WHERE cd.id_conteo_detalle = $estante->id_conteo_detalle
+															  	AND cd.conteo = 1
+															  	AND sc.id_fila_estante = $fila->id_fila
+															  	AND sc.estado = 1";
 
-										foreach ($seguimientos as $seguimiento) {
-											$seguimientos_conteo_1 = DB::select("SELECT *
+										$seguimientos_conteo_2 = "SELECT DISTINCT(p.id_producto) as id_producto,
+			                                                    sc.id_fila_estante,													 
+																p.codigo,
+																p.codigo_barras,
+																p.nombre,
+																p.descripcion 
+																FROM seguimiento_conteo sc
+																LEFT JOIN producto p USING(id_producto)
+																LEFT JOIN conteo_detalle cd USING(id_conteo_detalle)
+																WHERE cd.id_conteo_detalle = $estante->id_conteo_detalle
+																AND cd.conteo = 2
+																AND sc.id_fila_estante = $fila->id_fila
+																AND sc.estado = 1";
+										$seguimientos = [];
+										foreach (DB::select($seguimientos_conteo_1) as $conteo_1) { $conteo_1 = (object) $conteo_1;
+											$encontro = false;
+											foreach (DB::select($seguimientos_conteo_2) as $conteo_2) { $conteo_2 = (object) $conteo_2;
+												if ($conteo_1->id_producto 		 == $conteo_2->id_producto
+													$conteo_1->lote 	   		 == $conteo_2->lote
+													$conteo_1->fecha_vencimiento == $conteo_2->fecha_vencimiento
+												) {
+													$encontro = true;
+													if ($conteo_1->cantidad != $conteo_2->cantidad) {
+														$producto['id_fila_estante'] = $fila->id_fila;												 
+														$producto['codigo'] = $conteo_2->codigo;
+														$producto['codigo_barras'] = $conteo_2->codigo_barras;
+														$producto['nombre'] = $conteo_2->nombre;
+														$producto['descripcion'] = $conteo_2->descripcion;
+														$seguimientos_conteo = DB::select("SELECT *
 																   FROM seguimiento_conteo sc
-																   WHERE sc.id_producto = ".$seguimiento->id_producto."
+																   LEFT JOIN conteo_detalle cd USING(id_conteo_detalle)
+																   WHERE sc.id_producto = ".$conteo_2->id_producto."
 																   AND sc.estado = 1
+																   AND cd.conteo = 3
 																   AND sc.id_fila_estante = ".$fila->id_fila."
 																   AND sc.id_conteo_detalle = ".$estante->id_conteo_detalle);
-											$seguimiento->seguimientos = $seguimientos_conteo;
+														$producto['seguimientos'] = $seguimientos_conteo;
+														$seguimientos[] = (object) $producto;
+													}
+												}
+											}
+											if(!$encontro){
+												$producto['id_fila_estante'] = $fila->id_fila;												 
+												$producto['codigo'] = $conteo_2->codigo;
+												$producto['codigo_barras'] = $conteo_2->codigo_barras;
+												$producto['nombre'] = $conteo_2->nombre;
+												$producto['descripcion'] = $conteo_2->descripcion;
+												$seguimientos_conteo = DB::select("SELECT *
+																   FROM seguimiento_conteo sc
+																   LEFT JOIN conteo_detalle cd USING(id_conteo_detalle)
+																   LEFT JOIN producto p USING(id_producto)
+																   WHERE sc.id_producto = ".$conteo_1->id_producto."
+																   AND sc.estado = 1
+																   AND cd.conteo = 3
+																   AND sc.id_fila_estante = ".$fila->id_fila."
+																   AND sc.id_conteo_detalle = ".$estante->id_conteo_detalle);
+												$producto['seguimientos'] = $seguimientos_conteo;
+												$seguimientos[] = (object) $producto;
+											}
 										}
 									}
-									
-
 									$fila->productos = $seguimientos;
 								}
 								$estante->filas = $filas;
