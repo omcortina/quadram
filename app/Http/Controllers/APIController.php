@@ -609,6 +609,7 @@ class APIController extends Controller
 					//ESTA VARIABLE PERMITIRA SABER SI EL PRODUCTO EXISTE EN AMBOS CONTEOS SI SOLO EXISTE EN EL PRIMER CONTEO DEBE SER VERIFICADO EN EL TERCER CONTEO
 					$encontro = true;
 					if ($conteo_1->cantidad != $conteo_2->cantidad) {
+						$producto['id_producto'] = $conteo_2->id_producto;												 
 						$producto['id_fila_estante'] = $fila->id_fila;												 
 						$producto['codigo'] = $conteo_2->codigo;
 						$producto['codigo_barras'] = $conteo_2->codigo_barras;
@@ -635,6 +636,7 @@ class APIController extends Controller
 				}
 			}
 			if(!$encontro){
+				$producto['id_producto'] = $conteo_1->id_producto;	
 				$producto['id_fila_estante'] = $fila->id_fila;												 
 				$producto['codigo'] = $conteo_1->codigo;
 				$producto['codigo_barras'] = $conteo_1->codigo_barras;
@@ -675,6 +677,7 @@ class APIController extends Controller
 				}
 			}
 			if(!$encontro){
+				$producto['id_producto'] = $conteo_2->id_producto;
 				$producto['id_fila_estante'] = $fila->id_fila;												 
 				$producto['codigo'] = $conteo_2->codigo;
 				$producto['codigo_barras'] = $conteo_2->codigo_barras;
