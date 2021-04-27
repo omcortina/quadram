@@ -95,4 +95,5 @@ Route::delete('api/counter/deleteTracing', [APIController::class, 'BorrarSeguimi
 Route::any('api/counter/getLocations', [APIController::class, 'LocacionesConteoContador'])->name('api/counter/getLocations');
 Route::post('api/counter/countsHistory', [APIController::class, 'HistorialConteos'])->name('api/counter/countsHistory');
 Route::post('api/counter/finalizeCountDetail', [APIController::class, 'FinalizarConteo'])->name('api/counter/finalizeCountDetail');
+Route::post('api/counter/invalidateCountTracing', [APIController::class, 'InvalidarSeguimiento'])->name('api/counter/invalidateCountTracing');
 

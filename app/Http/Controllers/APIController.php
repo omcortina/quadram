@@ -571,12 +571,14 @@ class APIController extends Controller
 								p.descripcion,
 								sc.cantidad,
 								sc.fecha_vencimiento,
-								sc.lote
+								sc.lote,
+								sc.id_seguimiento_conteo
 							  	FROM seguimiento_conteo sc
 							  	LEFT JOIN producto p USING(id_producto)
 							  	LEFT JOIN conteo_detalle cd USING(id_conteo_detalle)
 							  	WHERE cd.id_conteo = $conteo->id_conteo
 							  	AND cd.conteo = 1
+							  	AND sc.valido = 1
 							  	AND sc.id_fila_estante = $fila->id_fila
 							  	AND sc.estado = 1";
 		
@@ -589,12 +591,14 @@ class APIController extends Controller
 								p.descripcion,
 								sc.cantidad,
 								sc.fecha_vencimiento,
-								sc.lote 
+								sc.lote,
+								sc.id_seguimiento_conteo 
 								FROM seguimiento_conteo sc
 								LEFT JOIN producto p USING(id_producto)
 								LEFT JOIN conteo_detalle cd USING(id_conteo_detalle)
 								WHERE cd.id_conteo = $conteo->id_conteo
 								AND cd.conteo = 2
+								AND sc.valido = 1
 								AND sc.id_fila_estante = $fila->id_fila
 								AND sc.estado = 1";
 
@@ -610,6 +614,7 @@ class APIController extends Controller
 					$encontro = true;
 					if ($conteo_1->cantidad != $conteo_2->cantidad) {
 						$producto['id_producto'] = $conteo_2->id_producto;												 
+						$producto['id_seguimiento_conteo'] = $conteo_2->id_seguimiento_conteo;												 
 						$producto['id_fila_estante'] = $fila->id_fila;												 
 						$producto['codigo'] = $conteo_2->codigo;
 						$producto['codigo_barras'] = $conteo_2->codigo_barras;
@@ -637,6 +642,7 @@ class APIController extends Controller
 			}
 			if(!$encontro){
 				$producto['id_producto'] = $conteo_1->id_producto;	
+				$producto['id_seguimiento_conteo'] = $conteo_1->id_seguimiento_conteo;	
 				$producto['id_fila_estante'] = $fila->id_fila;												 
 				$producto['codigo'] = $conteo_1->codigo;
 				$producto['codigo_barras'] = $conteo_1->codigo_barras;
@@ -678,6 +684,7 @@ class APIController extends Controller
 			}
 			if(!$encontro){
 				$producto['id_producto'] = $conteo_2->id_producto;
+				$producto['id_seguimiento_conteo'] = $conteo_2->id_seguimiento_conteo;
 				$producto['id_fila_estante'] = $fila->id_fila;												 
 				$producto['codigo'] = $conteo_2->codigo;
 				$producto['codigo_barras'] = $conteo_2->codigo_barras;
@@ -881,10 +888,10 @@ class APIController extends Controller
 										$seguimiento->save();
 		                                $producto->id_seguimiento_conteo = $seguimiento->id_seguimiento_conteo;
 		                                $producto->seguimientos = DB::select("SELECT *
-													   FROM seguimiento_conteo sc
-													   WHERE sc.id_producto = ".$producto->id_producto."
-													   AND sc.estado = 1
-													   AND sc.id_conteo_detalle = ".$seguimiento->id_conteo_detalle);
+																		      FROM seguimiento_conteo sc
+																		      WHERE sc.id_producto = ".$producto->id_producto."
+																		      AND sc.estado = 1
+																		      AND sc.id_conteo_detalle = ".$seguimiento->id_conteo_detalle);
 
 
 										$message = "Producto agregado correctamente"; $status_code = 200;
@@ -1073,6 +1080,40 @@ class APIController extends Controller
 		}
 		return response()->json([
 			'message' => $message
+		], $status_code);
+    }
+
+    public function InvalidarSeguimiento(Request $request)
+    {
+     	$post = $request->all();
+		$status_code = 500;
+		$message = "";
+        $producto = new Producto;
+		if($post){
+			$post = (object) $post;
+			if(isset($post->id_seguimiento_conteo)){
+				$seguimiento = SeguimientoConteo::find($post->id_seguimiento_conteo);
+				if($seguimiento){
+					$seguimiento->valido = 0;
+					$seguimiento->save();
+					$producto = $seguimiento->producto;
+					$producto->id_seguimiento_conteo = $seguimiento->id_seguimiento_conteo;
+					$producto->seguimientos = DB::select("SELECT *
+													   FROM seguimiento_conteo sc
+													   WHERE sc.id_producto = ".$producto->id_producto."
+													   AND sc.estado = 1
+													   AND sc.id_conteo_detalle = ".$seguimiento->id_conteo_detalle);
+					$message = "Seguimiento invalidado exitosamente"; $status_code = 200;
+				}else{
+					$message = "Seguimiento invalido";
+				}
+			}else{
+				$message = "Parametro [id_seguimiento_conteo] perteneciente al seguimiento previamente registrado no esta definido";
+			}
+		}
+		return response()->json([
+			'message' => $message,
+            'product' => $producto
 		], $status_code);
     }
 

@@ -24,6 +24,7 @@ class VerifyCsrfToken extends Middleware
         "api/counter/deleteTracing",
         "api/counter/deleteTracing",
         "api/counter/countsHistory",
-        "api/counter/finalizeCountDetail"
+        "api/counter/finalizeCountDetail",
+        "api/counter/invalidateCountTracing"
     ];
 }
