@@ -1063,7 +1063,7 @@ class APIController extends Controller
 														  FROM seguimiento_conteo sc
 														  WHERE sc.estado = 1
 														  AND sc.id_conteo_detalle = ".$detalle->id_conteo_detalle);
-					if(count($seguimientos_conteo) >= count($seguimientos_auditoria)){
+					if(count($seguimientos_conteo) >= count($seguimientos_auditoria) || $detalle->conteo == 3){
 						$detalle->finalizo = 1;
 						$detalle->save();
 						$this->ActualizarConteosActuales($detalle->id_usuario);
@@ -1103,7 +1103,7 @@ class APIController extends Controller
 													   WHERE sc.id_producto = ".$producto->id_producto."
 													   AND sc.estado = 1
 													   AND sc.id_conteo_detalle = ".$seguimiento->id_conteo_detalle);
-					$message = "Seguimiento invalidado exitosamente"; $status_code = 200;
+					$message = "Producto invalidado exitosamente"; $status_code = 200;
 				}else{
 					$message = "Seguimiento invalido";
 				}

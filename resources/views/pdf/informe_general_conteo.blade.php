@@ -55,40 +55,49 @@
 				<td><center>{{ $item->auditoria_detalle->estante->nombre }}</center></td>
 				<td><center>{{ $item->fila->nombre }}</center></td>
 				<td><center>{{ $item->producto->codigo }} - {{ ucfirst(strtolower($item->producto->nombre)) }}</center></td>
+				@php
+					$cantidad_ultimo_conteo = "No definida";
+				@endphp
 				@for ($_conteo = 1; $_conteo <= 3; $_conteo++)
 					<td>
 						<center>
 							@php
-
-								$cantidad_ultimo_conteo = "No definida";
 								$cantidad = "No definida";
 								$lote = "No definido";
 								$vencimiento = "No definido";
 								
 								//BUSCAMOS SEGUIMIENTOS DE CONTEO RELACIONADOS A LOS DETALLES
 								$conteo_detalle = \App\Models\ConteoDetalle::where('estado', 1)
-																		   ->where('id_auditoria_detalle', $item->id_auditoria_detalle)
-																		   ->where('conteo', $_conteo)
-																		   ->first();
+																		   	->where('id_auditoria_detalle', $item->id_auditoria_detalle)
+																		   	->where('conteo', $_conteo)
+																		   	->first();
 								if($conteo_detalle){
-									$seguimiento_conteo = \App\Models\SeguimientoConteo::where('estado', 1)
-																				   	   ->where('id_conteo_detalle', $conteo_detalle->id_conteo_detalle)
-																				   	   ->where('id_fila_estante', $item->id_fila_estante)
-																				   	   ->where('id_producto', $item->id_producto)
-																				   	   ->first();
-									if($seguimiento_conteo){
-										$cantidad = $seguimiento_conteo->cantidad;
-										$lote = $seguimiento_conteo->lote;
-										$vencimiento = $seguimiento_conteo->fecha_vencimiento;
+									$seguimientos_conteo = \App\Models\SeguimientoConteo::all()
+																			->where('estado', 1)
+																		   	->where('id_conteo_detalle', $conteo_detalle->id_conteo_detalle)
+																		   	->where('id_fila_estante', $item->id_fila_estante)
+																		   	->where('id_producto', $item->id_producto);
+									if(count($seguimientos_conteo) > 0){
+										$cont = 0;
+										foreach ($seguimientos_conteo as $seguimiento_conteo) {
+											$cont++;
+											if ($cantidad == "No definida") $cantidad = 0;
+											if ($lote == "No definido") $lote = "";
+											if ($vencimiento == "No definido") $vencimiento = "";
+											$cantidad += $seguimiento_conteo->cantidad;
+											$lote .= $seguimiento_conteo->lote; if ($cont < count($seguimientos_conteo)) $lote .= " | ";
+											$vencimiento .= $seguimiento_conteo->fecha_vencimiento; if ($cont < count($seguimientos_conteo)) $vencimiento .= " | ";
+											$cantidad_ultimo_conteo = $cantidad;
+										}
 									}
 								}
 							@endphp
 
 							<b>Cantidad</b><br>
 							{{ $cantidad }}<br>
-							<b>Lote</b><br>
+							<b>Lotes</b><br>
 							{{ $lote }}<br>
-							<b>Vencimiento</b><br>
+							<b>Vencimientos</b><br>
 							{{ $vencimiento }}<br>
 						</center>
 					</td>

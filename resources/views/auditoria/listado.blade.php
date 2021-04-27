@@ -12,10 +12,12 @@
         </ol>
         </nav>
     </div>
-
-    <div class="col-lg-6 col-5 text-right">
-      <a  class="btn btn-sm btn-neutral" href="{{ route("auditoria/gestion") }}?inventario={{ $inventario->id_inventario }}">+ Nueva auditoria</a>
-    </div>
+    @if (count($inventario->auditorias) == 0)
+      <div class="col-lg-6 col-5 text-right">
+          <a  class="btn btn-sm btn-neutral" href="{{ route("auditoria/gestion") }}?inventario={{ $inventario->id_inventario }}">+ Nueva auditoria</a>
+      </div>
+    @endif
+    
 </div>
 <div class="row">
   <div class="col-sm-3"></div>
