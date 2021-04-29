@@ -767,7 +767,7 @@
                     loading(false)
                     if(!response.error){
                       toastr.success(response.mensaje)
-                      if(refresh) locacion.reload()
+                      if(refresh) location.reload()
                     }else{
                       toastr.error(response.mensaje)
                     }
