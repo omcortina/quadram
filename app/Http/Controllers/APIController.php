@@ -103,7 +103,8 @@ class APIController extends Controller
 					$auditorias = DB::select("SELECT DISTINCT(a.id_auditoria) as id_auditoria,
 													 a.fecha_inicio,
 													 a.fecha_fin,
-													 al.nombre as almacen
+													 al.nombre as almacen,
+													 0 as historico
 											  FROM auditoria a
 											  LEFT JOIN auditoria_detalle ad USING(id_auditoria)
 											  LEFT JOIN inventario i USING(id_inventario)
@@ -362,7 +363,8 @@ class APIController extends Controller
 					$auditorias = DB::select("SELECT DISTINCT(a.id_auditoria) as id_auditoria,
 													 a.fecha_inicio,
 													 a.fecha_fin,
-													 al.nombre as almacen
+													 al.nombre as almacen,
+													 1 as historico
 											  FROM auditoria a
 											  LEFT JOIN auditoria_detalle ad USING(id_auditoria)
 											  LEFT JOIN inventario i USING(id_inventario)
