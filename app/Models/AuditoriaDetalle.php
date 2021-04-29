@@ -21,4 +21,8 @@ class AuditoriaDetalle extends Model
     public function estante(){
       	return $this->belongsTo(Estante::class, 'id_estante');
     }
+
+    public function seguimientos(){
+        return $this->hasMany(SeguimientoAuditoria::class, 'id_auditoria_detalle');
+    }
 }

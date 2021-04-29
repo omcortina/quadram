@@ -15,6 +15,19 @@ class Conteo extends Model
       	return $this->belongsTo(Auditoria::class, 'id_auditoria');
     }
 
+    public function detalles(){
+        return $this->hasMany(ConteoDetalle::class, 'id_conteo');
+    }
+
+    public function tiene_seguimientos()
+    {
+        $respuesta = false;
+        foreach ($this->detalles as $detalle) {
+            if (count($detalle->seguimientos) > 0) $respuesta = true;
+        }
+        return $respuesta;
+    }
+
     public function ActualizarConteoActual()
     {
         $detalles_conteo_1 = ConteoDetalle::all()
@@ -42,33 +55,31 @@ class Conteo extends Model
         $this->save();
     }
 
-    public function ActualizarConteoActualOLD()
+    public function estado_actual()
+    {   
+        $fecha_actual = date('Y-m-d H:i:s');
+        $estado = "No creado";
+
+        if ($fecha_actual >= $this->fecha_inicio and $fecha_actual <= $this->fecha_fin) $estado = "Iniciado";
+        
+        if ($this->tiene_seguimientos()) $estado = "En progreso";
+        
+        if ($fecha_actual < $this->fecha_inicio) $estado = "Sin Iniciar";
+        
+        if ($fecha_actual > $this->fecha_fin) $estado = "Finalizado";
+
+        return $estado;
+    }
+
+    public function texto_conteo_actual()
     {
-        $seguimientos_auditoria = DB::select("SELECT *
-                                              FROM seguimiento_auditoria sa
-                                              LEFT JOIN auditoria_detalle ad USING(id_auditoria_detalle)
-                                              WHERE sa.estado = 1
-                                              AND ad.id_auditoria = ".$this->id_auditoria);
-
-        $this->conteo_activo = 1;
-
-        $conteos_1 = DB::select("SELECT *
-                                 FROM seguimiento_conteo sc
-                                 LEFT JOIN conteo_detalle cd USING(id_conteo_detalle)
-                                 LEFT JOIN auditoria_detalle ad USING(id_auditoria_detalle)
-                                 WHERE sc.estado = 1
-                                 AND cd.conteo = 1
-                                 AND ad.id_auditoria = ".$this->id_auditoria);
-        $conteos_2 = DB::select("SELECT *
-                                 FROM seguimiento_conteo sc
-                                 LEFT JOIN conteo_detalle cd USING(id_conteo_detalle)
-                                 LEFT JOIN auditoria_detalle ad USING(id_auditoria_detalle)
-                                 WHERE sc.estado = 1
-                                 AND cd.conteo = 2
-                                 AND ad.id_auditoria = ".$this->id_auditoria);
-
-        if(count($conteos_1) >= count($seguimientos_auditoria)) $this->conteo_activo = 2;
-        if(count($conteos_2) >= count($seguimientos_auditoria)) $this->conteo_activo = 3;
-        $this->save();
+        $fecha_actual = date('Y-m-d H:i:s');
+        $estado = "No iniciado";
+        if ($fecha_actual >= $this->fecha_inicio){
+            if ($this->conteo_activo == 1) $estado = "Primer Conteo";
+            if ($this->conteo_activo == 2) $estado = "Segundo Conteo";
+            if ($this->conteo_activo == 3) $estado = "Tercer Conteo";
+        }
+        return $estado;
     }
 }

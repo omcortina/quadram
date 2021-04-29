@@ -21,4 +21,8 @@ class ConteoDetalle extends Model
     public function conteo(){
       	return $this->belongsTo(Conteo::class, 'id_conteo');
     }
+
+    public function seguimientos(){
+        return $this->hasMany(SeguimientoConteo::class, 'id_conteo_detalle');
+    }
 }

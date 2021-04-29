@@ -39,7 +39,10 @@
                 <th scope="col">Almacen</th>
                 <th scope="col">Fecha Inicio</th>
                 <th scope="col">Fecha Fin</th>
-                <th scope="col">Usuario</th>
+                <th scope="col">Supervisor</th>
+                <th scope="col">Auditoria</th>
+                <th scope="col">Conteo</th>
+                <th scope="col">Conteo Actual</th>
                 <th scope="col">Estado</th>
                 <th scope="col"><center>Acciones</center></th>
               </tr>
@@ -114,9 +117,8 @@
       }
     }
 
-
     function CerrarModal() {
-        $('#ModalInventario').modal('hide')
+      $('#ModalInventario').modal('hide')
     }
 
     function AbrirModal(id_inventario = null) {
@@ -191,11 +193,18 @@
                       '<td>'+item.fecha_inicio+'</td>'+
                       '<td>'+item.fecha_fin+'</td>'+
                       '<td>'+item.usuario.nombres+' - '+item.usuario.documento+'</td>'+
+                      '<td>'+item.estado_auditoria+'</td>'+
+                      '<td>'+item.estado_conteo+'</td>'+
+                      '<td>'+item.conteo_actual+'</td>'+
                       '<td><span class="text-'+EstadoColor(item.estado)+'">'+EstadoTexto(item.estado)+'</span></td>'+
                       '<td><center>'+
                         '<a class="icons" title="Editar" onclick="AbrirModal('+item.id_inventario+')"><i data-feather="edit"></i></a>'+
-                        '<a class="icons" title="Auditorias" href="'+ruta_auditorias+'"><i data-feather="clipboard"></i></a>'+
-                      '</center></td>'+
+                        '<a class="icons" title="Auditorias" href="'+ruta_auditorias+'"><i data-feather="clipboard"></i></a>'
+          if(item.conteo_tiene_seguimientos){
+            let ruta_conteo = "{{ config('global.servidor') }}/inventario/seguimiento-general/"+item.id_inventario
+            tabla += '<a class="icons" title="Informe de inventario" href="'+ruta_conteo+'"><i  data-feather="bar-chart-2"></i></a>'
+          }
+         tabla +=     '</center></td>'+
                    '</tr>'
       })
       $("#bodytable_inventarios").html(tabla)

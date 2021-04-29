@@ -65,6 +65,7 @@ Route::any('fila/guardar', [EstanteController::class, 'GuardarFila'])->name('fil
 Route::get('inventario/gestion', [InventarioController::class, 'Gestion'])->name('inventario/gestion');
 Route::get('inventario/obtener_listado', [InventarioController::class, 'ObtenerListado'])->name('inventario/obtener_listado');
 Route::post('inventario/guardar', [InventarioController::class, 'Guardar'])->name('inventario/guardar');
+Route::get('inventario/seguimiento-general/{id_inventario}', [InventarioController::class, 'InformeGeneral'])->name('inventario/seguimiento-general');
 
 //AUDITORIA
 Route::get('auditoria/listado/{id_inventario}', [AuditoriaController::class, 'Listado'])->name('auditoria/listado');

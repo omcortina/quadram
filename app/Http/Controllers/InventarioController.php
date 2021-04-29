@@ -6,8 +6,12 @@ use Illuminate\Http\Request;
 use App\Models\Dominio;
 use App\Models\Inventario;
 use App\Models\Almacen;
+use App\Models\Auditoria;
+use App\Models\Conteo;
+use App\Exports\InformeGeneralInventario;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Maatwebsite\Excel\Facades\Excel;
 
 class InventarioController extends Controller
 {
@@ -20,6 +24,38 @@ class InventarioController extends Controller
 	public function ObtenerListado()
 	{
 		$inventarios = Inventario::orderByDesc('fecha_inicio')->with('usuario')->with('almacen')->get();
+		$fecha_actual = date('Y-m-d H:i:s');
+		foreach ($inventarios as $inventario) {
+			$auditoria = Auditoria::where('id_inventario', $inventario->id_inventario)
+								  ->where('estado', 1)
+								  ->first();
+			$estado_auditoria = "No creada";
+			$estado_conteo = "No creado";
+			$conteo_actual = "No definido";
+			$inventario->conteo_tiene_seguimientos = false;
+			$inventario->id_auditoria = null;
+			$inventario->id_conteo = null;
+			if ($auditoria) {
+				$estado_auditoria = $auditoria->estado_actual();
+				//AHORA VALIDAMOS EL CONTEO
+				$conteo = Conteo::where('id_auditoria', $auditoria->id_auditoria)
+								  ->where('estado', 1)
+								  ->first();
+				if ($conteo) {
+					$estado_conteo = $conteo->estado_actual();
+					$conteo_actual = $conteo->texto_conteo_actual();
+				}
+
+				$inventario->conteo_tiene_seguimientos = $conteo->tiene_seguimientos();
+				$inventario->id_auditoria = $auditoria->id_auditoria;
+				$inventario->id_conteo = $conteo->id_conteo;
+			}
+
+			$inventario->estado_auditoria = $estado_auditoria;	
+			$inventario->estado_conteo = $estado_conteo;	
+			$inventario->conteo_actual = $conteo_actual;
+			
+		}
 		return response()->json([
 			'inventarios' => $inventarios
 		]);
@@ -49,5 +85,10 @@ class InventarioController extends Controller
 			'mensaje' => $mensaje,
 			'error' => $error
 		]);
+	}
+
+	public function InformeGeneral($id_inventario)
+	{
+		return Excel::download(new InformeGeneralInventario($id_inventario), 'Inventario #'.$id_inventario.'.xlsx');
 	}
 }
