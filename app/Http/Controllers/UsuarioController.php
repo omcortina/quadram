@@ -37,9 +37,9 @@ class UsuarioController extends Controller
 		if($data){
 			$data = (object) $data;
 			$usuario = Usuario::where("nombre_usuario", $data->nombre_usuario)
-							  ->where("clave", md5($data->clave))
-							  ->where("estado", 1)
-							  ->first();
+					  ->where("clave", md5($data->clave))
+					  ->where("estado", 1)
+					  ->first();
 			if($usuario){
 				if($usuario->tipo->id_dominio == 2){
 					session([
@@ -47,7 +47,7 @@ class UsuarioController extends Controller
 						'tipo_usuario' => $usuario->tipo->id_dominio,
 						'super_admin' => true
 					]);
-					return redirect()->route('producto/listado');
+					return redirect()->route('inventario/gestion');
 				}
 			}else{
 				$mensaje = "Credenciales invalidas";

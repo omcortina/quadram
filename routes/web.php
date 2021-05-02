@@ -82,6 +82,7 @@ Route::any('conteo/informe/{id_conteo}', [ConteoController::class, 'Imprimir'])-
 
 //API
 Route::post('api/login', [APIController::class, 'Login'])->name('api/login');
+Route::post('api/updateUser', [APIController::class, 'ActualizarPerfil'])->name('api/updateUser');
 Route::post('api/auditor/audits', [APIController::class, 'Auditorias']);
 Route::post('api/auditor/saveTracing', [APIController::class, 'GuardarSeguimientoAuditoria']);
 Route::delete('api/auditor/deleteTracing', [APIController::class, 'BorrarSeguimientoAuditoria'])->name('api/auditor/deleteTracing');

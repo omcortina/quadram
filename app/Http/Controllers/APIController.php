@@ -869,47 +869,40 @@ class APIController extends Controller
 			if(isset($post->id_conteo_detalle)){
 				if (isset($post->id_fila)) {
 					if (isset($post->cantidad)) {
-						if (isset($post->fecha_vencimiento)) {
-							if (isset($post->lote)) {
-								if (isset($post->id_producto)) {
-									if(Producto::find($post->id_producto)){
-		                                $producto = Producto::find($post->id_producto);
-										$seguimiento = SeguimientoConteo::where('id_conteo_detalle', $post->id_conteo_detalle)
-																->where('id_producto', $post->id_producto)
-																->where('lote', $post->lote)
-																->where('fecha_vencimiento', $post->fecha_vencimiento)
-																->where('id_fila_estante', $post->id_fila)
-		                                                        ->where('estado', 1)
-																->first();
-										if(is_null($seguimiento)) $seguimiento = new SeguimientoConteo;
-										$seguimiento->id_conteo_detalle = $post->id_conteo_detalle;
-										$seguimiento->id_producto = $post->id_producto;
-										$seguimiento->cantidad = $seguimiento->cantidad + $post->cantidad;
-										$seguimiento->fecha_vencimiento = $post->fecha_vencimiento;
-										$seguimiento->lote = $post->lote;
-										$seguimiento->id_fila_estante = $post->id_fila;
-										$seguimiento->save();
-		                                $producto->id_seguimiento_conteo = $seguimiento->id_seguimiento_conteo;
-		                                $producto->seguimientos = DB::select("SELECT *
-																		      FROM seguimiento_conteo sc
-																		      WHERE sc.id_producto = ".$producto->id_producto."
-																		      AND sc.estado = 1
-																		      AND sc.id_conteo_detalle = ".$seguimiento->id_conteo_detalle);
+						if (isset($post->id_producto)) {
+							if(Producto::find($post->id_producto)){
+                                $producto = Producto::find($post->id_producto);
+								$seguimiento = SeguimientoConteo::where('id_conteo_detalle', $post->id_conteo_detalle)
+														->where('id_producto', $post->id_producto)
+														->where('lote', $post->lote)
+														->where('fecha_vencimiento', $post->fecha_vencimiento)
+														->where('id_fila_estante', $post->id_fila)
+                                                        ->where('estado', 1)
+														->first();
+								if(is_null($seguimiento)) $seguimiento = new SeguimientoConteo;
+								$seguimiento->id_conteo_detalle = $post->id_conteo_detalle;
+								$seguimiento->id_producto = $post->id_producto;
+								$seguimiento->cantidad = $seguimiento->cantidad + $post->cantidad;
+								$seguimiento->fecha_vencimiento = $post->fecha_vencimiento;
+								$seguimiento->lote = $post->lote;
+								$seguimiento->id_fila_estante = $post->id_fila;
+								$seguimiento->save();
+                                $producto->id_seguimiento_conteo = $seguimiento->id_seguimiento_conteo;
+                                $producto->seguimientos = DB::select("SELECT *
+																      FROM seguimiento_conteo sc
+																      WHERE sc.id_producto = ".$producto->id_producto."
+																      AND sc.estado = 1
+																      AND sc.id_conteo_detalle = ".$seguimiento->id_conteo_detalle);
 
 
-										$message = "Producto agregado correctamente"; $status_code = 200;
-									}else{
-										$message = "El producto no es valido";
-									}
-								}else{
-									$message = "Parametro [id_producto] perteneciente al producto contado no esta definido";
-								}
+								$message = "Producto agregado correctamente"; $status_code = 200;
 							}else{
-								$message = "Parametro [lote] perteneciente al del producto contado no esta definido";
+								$message = "El producto no es valido";
 							}
 						}else{
-							$message = "Parametro [fecha_vencimiento] perteneciente a la fecha de vencimiento del producto contado no esta definido";
+							$message = "Parametro [id_producto] perteneciente al producto contado no esta definido";
 						}
+							
 					}else{
 						$message = "Parametro [cantidad] perteneciente a la cantidad contada no esta definida";
 					}
@@ -1121,4 +1114,57 @@ class APIController extends Controller
 		], $status_code);
     }
 
+    public function ActualizarPerfil(Request $request)
+    {
+    	$post = $request->all();
+		$status_code = 500;
+		$message = "";
+		if($post){
+			$post = (object) $post;
+			if(isset($post->id_usuario)){
+				if (isset($post->nombre)) {
+					if (isset($post->apellido)) {
+						if (isset($post->identificacion)) {
+							if (isset($post->telefono)) {
+								if (isset($post->nombre_usuario)) {
+									if(Usuario::find($post->id_usuario)){
+		                                $usuario = Usuario::find($post->id_usuario);
+		                                $usuario->nombres = $post->nombre;
+										$usuario->apellidos = $post->apellido;
+										$usuario->documento = $post->identificacion;
+										$usuario->telefono = $post->telefono;
+										$usuario->nombre_usuario = $post->nombre_usuario;
+										if ($usuario->save()) {
+											$message = "Información actualizada correctamente"; $status_code = 200;
+										}else{
+											$message = "Ocurrio el siguiente error: ".$usuario->errors[0];
+										}
+									}else{
+										$message = "El usuario no es valido";
+									}
+								}else{
+									$message = "Parametro [nombre_usuario] no esta definido";
+								}
+							}else{
+								$message = "Parametro [telefono] no esta definido";
+							}
+						}else{
+							$message = "Parametro [identificacion] no esta definido";
+						}
+					}else{
+						$message = "Parametro [apellido] no esta definido";
+					}
+				}else{
+					$message = "Parametro [nombre] no esta definido";
+				}
+			}else{
+				$message = "Parametro [id_usuario] no esta definido";
+			}
+	    }else{
+			$message = "Datos invalidos";
+		}
+	    return response()->json([
+			'message' => $message
+		], $status_code);
+	}
 }
