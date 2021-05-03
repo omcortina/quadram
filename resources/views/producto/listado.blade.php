@@ -14,7 +14,6 @@
     </div>
 
     <div class="col-lg-6 col-5 text-right">
-      <a href="#" class="btn btn-sm btn-neutral">+ Nuevo producto</a>
       <a href="{{ route('producto/cargar_archivo') }}" class="btn btn-sm btn-success">Importar productos</a>
     </div>
 </div>
@@ -33,7 +32,6 @@
                 <th scope="col">Nombre</th>
                 <th scope="col">Descipción</th>
                 <th scope="col">Estado</th>
-                <th scope="col"><center>Acciones</center></th>
               </tr>
             </thead>
             <tbody>
@@ -49,9 +47,6 @@
                     @endif
                   </td>
                   <td style="color: #2dce89">{{ $producto->estado == 1 ? 'Activo' : 'Inactivo' }}</td>
-                  <td><center>
-                    <a href="">Editar</a>
-                  </center></td>
                 </tr>
               @endforeach
             </tbody>

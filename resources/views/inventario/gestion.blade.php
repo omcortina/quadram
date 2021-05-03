@@ -202,7 +202,10 @@
                         '<a class="icons" title="Auditorias" href="'+ruta_auditorias+'"><i data-feather="clipboard"></i></a>'
           if(item.conteo_tiene_seguimientos){
             let ruta_conteo = "{{ config('global.servidor') }}/inventario/seguimiento-general/"+item.id_inventario
+            let ruta_export_conteo = "{{ config('global.servidor') }}/inventario/export-seguimiento-general/"+item.id_inventario
             tabla += '<a class="icons" title="Informe de inventario" href="'+ruta_conteo+'"><i  data-feather="bar-chart-2"></i></a>'
+
+            tabla += '<a class="icons" title="Exportar Informe de inventario" href="'+ruta_export_conteo+'"><i  data-feather="code"></i></a>'
           }
          tabla +=     '</center></td>'+
                    '</tr>'

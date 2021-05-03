@@ -9,6 +9,7 @@ use App\Models\Almacen;
 use App\Models\Auditoria;
 use App\Models\Conteo;
 use App\Exports\InformeGeneralInventario;
+use App\Exports\ExportInformeGeneralInventario;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Maatwebsite\Excel\Facades\Excel;
@@ -90,5 +91,10 @@ class InventarioController extends Controller
 	public function InformeGeneral($id_inventario)
 	{
 		return Excel::download(new InformeGeneralInventario($id_inventario), 'Inventario #'.$id_inventario.'.xlsx');
+	}
+
+	public function ExportarInformeGeneral($id_inventario)
+	{
+		return Excel::download(new ExportInformeGeneralInventario($id_inventario), 'Exportación Inventario #'.$id_inventario.'.xlsx');
 	}
 }

@@ -56,6 +56,7 @@ Route::get('locacion/estantes_por_locacion/{id_locacion}', [LocacionController::
 //ESTANTE
 Route::get('estante/listado', [EstanteController::class, 'Listado'])->name('estante/listado');
 Route::any('estante/guardar', [EstanteController::class, 'Guardar'])->name('estante/guardar');
+Route::any('estante/filas_por_estante/{id_estante}', [EstanteController::class, 'FilasPorEstante'])->name('estante/filas_por_estante');
 
 //FILA
 Route::get('fila/listado', [EstanteController::class, 'ListadoFilas'])->name('fila/listado');
@@ -66,7 +67,7 @@ Route::get('inventario/gestion', [InventarioController::class, 'Gestion'])->name
 Route::get('inventario/obtener_listado', [InventarioController::class, 'ObtenerListado'])->name('inventario/obtener_listado');
 Route::post('inventario/guardar', [InventarioController::class, 'Guardar'])->name('inventario/guardar');
 Route::get('inventario/seguimiento-general/{id_inventario}', [InventarioController::class, 'InformeGeneral'])->name('inventario/seguimiento-general');
-
+Route::get('inventario/export-seguimiento-general/{id_inventario}', [InventarioController::class, 'ExportarInformeGeneral'])->name('inventario/export-seguimiento-general');
 //AUDITORIA
 Route::get('auditoria/listado/{id_inventario}', [AuditoriaController::class, 'Listado'])->name('auditoria/listado');
 Route::any('auditoria/gestion', [AuditoriaController::class, 'Gestion'])->name('auditoria/gestion');
@@ -82,7 +83,6 @@ Route::any('conteo/informe/{id_conteo}', [ConteoController::class, 'Imprimir'])-
 
 //API
 Route::post('api/login', [APIController::class, 'Login'])->name('api/login');
-Route::post('api/updateUser', [APIController::class, 'ActualizarPerfil'])->name('api/updateUser');
 Route::post('api/auditor/audits', [APIController::class, 'Auditorias']);
 Route::post('api/auditor/saveTracing', [APIController::class, 'GuardarSeguimientoAuditoria']);
 Route::delete('api/auditor/deleteTracing', [APIController::class, 'BorrarSeguimientoAuditoria'])->name('api/auditor/deleteTracing');

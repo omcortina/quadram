@@ -179,6 +179,7 @@
 
     function ListadoLocacion(){
         let url = "{{ route('locacion/listado', $almacen->id_almacen) }}"
+        loading(true)
         $.get(url, (response)=>{
             let fila_locacion = ""
             let fila_estante = ""
@@ -195,9 +196,13 @@
                                         "<td><center><span class='icons' onclick='ModalEstante("+locacion.id_locacion+")'><i data-feather='plus-circle'></i></span><span class='icons' onclick='ConsultarEstantesPorLocacion("+locacion.id_locacion+")'><i data-feather='box'></i></span><span class='icons'><i data-feather='trash'></i></span></center></td>"
                                     "</tr>"
                 })
-                $("#bodytable_locacion").html(fila_locacion)
-                feather.replace()
             }
+            $("#bodytable_locacion").html(fila_locacion)
+            feather.replace()
+            loading(false)
+        }).fail((error)=>{
+            toastr.error("Ocurrio un error", "Error")
+            loading(false)
         })
     }
 
@@ -221,6 +226,7 @@
             "id_almacen" : {{ $almacen->id_almacen }}
         }
         let url = "{{ route('locacion/guardar') }}"
+        loading(true)
         $.post(url, request, (response)=>{
             if(response.error == false){
                 $("#nombre_locacion").val(null)
@@ -232,6 +238,10 @@
                 toastr.error(response.mensaje)
                 return false
             }
+            loading(false)
+        }).fail((error)=>{
+            toastr.error("Ocurrio un error", "Error")
+            loading(false)
         })
     }
 
@@ -290,6 +300,7 @@
             "estante" : this.estante
         }
         let url = "{{ route('estante/guardar') }}"
+        loading(true)
         $.post(url, request, (response)=>{
             if(response.error == false){
                 toastr.success(response.mensaje)
@@ -300,6 +311,10 @@
                 toastr.error(response.mensaje)
                 return false
             }
+            loading(false)
+        }).fail((error)=>{
+            toastr.error("Ocurrio un error", "Error")
+            loading(false)
         })
     }
 
@@ -318,6 +333,7 @@
             "fila" : this.fila
         }
         let url = "{{ route('fila/guardar') }}"
+        loading(true)
         $.post(url, request, (response)=>{
             if(response.error == false){
                 toastr.success(response.mensaje)
@@ -326,6 +342,10 @@
                 toastr.error(response.mensaje)
                 return false
             }
+            loading(false)
+        }).fail((error)=>{
+            toastr.error("Ocurrio un error", "Error")
+            loading(false)
         })
 
     }
@@ -336,6 +356,9 @@
 
     function ConsultarEstantesPorLocacion(id_locacion){
         let url = "{{ config('global.servidor') }}/locacion/estantes_por_locacion/"+id_locacion
+        loading(true)
+        $("#bodytable_fila_estante").html("")
+        $("#bodytable_estante").html("")
         $.get(url, (response)=>{
             let fila = "";
             if(response.estantes.length > 0){
@@ -346,13 +369,18 @@
                                 "<td><center><span class='icons' onclick='ModalFila("+estante.id_estante+")'><i data-feather='plus-circle'></i></span><span class='icons' onclick='ConsultarFilasPorEstante("+estante.id_estante+")'><i data-feather='list'></i></span><span class='icons'><i data-feather='trash'></i></span></center></td>"
                             "</tr>"
                 })
-                $("#bodytable_estante").html(fila)
-                feather.replace()
             }
+            $("#bodytable_estante").html(fila)
+            feather.replace()
+            loading(false)
+        }).fail((error)=>{
+            toastr.error("Ocurrio un error", "Error")
+            loading(false)
         })
     }
 
     function ConsultarFilasPorEstante(id_estante){
+        loading(true)
         let url = "{{ config('global.servidor') }}/estante/filas_por_estante/"+id_estante
         $.get(url, (response)=>{
             let item = "";
@@ -364,9 +392,13 @@
                                 "<td><center><span class='icons'><i data-feather='trash'></i></span></center></td>"
                             "</tr>"
                 })
-                $("#bodytable_fila_estante").html(item)
-                feather.replace()
             }
+            $("#bodytable_fila_estante").html(item)
+            feather.replace()
+            loading(false)
+        }).fail((error)=>{
+            toastr.error("Ocurrio un error", "Error")
+            loading(false)
         })
     }
 </script>
