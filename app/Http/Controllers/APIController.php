@@ -842,6 +842,7 @@ class APIController extends Controller
 													   FROM seguimiento_conteo sc
 													   WHERE sc.id_producto = ".$producto->id_producto."
 													   AND sc.estado = 1
+													   AND sc.id_fila_estante = ".$seguimiento->id_fila_estante."
 													   AND sc.id_conteo_detalle = ".$seguimiento->id_conteo_detalle);
 					$message = "Producto eliminado"; $status_code = 200;
 				}else{
@@ -892,6 +893,7 @@ class APIController extends Controller
 																      FROM seguimiento_conteo sc
 																      WHERE sc.id_producto = ".$producto->id_producto."
 																      AND sc.estado = 1
+																      AND sc.id_fila_estante = ".$post->id_fila."
 																      AND sc.id_conteo_detalle = ".$seguimiento->id_conteo_detalle);
 
 
