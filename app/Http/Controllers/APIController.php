@@ -765,7 +765,7 @@ class APIController extends Controller
                                                     LEFT JOIN conteo_detalle cd USING(id_conteo)
                                                     LEFT JOIN estante e USING(id_estante)
                                                     WHERE c.id_conteo = ".$conteo->id_conteo."
-                                                    AND cd.conteo = ".$conteo->conteo_activo."
+                                                    AND cd.conteo = ".$num_conteo."
                                                     AND e.id_locacion = ".$locacion->id_locacion."
                                                     AND cd.id_usuario = ".$usuario->id_usuario);
 

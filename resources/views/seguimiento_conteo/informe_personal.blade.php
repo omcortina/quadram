@@ -226,18 +226,20 @@
             let locacion = this.locaciones.find(element => element.id_locacion == id_locacion)
             let estante = locacion.estantes.find(element => element.id_estante == id_estante)
             let tabla = ""
-            estante.filas.forEach((fila) => {
-                tabla += '<tr>'+
-                            '<td id="td-fila-'+fila.id_fila+'"'+
-                                'class="td-fila"'+
-                                'onclick="ActualizarProductos('+id_locacion+', '+id_estante+', '+fila.id_fila+')">'+
-                                '<strong>Fila '+fila.nombre+'</strong>'+
-                            '</td>'+
-                        '</tr>'
-            })
-            if(tabla == "") tabla = "<center> <span class='span-msg'>No hay filas disponibles</span> </center>"
-            $("#seguimiento-tabla-filas tbody").html(tabla)
-            $("#seguimiento-tabla-productos tbody").html("")
+            if(estante){
+                estante.filas.forEach((fila) => {
+                    tabla += '<tr>'+
+                                '<td id="td-fila-'+fila.id_fila+'"'+
+                                    'class="td-fila"'+
+                                    'onclick="ActualizarProductos('+id_locacion+', '+id_estante+', '+fila.id_fila+')">'+
+                                    '<strong>Fila '+fila.nombre+'</strong>'+
+                                '</td>'+
+                            '</tr>'
+                })
+                if(tabla == "") tabla = "<center> <span class='span-msg'>No hay filas disponibles</span> </center>"
+                $("#seguimiento-tabla-filas tbody").html(tabla)
+                $("#seguimiento-tabla-productos tbody").html("") 
+            }
         }
     }
 
@@ -274,12 +276,14 @@
             $(".td-"+tabla).each(function(){ $(this).removeClass('td-active') });
 
             let td = document.getElementById("td-"+tabla+"-"+id)
-            let is_active = td.classList.contains('td-active');
-            if(is_active){
-                $("#td-"+tabla+"-"+id).removeClass('td-active')
-            }
-            else{
-                $("#td-"+tabla+"-"+id).addClass('td-active')
+            if(td){
+                let is_active = td.classList.contains('td-active');
+                if(is_active){
+                    $("#td-"+tabla+"-"+id).removeClass('td-active')
+                }
+                else{
+                    $("#td-"+tabla+"-"+id).addClass('td-active')
+                }
             }
         }
     }
