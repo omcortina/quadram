@@ -54,4 +54,26 @@ class ConteoController extends Controller
 		]));
     	return $pdf->stream('Informe de conteo.pdf');
 	}
+
+	public function Finalizar($id_conteo)
+	{
+		$error = true;
+		$mensaje = "";
+		$conteo = Conteo::find($id_conteo);
+		if ($conteo) {
+			$conteo->fecha_fin = date('Y-m-d H:i').":00";
+			if ($conteo->save()) {
+				$error = false;
+				$mensaje = "Conteo finalizado exitosamente";
+			}else{
+				$mensaje = "Ocurrio el siguiente error al finalizar la conteo: ".$conteo->errors[0];
+			}
+		}else{
+			$mensaje = "Conteo invalido";
+		}
+		return response()->json([
+			'mensaje' => $mensaje,
+			'error' => $error
+		]);
+	}
 }

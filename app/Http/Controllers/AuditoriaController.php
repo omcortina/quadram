@@ -29,6 +29,11 @@ class AuditoriaController extends Controller
 		$inventario = new Inventario;
 		$conteo = new Conteo;
 		if(isset($data->inventario)) $inventario = Inventario::find($data->inventario);
+		if (count($inventario->auditorias) > 0 and !isset($data->auditoria)) {
+			$id_inventario = $inventario->id_inventario;
+			$id_auditoria = $inventario->auditorias[0]->id_auditoria; 
+			return redirect("auditoria/gestion?inventario=".$id_inventario."&auditoria=".$id_auditoria);
+		}
 		if(isset($data->auditoria)){
 			 $auditoria = Auditoria::find($data->auditoria);
 			 $auditoria->fecha_inicio = str_replace(" ", "T", $auditoria->fecha_inicio);
@@ -51,6 +56,9 @@ class AuditoriaController extends Controller
 		$post = (object) $request->all();
 		$data = [];
 		$locaciones = Locacion::all()->where('id_almacen', $id_almacen);
+		$progreso_conteo_1 = 30;
+		$progreso_conteo_2 = 10;
+		$progreso_conteo_3 = 0;
 		foreach ($locaciones as $locacion) {
 			$detalle['id_locacion'] = $locacion->id_locacion;
 			$detalle['nombre'] = $locacion->nombre;
@@ -89,8 +97,6 @@ class AuditoriaController extends Controller
 								'conteo' => $detalle_conteo->conteo,
 								'tiene_seguimientos' => count($seguimientos_conteo) > 0 ? true : false,
 							];
-
-							
 						}	
 					}
 				}
@@ -100,15 +106,25 @@ class AuditoriaController extends Controller
 					'nombre' => $estante->nombre,
 					'encargado' => (object) $encargado,
 					'tiene_seguimientos' => count($seguimientos) > 0 ? true : false,
-					'encargados' => $encargados_conteo
+					'encargados' => $encargados_conteo,
 				];
 			}
-
 			$data[] = $detalle;
-			
 		}
+		if (isset($post->id_auditoria)) {
+			$conteo = Conteo::where('id_auditoria', $post->id_auditoria)->where('estado', 1)->first();
+			if ($conteo) {
+				$progreso_conteo_1 = $conteo->progreso(1); 
+				$progreso_conteo_2 = $conteo->progreso(2);
+				$progreso_conteo_3 = $conteo->progreso(3);
+			}
+		}
+
 		return response()->json([
-			'data' => $data
+			'data' => $data,
+			'progreso_conteo_1' => $progreso_conteo_1,
+			'progreso_conteo_2' => $progreso_conteo_2,
+			'progreso_conteo_3' => $progreso_conteo_3
 		]);
 	}
 
@@ -233,5 +249,27 @@ class AuditoriaController extends Controller
 			'seguimientos', 'auditoria'
 		]));
     	return $pdf->stream('Informe general de auditoria.pdf');
+	}
+
+	public function Finalizar($id_auditoria)
+	{
+		$error = true;
+		$mensaje = "";
+		$auditoria = Auditoria::find($id_auditoria);
+		if ($auditoria) {
+			$auditoria->fecha_fin = date('Y-m-d H:i').":00";
+			if ($auditoria->save()) {
+				$error = false;
+				$mensaje = "Auditoria finalizada exitosamente";
+			}else{
+				$mensaje = "Ocurrio el siguiente error al finalizar la auditoria: ".$auditoria->errors[0];
+			}
+		}else{
+			$mensaje = "Auditoria invalida";
+		}
+		return response()->json([
+			'mensaje' => $mensaje,
+			'error' => $error
+		]);
 	}
 }

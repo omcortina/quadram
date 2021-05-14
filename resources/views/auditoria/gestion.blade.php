@@ -142,7 +142,16 @@
                             <tbody></tbody>
                         </table>
                     </div>
-                </div>
+                </div><br>
+                @if ($auditoria->id_auditoria and str_replace("T", " ", $auditoria->fecha_fin) > date('Y-m-d H:i:s'))
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <center>
+                                <button class="btn btn-primary" onclick="FinalizarAuditoria()">Finalizar auditoria</button>
+                            </center>
+                        </div>
+                    </div>
+                @endif
             </div>
         </div>
     </div>
@@ -203,7 +212,13 @@
                     </div>
                 </div><br>
                 <div class="row">
-                    <div class="col-sm-12 text-right">
+                    <div class="col-sm-7">
+                        <label><b>Progreso del <b id="porcentaje_conteo_text">0</b>%</b></label>
+                        <div class="progress">
+                          <div id="porcentaje_conteo_progress" class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    <div class="col-sm-5 text-right">
                             @if ($conteo->id_conteo)
                                 <a onclick="InformePorConteo()" target="_blank" class="btn btn-danger" style="font-size: 13px !important;"> <i data-feather="file-text"></i> Informe por conteo</a>
                             @endif
@@ -231,7 +246,16 @@
                             <tbody></tbody>
                         </table>
                     </div>
-                </div>
+                </div><br>
+                @if ($conteo->id_conteo and str_replace("T", " ", $conteo->fecha_fin) > date('Y-m-d H:i').":00")
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <center>
+                                <button class="btn btn-primary" onclick="FinalizarConteo()">Finalizar conteo</button>
+                            </center>
+                        </div>
+                    </div>
+                @endif
             </div>
         </div>
     </div>
@@ -342,6 +366,9 @@
     var conteo_locaciones = []
     var conteo_actual = 1
     var estado = 1
+    var progreso_conteo_1 = 0
+    var progreso_conteo_2 = 0
+    var progreso_conteo_3 = 0
 
     function InformePorConteo() {
         @if ($conteo->id_conteo)
@@ -392,8 +419,10 @@
                         '</td>'+
                     '</tr>'
         })
+
         $("#auditoria-tabla-estantes tbody").html(tabla)
         ConteoActualizarTablaLocaciones(id_locacion)
+        EscogerConteo(1)
     }
 
     function AuditoriaCargarLocaciones() {
@@ -406,6 +435,9 @@
         $.get(ruta, (response) => {
             this.auditoria_locaciones = response.data;
             this.conteo_locaciones = response.data;
+            this.progreso_conteo_1 = response.progreso_conteo_1
+            this.progreso_conteo_2 = response.progreso_conteo_2
+            this.progreso_conteo_3 = response.progreso_conteo_3
             loading(false)
         })
         .fail((error) => {toastr.error("Ocurrio un error"); loading(false)})
@@ -592,6 +624,19 @@
         $(".td-location-conteo").each(function(){ $(this).removeClass('td-active') });
         $("#conteo-tabla-estantes tbody").html("")
         if(this.conteo_locaciones.length > 0) ConteoEscogerLocacion(this.conteo_locaciones[0].id_locacion)
+
+        if(conteo == 1){
+            $("#porcentaje_conteo_text").html(progreso_conteo_1)
+            $("#porcentaje_conteo_progress").css('width', progreso_conteo_1 + "%")
+        }
+        if(conteo == 2){
+            $("#porcentaje_conteo_text").html(progreso_conteo_2)
+            $("#porcentaje_conteo_progress").css('width', progreso_conteo_2 + "%")
+        }
+        if(conteo == 3){
+            $("#porcentaje_conteo_text").html(progreso_conteo_3)
+            $("#porcentaje_conteo_progress").css('width', progreso_conteo_3 + "%")
+        }
     }
 
     function ConteoConfigurarEstante(id_locacion, id_estante) {
@@ -767,7 +812,7 @@
                     loading(false)
                     if(!response.error){
                       toastr.success(response.mensaje)
-                      if(refresh) location.reload()
+                      location.reload()
                     }else{
                       toastr.error(response.mensaje)
                     }
@@ -780,6 +825,54 @@
             }
         }
     }
+
+    @if ($conteo->id_conteo and str_replace("T", " ", $conteo->fecha_fin) > date('Y-m-d H:i').":00")
+        function FinalizarConteo() {
+            let respuesta = confirm("¿Seguro que desea finalizar este conteo?")
+            if (respuesta) {
+                let ruta = '{{ route('conteo/finalizar', $conteo->id_conteo) }}'
+                loading(true, "Finalizando conteo...")
+                $.get(ruta, (response) => {
+                    loading(false)
+                    if (response.error == false) {
+                        toastr.success(response.mensaje, "Exito")
+                        location.reload()
+                    }else{
+                        toastr.error(response.mensaje, "Error")
+                    }
+                })
+                .fail((error) => {
+                    toastr.error("Ocurrio un problema por favor intentelo nuevamente", "Error")
+                    loading(false)
+                })
+            }
+        }
+    @endif
+    
+
+    @if ($auditoria->id_auditoria and str_replace("T", " ", $auditoria->fecha_fin) > date('Y-m-d H:i').":00")
+        function FinalizarAuditoria() {
+            let respuesta = confirm("¿Seguro que desea finalizar esta auditoria?")
+            if (respuesta) {
+                let ruta = '{{ route('auditoria/finalizar', $auditoria->id_auditoria) }}'
+                loading(true, "Finalizando auditoria...")
+                $.get(ruta, (response) => {
+                    loading(false)
+                    if (response.error == false) {
+                        toastr.success(response.mensaje, "Exito")
+                        location.reload()
+                    }else{
+                        toastr.error(response.mensaje, "Error")
+                    }
+                })
+                .fail((error) => {
+                    toastr.error("Ocurrio un problema por favor intentelo nuevamente", "Error")
+                    loading(false)
+                })
+            }
+        }
+    @endif
+    
 
 
     document.addEventListener("DOMContentLoaded", function(event) {

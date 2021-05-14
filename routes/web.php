@@ -74,17 +74,19 @@ Route::any('auditoria/gestion', [AuditoriaController::class, 'Gestion'])->name('
 Route::get('auditoria/buscar_locaciones/{id_almacen}', [AuditoriaController::class, 'BuscarLocaciones'])->name('auditoria/buscar_locaciones');
 Route::any('auditoria/guardar', [AuditoriaController::class, 'Guardar'])->name('auditoria/guardar');
 Route::any('auditoria/informe/{id_auditoria}', [AuditoriaController::class, 'Imprimir'])->name('auditoria/informe');
+Route::any('auditoria/finalizar/{id_auditoria}', [AuditoriaController::class, 'Finalizar'])->name('auditoria/finalizar');
 
 //SEGUIMIENTO AUDITORIA
 Route::any('auditoria/seguimiento', [SeguimientoAuditoriaController::class, 'Informe'])->name('auditoria/seguimiento');
 Route::any('conteo/seguimiento', [SeguimientoConteoController::class, 'Informe'])->name('conteo/seguimiento');
 Route::any('conteo/informe/{id_conteo}', [ConteoController::class, 'Imprimir'])->name('conteo/informe');
+Route::any('conteo/finalizar/{id_conteo}', [ConteoController::class, 'Finalizar'])->name('conteo/finalizar');
 
 
 //API
 Route::post('api/login', [APIController::class, 'Login'])->name('api/login');
 Route::post('api/auditor/audits', [APIController::class, 'Auditorias']);
-Route::post('api/auditor/saveTracing', [APIController::class, 'GuardarSeguimientoAuditoria']);
+Route::post('api/auditor/saveTracing', [APIController::class, 'GuardarSeguimientoAuditoria'])->name('api/auditor/saveTracing');
 Route::delete('api/auditor/deleteTracing', [APIController::class, 'BorrarSeguimientoAuditoria'])->name('api/auditor/deleteTracing');
 Route::any('api/auditor/getLocations', [APIController::class, 'LocacionesAuditoriaAuditor'])->name('api/auditor/getLocations');
 Route::post('api/auditor/auditHistory', [APIController::class, 'HistorialAuditorias'])->name('api/auditor/auditHistory');

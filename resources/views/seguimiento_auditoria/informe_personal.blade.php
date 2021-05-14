@@ -159,6 +159,9 @@
 
 <script>
     var locaciones = []
+    var fila_escojida = null;
+    var estante_escojido = null;
+    var locacion_escojida = null;
     function BuscarLocaciones() {
         loading(true, "Consultando información...")
         let url = "{{ route('api/auditor/getLocations') }}?usuario={{ $usuario->id_usuario }}&auditoria={{ $auditoria->id_auditoria }}"
@@ -252,6 +255,9 @@
         })
         if(tabla == "") tabla = "<center> <span class='span-msg'>No hay productos disponibles</span> </center>"
         $("#seguimiento-tabla-productos tbody").html(tabla)
+        this.fila_escojida = fila
+        this.estante_escojido = estante
+        this.locacion_escojida = locacion
     }
 
 
@@ -296,6 +302,41 @@
         }
     }
 
+    function AgregarProducto() {
+        let id_producto = $("#id_producto").val()
+        if(id_producto == 0){
+            toastr.error("Debe escoger un producto valido")
+            return false
+        }
+        
+        let validacion = this.fila_escojida.productos.filter(element => element.id_producto == id_producto)
+        if(validacion.length > 0){
+            toastr.error("Este producto ya se encuentra en esta fila auditado", "Error")
+        }else{
+            $("#btn-agregar").prop("disabled", true)
+            $("#btn-agregar").html("Validando...")
+            let url = "{{ route('api/auditor/saveTracing') }}"
+            let request = {
+                'id_auditoria_detalle' : this.estante_escojido.id_auditoria_detalle,
+                'id_estante' : this.estante_escojido.id_estante,
+                'id_fila' : this.fila_escojida.id_fila,
+                'id_producto' : id_producto
+            }
+            $.post(url, request, (response) => {
+                $("#btn-agregar").prop("disabled", false)
+                $("#btn-agregar").html("Agregar producto")
+                toastr.success(response.message)
+                location.reload()
+            })
+            .fail((error) => {
+                toastr.error("Ocurrio un error")
+                $("#btn-agregar").prop("disabled", true)
+                $("#btn-agregar").html("Agregar producto")
+            })
+
+        }
+    }
+
     document.addEventListener("DOMContentLoaded", function(event) {
         BuscarLocaciones()
     });
@@ -310,6 +351,24 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" onclick="$('#ModalProductos').modal('hide')"></button>
             </div>
             <div class="modal-body">
+                <div class="row">
+                    <div class="col-sm-8">
+                        <label>Producto</label>
+                        <select class="form-control" id="id_producto">
+                            @php
+                                $productos = \App\Models\Producto::all()->where('estado', 1);
+                            @endphp
+                            <option value="0">Seleccione un producto</option>
+                            @foreach ($productos as $producto)
+                                <option value="{{ $producto->id_producto }}">{{ $producto->nombre }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="col-sm-4 text-right">
+                        <br>
+                        <button onclick="AgregarProducto()" class="btn btn-primary mt-2 w-100" id="btn-agregar">Agregar producto</button>
+                    </div>
+                </div><br>
                 <div class="row">
                     <div class="col-sm-12">
                         <div class="table-responsive">

@@ -293,6 +293,7 @@ class APIController extends Controller
 								$seguimiento->id_producto = $post->id_producto;
 								$seguimiento->save();
                                 $producto->id_seguimiento_auditoria = $seguimiento->id_seguimiento_auditoria;
+                                $producto->seguimiento = $seguimiento;
 								$message = "Producto agregado correctamente"; $status_code = 200;
 							}else{
 								$message = "El producto no es valido";

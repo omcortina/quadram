@@ -82,4 +82,32 @@ class Conteo extends Model
         }
         return $estado;
     }
+
+    public function progreso($conteo)
+    {
+        $id_auditoria = $this->id_auditoria;
+        $sql = "SELECT sa.id_producto, sa.id_fila_estante 
+                FROM seguimiento_auditoria sa 
+                LEFT JOIN auditoria_detalle ad USING(id_auditoria_detalle)
+                WHERE ad.id_auditoria = $id_auditoria
+                AND sa.estado = 1
+                GROUP BY 1, 2";
+        $total_a_contar = count(DB::select($sql));
+
+        $sql = "SELECT sc.id_producto, sc.id_fila_estante 
+                FROM seguimiento_conteo sc 
+                LEFT JOIN conteo_detalle cd USING(id_conteo_detalle)
+                LEFT JOIN auditoria_detalle ad USING(id_auditoria_detalle)
+                WHERE ad.id_auditoria = $id_auditoria
+                AND sc.estado = 1
+                AND cd.conteo = $conteo
+                GROUP BY 1, 2";
+        $total_contado = count(DB::select($sql)); 
+        
+        $porcentaje = 0;
+        if ($total_a_contar > 0) {
+           $porcentaje = ($total_contado / $total_a_contar) * 100;
+        }       
+        return $porcentaje;
+    }
 }
