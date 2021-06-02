@@ -41,14 +41,14 @@ class UsuarioController extends Controller
 					  ->where("estado", 1)
 					  ->first();
 			if($usuario){
-				if($usuario->tipo->id_dominio == 2){
-					session([
-						'id_usuario' => $usuario->id_usuario,
-						'tipo_usuario' => $usuario->tipo->id_dominio,
-						'super_admin' => true
-					]);
-					return redirect()->route('inventario/gestion');
-				}
+				$redirect = "";
+				if($usuario->tipo->id_dominio == 2) $redirect = 'inventario/gestion';
+				if($usuario->tipo->id_dominio == 11) $redirect = 'inventario/gestion';
+				session([
+					'id_usuario' => $usuario->id_usuario,
+					'tipo_usuario' => $usuario->tipo->id_dominio
+				]);
+				return redirect()->route('inventario/gestion');
 			}else{
 				$mensaje = "Credenciales invalidas";
         		session()->flash('mensaje_login', $mensaje);

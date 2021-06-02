@@ -17,9 +17,15 @@ use Illuminate\Support\Facades\DB;
 class AuditoriaController extends Controller
 {
     public function Listado($id_inventario)
-	{
+	{	
 		$inventario = Inventario::find($id_inventario);
-		return view('auditoria.listado', compact(['inventario']));
+		if ($id_inventario == 'todos') {
+			$auditorias = Auditoria::orderBy('id_auditoria', 'desc')->get();
+		}else{
+			$auditorias = $inventario->auditorias;
+		}
+		
+		return view('auditoria.listado', compact(['inventario', 'auditorias']));
 	}
 
 	public function Gestion(Request $request)

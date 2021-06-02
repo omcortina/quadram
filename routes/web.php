@@ -82,6 +82,7 @@ Route::any('auditoria/seguimiento', [SeguimientoAuditoriaController::class, 'Inf
 Route::any('conteo/seguimiento', [SeguimientoConteoController::class, 'Informe'])->name('conteo/seguimiento');
 Route::any('conteo/informe/{id_conteo}', [ConteoController::class, 'Imprimir'])->name('conteo/informe');
 Route::any('conteo/finalizar/{id_conteo}', [ConteoController::class, 'Finalizar'])->name('conteo/finalizar');
+Route::any('conteo/listado', [ConteoController::class, 'Listado'])->name('conteo/listado');
 
 
 //API
