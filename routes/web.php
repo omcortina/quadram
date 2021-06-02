@@ -41,6 +41,7 @@ Route::any('usuario/actualizar_perfil', [UsuarioController::class, 'ActualizarPe
 Route::get('producto/listado', [ProductoController::class, 'Listado'])->name('producto/listado');
 Route::get('producto/cargar_archivo', function () { return view('producto.cargar_archivo');})->name('producto/cargar_archivo');
 Route::post('producto/importar_excel', [ProductoController::class, 'ImportarExcel'])->name('producto/importar_excel');
+Route::any('producto/gestion', [ProductoController::class, 'Gestion'])->name('producto/gestion');
 
 //ALMACEN
 Route::get('almacen/ver_listado', [AlmacenController::class, 'VerListado'])->name('almacen/ver_listado');

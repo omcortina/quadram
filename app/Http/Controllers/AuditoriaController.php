@@ -56,8 +56,8 @@ class AuditoriaController extends Controller
 		$post = (object) $request->all();
 		$data = [];
 		$locaciones = Locacion::all()->where('id_almacen', $id_almacen);
-		$progreso_conteo_1 = 30;
-		$progreso_conteo_2 = 10;
+		$progreso_conteo_1 = 0;
+		$progreso_conteo_2 = 0;
 		$progreso_conteo_3 = 0;
 		foreach ($locaciones as $locacion) {
 			$detalle['id_locacion'] = $locacion->id_locacion;

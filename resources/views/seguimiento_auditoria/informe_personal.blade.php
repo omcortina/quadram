@@ -343,7 +343,7 @@
 </script>
 @endsection
 
-<div class="modal" tabindex="-1" id="ModalProductos">
+<div class="modal" id="ModalProductos">
     <div class="modal-dialog" style="max-width: 800px">
         <div class="modal-content">
             <div class="modal-header">
@@ -354,7 +354,7 @@
                 <div class="row">
                     <div class="col-sm-8">
                         <label>Producto</label>
-                        <select class="form-control" id="id_producto">
+                        <select class="my-select2" id="id_producto">
                             @php
                                 $productos = \App\Models\Producto::all()->where('estado', 1);
                             @endphp
