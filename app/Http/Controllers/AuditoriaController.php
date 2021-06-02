@@ -31,7 +31,7 @@ class AuditoriaController extends Controller
 		if(isset($data->inventario)) $inventario = Inventario::find($data->inventario);
 		if (count($inventario->auditorias) > 0 and !isset($data->auditoria)) {
 			$id_inventario = $inventario->id_inventario;
-			$id_auditoria = $inventario->auditorias[0]->id_auditoria; 
+			$id_auditoria = $inventario->auditorias[0]->id_auditoria;
 			return redirect("auditoria/gestion?inventario=".$id_inventario."&auditoria=".$id_auditoria);
 		}
 		if(isset($data->auditoria)){
@@ -73,8 +73,8 @@ class AuditoriaController extends Controller
 												 ->where('id_estante', $estante->id_estante)
 												 ->first();
 					if($detalle_encargado){
-						$encargado = [ 
-							'id_usuario' => $detalle_encargado->id_usuario, 
+						$encargado = [
+							'id_usuario' => $detalle_encargado->id_usuario,
 							'nombre' => $detalle_encargado->usuario->nombre_completo()
 						];
 						//SE VALIDA SI TIENE SEGUIMIENTOS EL USUARIO
@@ -92,12 +92,12 @@ class AuditoriaController extends Controller
 										->where('id_conteo_detalle', $detalle_conteo->id_conteo_detalle);
 
 							$encargados_conteo[] = (object)[
-								'id_usuario' => $detalle_conteo->id_usuario, 
+								'id_usuario' => $detalle_conteo->id_usuario,
 								'nombre' => $detalle_conteo->usuario->nombre_completo(),
 								'conteo' => $detalle_conteo->conteo,
 								'tiene_seguimientos' => count($seguimientos_conteo) > 0 ? true : false,
 							];
-						}	
+						}
 					}
 				}
 
@@ -114,7 +114,7 @@ class AuditoriaController extends Controller
 		if (isset($post->id_auditoria)) {
 			$conteo = Conteo::where('id_auditoria', $post->id_auditoria)->where('estado', 1)->first();
 			if ($conteo) {
-				$progreso_conteo_1 = $conteo->progreso(1); 
+				$progreso_conteo_1 = $conteo->progreso(1);
 				$progreso_conteo_2 = $conteo->progreso(2);
 				$progreso_conteo_3 = $conteo->progreso(3);
 			}
@@ -135,7 +135,7 @@ class AuditoriaController extends Controller
 		$mensaje = "";
 		if($post){
 			DB::beginTransaction();
-			$post = (object) $post; 
+			$post = (object) $post;
 			$post->auditoria = (object) $post->auditoria;
 			$post->conteo = (object) $post->conteo;
 			$inventario = Inventario::find($post->id_inventario);
@@ -150,23 +150,25 @@ class AuditoriaController extends Controller
 				DB::statement("DELETE FROM auditoria_detalle WHERE id_auditoria_detalle in (SELECT ad.id_auditoria_detalle FROM auditoria_detalle ad LEFT JOIN seguimiento_auditoria s USING(id_auditoria_detalle) WHERE s.id_seguimiento_auditoria IS NULL AND ad.id_auditoria = ".$auditoria->id_auditoria.")");
 				foreach ($post->auditoria->detalles as $detalle) {
 					$detalle = (object) $detalle;
-					foreach ($detalle->estantes as $asignacion) {
+                    if(isset($detalle->estantes)){
+                        foreach ($detalle->estantes as $asignacion) {
 
-						$asignacion = (object) $asignacion;
-						$asignacion->encargado = (object) $asignacion->encargado;
-						if($asignacion->encargado->id_usuario != 0){
-							$auditoria_detalle = AuditoriaDetalle::where('id_auditoria', $auditoria->id_auditoria)
-															 ->where('id_estante', $asignacion->id_estante)
-															 ->first();
-							if($auditoria_detalle == null){
-								$auditoria_detalle = new AuditoriaDetalle;
-								$auditoria_detalle->id_auditoria = $auditoria->id_auditoria;
-								$auditoria_detalle->id_estante = $asignacion->id_estante;
-								$auditoria_detalle->id_usuario = $asignacion->encargado->id_usuario;
-								$auditoria_detalle->save();
-							}
-						}
-					}
+                            $asignacion = (object) $asignacion;
+                            $asignacion->encargado = (object) $asignacion->encargado;
+                            if($asignacion->encargado->id_usuario != 0){
+                                $auditoria_detalle = AuditoriaDetalle::where('id_auditoria', $auditoria->id_auditoria)
+                                                                 ->where('id_estante', $asignacion->id_estante)
+                                                                 ->first();
+                                if($auditoria_detalle == null){
+                                    $auditoria_detalle = new AuditoriaDetalle;
+                                    $auditoria_detalle->id_auditoria = $auditoria->id_auditoria;
+                                    $auditoria_detalle->id_estante = $asignacion->id_estante;
+                                    $auditoria_detalle->id_usuario = $asignacion->encargado->id_usuario;
+                                    $auditoria_detalle->save();
+                                }
+                            }
+                        }
+                    }
 				}
 
 				//AHORA GUARDAMOS EL CONTEO
@@ -181,35 +183,37 @@ class AuditoriaController extends Controller
 					DB::statement("DELETE FROM conteo_detalle WHERE id_conteo_detalle in (SELECT cd.id_auditoria_detalle FROM conteo_detalle cd LEFT JOIN seguimiento_conteo s USING(id_conteo_detalle) WHERE s.id_seguimiento_conteo IS NULL AND cd.id_conteo = ".$conteo->id_conteo.")");
 					foreach ($post->conteo->detalles as $detalle) {
 						$detalle = (object) $detalle;
-						foreach ($detalle->estantes as $asignacion) {
-							$asignacion = (object) $asignacion;
-							if (isset($asignacion->encargados)) {
-								foreach ($asignacion->encargados as $encargado) {
-									$encargado = (object) $encargado;
-									if($encargado->id_usuario != 0){
-										$auditoria_detalle = AuditoriaDetalle::where('id_auditoria', $auditoria->id_auditoria)
-																		 ->where('id_estante', $asignacion->id_estante)
-																		 ->first();
-										if($auditoria_detalle != null){
-											$conteo_detalle = ConteoDetalle::where('id_conteo', $conteo->id_conteo)
-															->where('id_auditoria_detalle', $auditoria_detalle->id_auditoria_detalle)
-															->where('id_estante', $asignacion->id_estante)
-															->where('conteo', $encargado->conteo)
-															->first();
-											if ($conteo_detalle == null) {
-												$conteo_detalle = new ConteoDetalle;
-												$conteo_detalle->id_conteo = $conteo->id_conteo;
-												$conteo_detalle->id_auditoria_detalle = $auditoria_detalle->id_auditoria_detalle;
-												$conteo_detalle->id_estante = $asignacion->id_estante;
-												$conteo_detalle->id_usuario = $encargado->id_usuario;
-												$conteo_detalle->conteo = $encargado->conteo;
-												$conteo_detalle->save();
-											}
-										}
-									}
-								}
-							}
-						}
+                        if(isset($detalle->estantes)){
+                            foreach ($detalle->estantes as $asignacion) {
+                                $asignacion = (object) $asignacion;
+                                if (isset($asignacion->encargados)) {
+                                    foreach ($asignacion->encargados as $encargado) {
+                                        $encargado = (object) $encargado;
+                                        if($encargado->id_usuario != 0){
+                                            $auditoria_detalle = AuditoriaDetalle::where('id_auditoria', $auditoria->id_auditoria)
+                                                                             ->where('id_estante', $asignacion->id_estante)
+                                                                             ->first();
+                                            if($auditoria_detalle != null){
+                                                $conteo_detalle = ConteoDetalle::where('id_conteo', $conteo->id_conteo)
+                                                                ->where('id_auditoria_detalle', $auditoria_detalle->id_auditoria_detalle)
+                                                                ->where('id_estante', $asignacion->id_estante)
+                                                                ->where('conteo', $encargado->conteo)
+                                                                ->first();
+                                                if ($conteo_detalle == null) {
+                                                    $conteo_detalle = new ConteoDetalle;
+                                                    $conteo_detalle->id_conteo = $conteo->id_conteo;
+                                                    $conteo_detalle->id_auditoria_detalle = $auditoria_detalle->id_auditoria_detalle;
+                                                    $conteo_detalle->id_estante = $asignacion->id_estante;
+                                                    $conteo_detalle->id_usuario = $encargado->id_usuario;
+                                                    $conteo_detalle->conteo = $encargado->conteo;
+                                                    $conteo_detalle->save();
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
 					}
 					$conteo->ActualizarConteoActual();
 					DB::commit();
@@ -236,7 +240,7 @@ class AuditoriaController extends Controller
 	{
 		$seguimientos = [];
 		$auditoria = Auditoria::find($id_auditoria);
-		$sql = "SELECT sa.id_seguimiento_auditoria 
+		$sql = "SELECT sa.id_seguimiento_auditoria
 				FROM seguimiento_auditoria sa
 				LEFT JOIN auditoria_detalle ad USING(id_auditoria_detalle)
 				WHERE ad.estado = 1 AND sa.estado = 1

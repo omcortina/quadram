@@ -50,22 +50,22 @@ class Conteo extends Model
                                         ->where('conteo', 2)
                                         ->where('finalizo', 1);
         $this->conteo_activo = 1;
-        if (count($detalles_finalizados_conteo_1) >= count($detalles_conteo_1)) $this->conteo_activo = 2;
-        if (count($detalles_finalizados_conteo_2) >= count($detalles_conteo_2)) $this->conteo_activo = 3;
+        if (count($detalles_finalizados_conteo_1) >= count($detalles_conteo_1) and count($detalles_conteo_1) > 0) $this->conteo_activo = 2;
+        if (count($detalles_finalizados_conteo_2) >= count($detalles_conteo_2) and count($detalles_conteo_2) > 0) $this->conteo_activo = 3;
         $this->save();
     }
 
     public function estado_actual()
-    {   
+    {
         $fecha_actual = date('Y-m-d H:i:s');
         $estado = "No creado";
 
         if ($fecha_actual >= $this->fecha_inicio and $fecha_actual <= $this->fecha_fin) $estado = "Iniciado";
-        
+
         if ($this->tiene_seguimientos()) $estado = "En progreso";
-        
+
         if ($fecha_actual < $this->fecha_inicio) $estado = "Sin Iniciar";
-        
+
         if ($fecha_actual > $this->fecha_fin) $estado = "Finalizado";
 
         return $estado;
@@ -86,28 +86,28 @@ class Conteo extends Model
     public function progreso($conteo)
     {
         $id_auditoria = $this->id_auditoria;
-        $sql = "SELECT sa.id_producto, sa.id_fila_estante 
-                FROM seguimiento_auditoria sa 
+        $sql = "SELECT sa.id_producto, sa.id_fila_estante
+                FROM seguimiento_auditoria sa
                 LEFT JOIN auditoria_detalle ad USING(id_auditoria_detalle)
                 WHERE ad.id_auditoria = $id_auditoria
                 AND sa.estado = 1
                 GROUP BY 1, 2";
         $total_a_contar = count(DB::select($sql));
 
-        $sql = "SELECT sc.id_producto, sc.id_fila_estante 
-                FROM seguimiento_conteo sc 
+        $sql = "SELECT sc.id_producto, sc.id_fila_estante
+                FROM seguimiento_conteo sc
                 LEFT JOIN conteo_detalle cd USING(id_conteo_detalle)
                 LEFT JOIN auditoria_detalle ad USING(id_auditoria_detalle)
                 WHERE ad.id_auditoria = $id_auditoria
                 AND sc.estado = 1
                 AND cd.conteo = $conteo
                 GROUP BY 1, 2";
-        $total_contado = count(DB::select($sql)); 
-        
+        $total_contado = count(DB::select($sql));
+
         $porcentaje = 0;
         if ($total_a_contar > 0) {
            $porcentaje = ($total_contado / $total_a_contar) * 100;
-        }       
+        }
         return $porcentaje;
     }
 }
