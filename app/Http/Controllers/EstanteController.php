@@ -5,7 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Estante;
 use App\Models\FilaEstante;
-
+use App\Models\AuditoriaDetalle;
+use App\Models\ConteoDetalle;
 
 class EstanteController extends Controller
 {
@@ -81,6 +82,30 @@ class EstanteController extends Controller
         }
         return response()->json([
             "filas" => $nuevas_filas
+        ]);
+    }
+
+    public function EliminarEstante($id_estante){
+        $estante = Estante::find($id_estante);
+        $error = true;
+        $mensaje = "";
+        if($estante){
+            $auditoria_detalle = AuditoriaDetalle::where("id_estante", $estante->id_estante)->first();
+            $conteo_detalle = ConteoDetalle::where("id_estante", $estante->id_estante)->first();
+            if($auditoria_detalle or $conteo_detalle){
+                $mensaje = "No se puede eliminar el estante debido a que existen auditorias o conteos en curso";
+            }else{
+                $estante->estado = 0;
+                if($estante->update()){
+                    $error = false;
+                    $mensaje = "Estante eliminado correctamente";
+                }
+            }
+        }
+
+        return response()->json([
+            "mensaje" => $mensaje,
+            "error" => $error
         ]);
     }
 }

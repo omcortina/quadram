@@ -50,4 +50,36 @@ class AlmacenController extends Controller
         $almacen = Almacen::findOrFail($id_almacen);
         return view('almacen.informacion', compact('almacen'));
     }
+
+    public function CambiarEstado($id_almacen){
+        $almacen = Almacen::find($id_almacen);
+        $mensaje = "";
+        $error = true;
+        if($almacen){
+            if($almacen->estado == 1){
+                $almacen->estado = 0;
+                if($almacen->update()){
+                    $mensaje = "Se actualizó el estado del almacen";
+                    $error = false;
+                }else{
+                    $mensaje = "Ocurrio un error";
+                }
+            }else{
+                $almacen->estado = 1;
+                if($almacen->update()){
+                    $mensaje = "Se actualizó el estado del almacen";
+                    $error = false;
+                }else{
+                    $mensaje = "Ocurrio un error";
+                }
+            }
+        }else{
+            $mensaje = "El almacen por actualizar no existe";
+        }
+
+        return response()->json([
+            "mensaje" => $mensaje,
+            "error" => $error
+        ]);
+    }
 }

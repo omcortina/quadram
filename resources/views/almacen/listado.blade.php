@@ -75,9 +75,13 @@
                                 }else{
                                     fila += "<td><span style='color: #f5365c'>Inactivo</span></td>"
                                 }
-                                fila += "<td><center><a class='icons' href='{{ config('global.servidor') }}/almacen/informacion/"+almacen.id_almacen+"'><i data-feather='info'></i></a></center></td>"+
-                            "</tr>"
 
+                                if(almacen.estado == 1){
+                                    fila += "<td><center><a title='Informacion del almacen' class='icons' href='{{ config('global.servidor') }}/almacen/informacion/"+almacen.id_almacen+"'><i data-feather='info'></i></a><a title='Inactivar' class='icons' href='#' onclick='CambiarEstado("+almacen.id_almacen+", "+almacen.estado+")'><i data-feather='toggle-left'></i></a></center></td>"
+                                }else{
+                                    fila += "<td><center><a title='Informacion del almacen' class='icons' href='{{ config('global.servidor') }}/almacen/informacion/"+almacen.id_almacen+"'><i data-feather='info'></i></a><a title='Activar' class='icons' href='#' onclick='CambiarEstado("+almacen.id_almacen+", "+almacen.estado+")'><i data-feather='toggle-right'></i></a></center></td>"
+                                }
+                            fila += "</tr>"
                 })
 
                 $("#bodytable").html(fila)
@@ -153,6 +157,47 @@
         $("#nombre").val(null)
         $("#direccion").val(null)
         $("#telefono").val(null)
+    }
+
+    function CambiarEstado(id_almacen, estado){
+        console.log(estado)
+        let titulo = ""
+        if(estado == 1){
+            titulo = "Inactivar almacen"
+        }else{
+            titulo = "Activar almacen"
+        }
+
+        Swal.fire({
+            title: titulo,
+            text: "Cambiar estado del almacen",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Si, cambiar',
+            cancelButtonText: 'Cancelar'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                let url = "{{ config('global.servidor') }}/almacen/cambiar_estado/"+id_almacen
+                $.get(url, (response)=>{
+                    if(response.error == false){
+                        Swal.fire(
+                            'Proceso exitoso',
+                            response.mensaje,
+                            'success'
+                        ).then((result) =>{
+                            if(result.isConfirmed){
+                                location.reload()
+                            }
+                        })
+                    }else{
+                        toastr.error(response.mensaje)
+                        return false
+                    }
+                })
+            }
+        })
     }
 </script>
 @endsection

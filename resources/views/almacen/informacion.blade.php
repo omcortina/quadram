@@ -149,7 +149,7 @@
                     }
                 }
             })
-        }, 200)
+        }, 300)
 
         setTimeout(()=>{
             $("#tabla_estante").DataTable({
@@ -193,7 +193,7 @@
                     fila_locacion += "<tr>"+
                                         "<td>"+locacion.id_locacion+"</td>"+
                                         "<td>"+locacion.nombre+"</td>"+
-                                        "<td><center><span class='icons' onclick='ModalEstante("+locacion.id_locacion+")'><i data-feather='plus-circle'></i></span><span class='icons' onclick='ConsultarEstantesPorLocacion("+locacion.id_locacion+")'><i data-feather='box'></i></span><span class='icons'><i data-feather='trash'></i></span></center></td>"
+                                        "<td><center><span class='icons' title='Agregar estantes' onclick='ModalEstante("+locacion.id_locacion+")'><i data-feather='plus-circle'></i></span><span class='icons' title='Ver estantes' onclick='ConsultarEstantesPorLocacion("+locacion.id_locacion+")'><i data-feather='box'></i></span><span class='icons' title='Eliminar locacion' onclick='EliminarLocacion("+locacion.id_locacion+")'><i data-feather='trash'></i></span></center></td>"
                                     "</tr>"
                 })
             }
@@ -336,13 +336,16 @@
         loading(true)
         $.post(url, request, (response)=>{
             if(response.error == false){
+                loading(false)
+                ListadoLocacion()
+                $("#nombre_fila").val(null)
                 toastr.success(response.mensaje)
                 return false
             }else{
+                loading(false)
                 toastr.error(response.mensaje)
                 return false
             }
-            loading(false)
         }).fail((error)=>{
             toastr.error("Ocurrio un error", "Error")
             loading(false)
@@ -362,11 +365,12 @@
         $.get(url, (response)=>{
             let fila = "";
             if(response.estantes.length > 0){
+                ConsultarFilasPorEstante(response.estantes[0].id_estante)
                 response.estantes.forEach((estante)=>{
                     fila += "<tr>"+
                                 "<td>"+estante.id_estante+"</td>"+
                                 "<td>"+estante.nombre+"</td>"+
-                                "<td><center><span class='icons' onclick='ModalFila("+estante.id_estante+")'><i data-feather='plus-circle'></i></span><span class='icons' onclick='ConsultarFilasPorEstante("+estante.id_estante+")'><i data-feather='list'></i></span><span class='icons'><i data-feather='trash'></i></span></center></td>"
+                                "<td><center><span class='icons' title='Agregar fila' onclick='ModalFila("+estante.id_estante+")'><i data-feather='plus-circle'></i></span><span class='icons' title='Ver filas' onclick='ConsultarFilasPorEstante("+estante.id_estante+")'><i data-feather='list'></i></span><span class='icons' title='Eliminar estante' onclick='EliminarEstante("+estante.id_estante+")'><i data-feather='trash'></i></span></center></td>"
                             "</tr>"
                 })
             }
@@ -389,7 +393,7 @@
                     item += "<tr>"+
                                 "<td>"+fila.id_fila_estante+"</td>"+
                                 "<td>"+fila.nombre+"</td>"+
-                                "<td><center><span class='icons'><i data-feather='trash'></i></span></center></td>"
+                                "<td><center><span class='icons' onclick='EliminarFila("+fila.id_fila_estante+")'><i data-feather='trash'></i></span></center></td>"
                             "</tr>"
                 })
             }
@@ -399,6 +403,123 @@
         }).fail((error)=>{
             toastr.error("Ocurrio un error", "Error")
             loading(false)
+        })
+    }
+
+    function EliminarLocacion(id_locacion){
+        Swal.fire({
+            title: "Eliminar locación",
+            text: "Si confirma su elección se eliminarán todos los estantes y filas de esta locación",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Si, eliminar',
+            cancelButtonText: 'Cancelar'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                loading(true)
+                let url = "{{ config('global.servidor') }}/locacion/eliminar_locacion/"+id_locacion
+                $.get(url, (response)=>{
+                    if(response.error == false){
+                        loading(false)
+                        Swal.fire(
+                            'Proceso exitoso',
+                            response.mensaje,
+                            'success'
+                        ).then((result) =>{
+                            if(result.isConfirmed){
+                                ListadoLocacion()
+                            }
+                        })
+                    }else{
+                        loading(false)
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Oops...',
+                            text: response.mensaje
+                        })
+                    }
+                })
+            }
+        })
+    }
+
+    function EliminarEstante(id_estante){
+        Swal.fire({
+            title: "Eliminar estante",
+            text: "Si confirma su elección se eliminarán todas las filas del estante",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Si, eliminar',
+            cancelButtonText: 'Cancelar'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                loading(true)
+                let url = "{{ config('global.servidor') }}/estante/eliminar_estante/"+id_estante
+                $.get(url, (response)=>{
+                    if(response.error == false){
+                        loading(false)
+                        Swal.fire(
+                            'Proceso exitoso',
+                            response.mensaje,
+                            'success'
+                        ).then((result) =>{
+                            if(result.isConfirmed){
+                                ListadoLocacion()
+                            }
+                        })
+                    }else{
+                        loading(false)
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Oops...',
+                            text: response.mensaje
+                        })
+                    }
+                })
+            }
+        })
+    }
+
+    function EliminarFila(id_fila){
+        Swal.fire({
+            title: "Eliminar fila",
+            text: "Si confirma su elección se eliminará la fila",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Si, eliminar',
+            cancelButtonText: 'Cancelar'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                loading(true)
+                let url = "{{ config('global.servidor') }}/fila/eliminar_fila/"+id_fila
+                $.get(url, (response)=>{
+                    if(response.error == false){
+                        loading(false)
+                        Swal.fire(
+                            'Proceso exitoso',
+                            response.mensaje,
+                            'success'
+                        ).then((result) =>{
+                            if(result.isConfirmed){
+                                ListadoLocacion()
+                            }
+                        })
+                    }else{
+                        loading(false)
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Oops...',
+                            text: response.mensaje
+                        })
+                    }
+                })
+            }
         })
     }
 </script>
