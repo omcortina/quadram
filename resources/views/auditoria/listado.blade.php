@@ -12,7 +12,7 @@
         </ol>
         </nav>
     </div>
-    @if (count($inventario->auditorias) == 0)
+    @if (count($auditorias) == 0 and $inventario != null)
       <div class="col-lg-6 col-5 text-right">
           <a  class="btn btn-sm btn-neutral" href="{{ route("auditoria/gestion") }}?inventario={{ $inventario->id_inventario }}">+ Nueva auditoria</a>
       </div>
@@ -47,9 +47,9 @@
               </tr>
             </thead>
             <tbody id="bodytable_auditorias">
-              @foreach($inventario->auditorias as $auditoria)
+              @foreach($auditorias as $auditoria)
                 <tr>
-                  <td>{{ $inventario->almacen->nombre }}</td>
+                  <td>{{ $auditoria->inventario->almacen->nombre }}</td>
                   <td>{{ date('d/m/Y', strtotime($auditoria->fecha_inicio)) }} hasta {{ date('d/m/Y', strtotime($auditoria->fecha_fin)) }}</td>
                   <td>@if($auditoria->conteo())
                     {{ date('d/m/Y', strtotime($auditoria->conteo()->fecha_inicio)) }} hasta {{ date('d/m/Y', strtotime($auditoria->conteo()->fecha_fin)) }}
@@ -66,7 +66,11 @@
                     @endif</td>
                   <td>
                     <center>
+                      @if ($inventario)
                         <a class="icons" href="{{ route('auditoria/gestion') }}?inventario={{ $auditoria->id_inventario }}&auditoria={{ $auditoria->id_auditoria }}" title="Editar"><i data-feather="edit"></i></a>
+                      @else
+                        <a class="icons" href="{{ route('auditoria/seguimiento/transcripcion') }}?auditoria={{ $auditoria->id_auditoria }}" title="Trascribir"><i data-feather="truck"></i></a>
+                      @endif
                     </center>
                   </td>
                 </tr>

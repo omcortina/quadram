@@ -3,7 +3,7 @@
     <thead>
     <tr>
         <th colspan="9" style="border-bottom-color: #FFFFFF"></th>
-        <th colspan="4" style="width: 30px;"><b>Fecha de inventario: </b> &nbsp;{{ date('Y-m-d', strtotime($inventario->fecha_inicio)) }} hasta {{ date('Y-m-d', strtotime($inventario->fecha_fin)) }}</th>
+        <th colspan="4" style="width: 30px;"><b>Fecha de inventario: </b> &nbsp;{{ date('Y-m-d H:i', strtotime($inventario->fecha_inicio)) }} hasta {{ date('Y-m-d H:i', strtotime($inventario->fecha_fin)) }}</th>
     </tr>
     <tr>
         <th colspan="9" style="border-top-color: #FFFFFF border-bottom-color: #FFFFFF; text-align: center;">
@@ -75,7 +75,7 @@
                 <td>{{ $seguimiento->fecha_vencimiento }}</td>
                 <td>{{ $seguimiento->total_conteo_1 }}</td>
                 <td>{{ $seguimiento->total_conteo_2 }}</td>
-                <td>{{ $seguimiento->total_conteo_3 }}</td>
+                <td>{{ $seguimiento->total_conteo_1 == $seguimiento->total_conteo_2 ? "Innecesario" :$seguimiento->total_conteo_3 }}</td>
                 @php
                     $color = "transparent";
                     $total_final = $seguimiento->total_conteo_1;

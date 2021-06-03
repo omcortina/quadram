@@ -37,6 +37,7 @@
         <script src="{{asset('design/assets/vendor/jquery/dist/jquery.min.js')}}"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 
+
         <script>
             function loading(open = true,message = "Por favor espere...", timeout = null) {
             if(timeout){
@@ -96,6 +97,10 @@
             .btn-danger{
                 color: white !important;
             }
+            .select2-container .select2-selection--single {
+                height: auto !important;
+                padding-top: 8px !important;
+            }
         </style>
     </head>
 
@@ -124,9 +129,7 @@
         </div>
       <!-- Argon Scripts -->
       <!-- Core -->
-        <script>
-            setTimeout(()=>{ feather.replace() }, 1000)
-        </script>
+
 
 
         <script src="{{asset('design/assets/vendor/bootstrap/dist/js/bootstrap.bundle.min.js')}}"></script>
@@ -157,6 +160,19 @@
         <script src="{{ asset('js/sweetalert2.js') }}"></script>
         <script src="{{ asset('js/sweetalert2.all.min.js') }}"></script>
         <script src="{{ asset('js/sweetalert2.all.js') }}"></script>
+        <link rel="stylesheet" type="text/css" href="{{asset('css/select2.min.css')}}">
+        <script src="{{asset('js/select2.min.js')}}"></script>
+
+        <script>
+            setTimeout(()=>{ feather.replace() }, 1000)
+            $(document).ready(function() {
+                $('.my-select2').select2({
+                  tags: "true",
+                  placeholder: "Seleccione...",
+                  allowClear: true
+                });
+            });
+        </script>
     </body>
 
 </html>

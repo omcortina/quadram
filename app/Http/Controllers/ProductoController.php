@@ -42,4 +42,32 @@ class ProductoController extends Controller
         }
         return view('producto.cargar_archivo', compact(['mensaje', 'error']));
 	}
+
+	public function Gestion(Request $request)
+	{
+		$post = $request->all();
+    	$producto = new Producto;
+    	$producto->estado = 1;
+    	$mensaje = null;
+        if($post) {
+            $post = (object) $post;
+            if(isset($post->producto)){
+                $producto = Producto::find($post->producto);
+                if($producto == null){ echo "Acceso denegado"; die; }
+            }
+        }
+    	if($request->except(['producto'])){
+            $post = (object) $post;
+            $producto->fill($request->except(['_token', 'producto']));
+            if($producto->save()){
+                $request->session()->flash('message', 'Información guardada exitosamente');
+                return redirect()->route("producto/listado");
+            }else{
+            	$mensaje = "ocurrio el siguiente error: ".$producto->errors[0];
+            }
+    	}
+    	return view("producto.gestion", compact([
+    		'producto', 'mensaje'
+    	]));
+	}
 }

@@ -183,6 +183,8 @@
                             <div class="col-sm-12">
                                 <center>
                                     <button id="btn" type="button" class="btn btn-success" onclick="ValidarArchivo()">Importar Productos</button>
+
+                                    <a type="button" class="btn btn-warning text-white" href="{{ asset('Formato Productos Quadram.xlsx') }}" target="_blank">Descargar formato</a>
                                 </center>
                             </div>
                         </div>

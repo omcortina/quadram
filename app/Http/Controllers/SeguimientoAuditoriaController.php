@@ -30,5 +30,18 @@ class SeguimientoAuditoriaController extends Controller
     	}
     }
 
-    
+    public function Transcripcion(Request $request)
+    {
+        $data = (object) $request->all();
+        if ($data) {
+            $auditoria = Auditoria::find($data->auditoria);
+            $usuario = isset($data->usuario) ? Usuario::find($data->usuario) : null;
+            $estante = isset($data->estante) ? Estante::find($data->estante) : null;
+
+            $usuarios = Usuario::where('id_dominio_tipo_usuario', 3)->get();
+            return view('seguimiento_auditoria.transcripcion', compact([
+                'usuario', 'auditoria', 'estante', 'usuarios'
+            ]));
+        }
+    }
 }

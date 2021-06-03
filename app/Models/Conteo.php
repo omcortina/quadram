@@ -86,28 +86,99 @@ class Conteo extends Model
     public function progreso($conteo)
     {
         $id_auditoria = $this->id_auditoria;
-        $sql = "SELECT sa.id_producto, sa.id_fila_estante
-                FROM seguimiento_auditoria sa
-                LEFT JOIN auditoria_detalle ad USING(id_auditoria_detalle)
-                WHERE ad.id_auditoria = $id_auditoria
-                AND sa.estado = 1
-                GROUP BY 1, 2";
-        $total_a_contar = count(DB::select($sql));
+        if ($conteo == 3) {
+            $sql = "SELECT p.id_producto, 
+                       fe.id_fila_estante, 
+                       e.id_estante, 
+                       sc.lote, 
+                       sc.fecha_vencimiento
+                       FROM seguimiento_conteo sc 
+                       LEFT JOIN producto p ON sc.id_producto = p.id_producto 
+                       LEFT JOIN fila_estante fe ON fe.id_fila_estante = sc.id_fila_estante 
+                       LEFT JOIN estante e ON e.id_estante = fe.id_estante 
+                       LEFT JOIN conteo_detalle cd USING(id_conteo_detalle) 
+                       LEFT JOIN auditoria_detalle ad USING(id_auditoria_detalle) 
+                       LEFT JOIN auditoria a USING(id_auditoria) 
+                       WHERE a.id_auditoria = $id_auditoria
+                       AND sc.valido = 1
+                       AND sc.estado = 1
+                       AND cd.estado = 1
+                       AND ad.estado = 1
+                       AND a.estado  = 1
+                       GROUP BY 1, 2, 3, 4, 5";
 
-        $sql = "SELECT sc.id_producto, sc.id_fila_estante
-                FROM seguimiento_conteo sc
-                LEFT JOIN conteo_detalle cd USING(id_conteo_detalle)
-                LEFT JOIN auditoria_detalle ad USING(id_auditoria_detalle)
-                WHERE ad.id_auditoria = $id_auditoria
-                AND sc.estado = 1
-                AND cd.conteo = $conteo
-                GROUP BY 1, 2";
-        $total_contado = count(DB::select($sql));
+            $seguimientos = DB::select($sql);   
+            $total_a_contar = 0;
+            $total_contado = 0;
+            foreach ($seguimientos as $seguimiento) {
+                $seguimiento = (object) $seguimiento;
+                $total_conteo_1 = DB::select("SELECT SUM(sc1.cantidad) as total
+                               FROM seguimiento_conteo sc1
+                               LEFT JOIN conteo_detalle cd1 USING(id_conteo_detalle) 
+                               LEFT JOIN auditoria_detalle ad1 USING(id_auditoria_detalle) 
+                               LEFT JOIN auditoria a1 USING(id_auditoria)
+                               WHERE cd1.conteo = 1
+                               AND sc1.valido = 1
+                               AND sc1.estado = 1
+                               AND sc1.id_producto = $seguimiento->id_producto
+                               AND sc1.id_fila_estante = $seguimiento->id_fila_estante
+                               AND sc1.lote = '$seguimiento->lote'
+                               AND sc1.fecha_vencimiento = '$seguimiento->fecha_vencimiento'
+                               AND a1.id_auditoria = $id_auditoria")[0]->total;
+                $total_conteo_2 = DB::select("SELECT SUM(sc1.cantidad) as total
+                               FROM seguimiento_conteo sc1
+                               LEFT JOIN conteo_detalle cd1 USING(id_conteo_detalle) 
+                               LEFT JOIN auditoria_detalle ad1 USING(id_auditoria_detalle) 
+                               LEFT JOIN auditoria a1 USING(id_auditoria)
+                               WHERE cd1.conteo = 2
+                               AND sc1.valido = 1
+                               AND sc1.estado = 1
+                               AND sc1.id_producto = $seguimiento->id_producto
+                               AND sc1.id_fila_estante = $seguimiento->id_fila_estante
+                               AND sc1.lote = '$seguimiento->lote'
+                               AND sc1.fecha_vencimiento = '$seguimiento->fecha_vencimiento'
+                               AND a1.id_auditoria = $id_auditoria")[0]->total;
+                $total_conteo_3 = DB::select("SELECT SUM(sc1.cantidad) as total
+                               FROM seguimiento_conteo sc1
+                               LEFT JOIN conteo_detalle cd1 USING(id_conteo_detalle) 
+                               LEFT JOIN auditoria_detalle ad1 USING(id_auditoria_detalle) 
+                               LEFT JOIN auditoria a1 USING(id_auditoria)
+                               WHERE cd1.conteo = 3
+                               AND sc1.valido = 1
+                               AND sc1.estado = 1
+                               AND sc1.id_producto = $seguimiento->id_producto
+                               AND sc1.id_fila_estante = $seguimiento->id_fila_estante
+                               AND sc1.lote = '$seguimiento->lote'
+                               AND sc1.fecha_vencimiento = '$seguimiento->fecha_vencimiento'
+                               AND a1.id_auditoria = $id_auditoria")[0]->total;
+                if ($total_conteo_1 != $total_conteo_2) $total_a_contar++;
+                if (is_numeric($total_conteo_3)) $total_contado++;
+            }
+
+        }else{
+            $sql = "SELECT sa.id_producto, sa.id_fila_estante
+                    FROM seguimiento_auditoria sa
+                    LEFT JOIN auditoria_detalle ad USING(id_auditoria_detalle)
+                    WHERE ad.id_auditoria = $id_auditoria
+                    AND sa.estado = 1
+                    GROUP BY 1, 2";
+            $total_a_contar = count(DB::select($sql));
+
+            $sql = "SELECT sc.id_producto, sc.id_fila_estante
+                    FROM seguimiento_conteo sc
+                    LEFT JOIN conteo_detalle cd USING(id_conteo_detalle)
+                    LEFT JOIN auditoria_detalle ad USING(id_auditoria_detalle)
+                    WHERE ad.id_auditoria = $id_auditoria
+                    AND sc.estado = 1
+                    AND cd.conteo = $conteo
+                    GROUP BY 1, 2";
+            $total_contado = count(DB::select($sql));
+        }
 
         $porcentaje = 0;
         if ($total_a_contar > 0) {
            $porcentaje = ($total_contado / $total_a_contar) * 100;
         }
-        return $porcentaje;
+        return round($porcentaje, 1);
     }
 }

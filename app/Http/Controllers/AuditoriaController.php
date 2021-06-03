@@ -17,9 +17,15 @@ use Illuminate\Support\Facades\DB;
 class AuditoriaController extends Controller
 {
     public function Listado($id_inventario)
-	{
+	{	
 		$inventario = Inventario::find($id_inventario);
-		return view('auditoria.listado', compact(['inventario']));
+		if ($id_inventario == 'todos') {
+			$auditorias = Auditoria::orderBy('id_auditoria', 'desc')->get();
+		}else{
+			$auditorias = $inventario->auditorias;
+		}
+		
+		return view('auditoria.listado', compact(['inventario', 'auditorias']));
 	}
 
 	public function Gestion(Request $request)
@@ -56,8 +62,8 @@ class AuditoriaController extends Controller
 		$post = (object) $request->all();
 		$data = [];
 		$locaciones = Locacion::all()->where('id_almacen', $id_almacen);
-		$progreso_conteo_1 = 30;
-		$progreso_conteo_2 = 10;
+		$progreso_conteo_1 = 0;
+		$progreso_conteo_2 = 0;
 		$progreso_conteo_3 = 0;
 		foreach ($locaciones as $locacion) {
 			$detalle['id_locacion'] = $locacion->id_locacion;

@@ -111,12 +111,15 @@
 
                 <div class="row">
                     <div class="col-sm-3"></div>
-                    <div class="col-sm-3">
+                    <div class="col-sm-{{ $usuario->id_usuario ? 3 : 6 }}">
                         <button type="button" style="width: 100%" class="btn btn-success" onclick="GuardarUsuario()">Guardar</button>
                     </div>
-                    <div class="col-sm-3">
-                        <button type="button" style="width: 100%" class="btn btn-info" onclick="AbrirModal()">Cambiar contraseña</button>
-                    </div>
+                    @if ($usuario->id_usuario)
+                        <div class="col-sm-3">
+                            <button type="button" style="width: 100%" class="btn btn-info" onclick="AbrirModal()">Cambiar contraseña</button>
+                        </div>
+                    @endif
+                    
                     <div class="col-sm-3"></div>
                 </div>
 
@@ -186,7 +189,7 @@
             "id_usuario" : {{session('id_usuario')}},
             "password" : password_actual,
             "password_nueva" : password_nueva,
-            "id_usuario_para_cambiar" : {{$usuario->id_usuario}}
+            "id_usuario_para_cambiar" : {{$usuario->id_usuario ? $usuario->id_usuario : "0"}}
         }
 
         $.post(url, request, (response)=>{

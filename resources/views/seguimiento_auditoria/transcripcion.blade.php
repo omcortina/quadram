@@ -3,13 +3,13 @@
 @section('breadcumb')
 <div class="row align-items-center py-4">
     <div class="col-lg-9">
-        <h6 class="h2 text-white d-inline-block mb-0">Seguimiento de auditoria</h6>
+        <h6 class="h2 text-white d-inline-block mb-0">Gestion auditoria</h6>
         <nav aria-label="breadcrumb" class="d-none d-md-inline-block ml-md-4">
         <ol class="breadcrumb breadcrumb-links breadcrumb-dark">
             <li class="breadcrumb-item"><a href="#"><i class="fas fa-user"></i></a></li>
             <li class="breadcrumb-item"><a onclick="history.go(-1)">Auditoria</a></li>
             <li class="breadcrumb-item active" aria-current="page">Almacen - {{ $auditoria->inventario->almacen->nombre }}</li>
-            <li class="breadcrumb-item active" aria-current="page">{{ date("d/m/Y H:i", strtotime($auditoria->fecha_inicio)) }} hasta {{ date("d/m/Y H:i", strtotime($auditoria->fecha_fin)) }}</li>
+            <li class="breadcrumb-item active" aria-current="page">Desde {{ date('d/m/Y H:i', strtotime($auditoria->fecha_inicio)) }} hasta {{ date('d/m/Y H:i', strtotime($auditoria->fecha_fin)) }}</li>
         </ol>
         </nav>
     </div>
@@ -90,6 +90,7 @@
     input[type="datetime-local"]{
         font-size: small;
     }
+    
 </style>
 <div class="row">
     <div class="col-sm-12">
@@ -97,22 +98,21 @@
             <div class="card-header border-0">
                 <div class="row">
                     <div class="col-sm-12">
-                        <h3>Informe de seguimiento de auditoria</h3>
-                        <div>
-                            <div class="media align-items-center">
-                              <span class="avatar avatar-sm rounded">
-                                <img alt="Image placeholder" src="{{ $usuario->obtenerImagen() }}">
-                              </span>
-                              <div class="media-body  ml-3" style="display: grid;">
-                                <span class="mb-0 text-sm  font-weight-bold">{{ $usuario->nombre_completo() }}</span>
-                                <span class="mb-0 text-sm">{{ $usuario->documento }}</span>
-                              </div>
-                            </div>
-                        </div>
+                        <h3><b>Transcripcion de Auditoria</b></h3>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-6">
+                        <label>Auditor</label>
+                        <select class="my-select2" >
+                            @foreach ($usuarios as $item)
+                                <option value="{{ $item->id_usuario }}">{{ $item->presentacion() }}</option>
+                            @endforeach
+                        </select>
                     </div>
                 </div><br>
                 <div class="row">
-                    <div class="col-sm-4">
+                    <div class="col-sm-3">
                         <div class="table-responsive">
                             <table class="table align-items-center table-flush" id="seguimiento-tabla-locaciones">
                                 <thead class="thead-light">
@@ -125,7 +125,7 @@
                         </div>
                     </div>
 
-                    <div class="col-sm-4">
+                    <div class="col-sm-3">
                         <div class="table-responsive">
                             <table class="table align-items-center table-flush" id="seguimiento-tabla-estantes">
                                 <thead class="thead-light">
@@ -138,12 +138,25 @@
                         </div>
                     </div>
 
-                    <div class="col-sm-4">
+                    <div class="col-sm-3">
                         <div class="table-responsive">
                             <table class="table align-items-center table-flush" id="seguimiento-tabla-filas">
                                 <thead class="thead-light">
                                   <tr>
                                     <th scope="col" colspan="2"><center><b>Filas</b></center></th>
+                                  </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-3">
+                        <div class="table-responsive">
+                            <table class="table align-items-center table-flush header-fixed" id="seguimiento-tabla-productos">
+                                <thead class="thead-light">
+                                  <tr>
+                                    <th scope="col" colspan="2"><center><b>Productos</b></center></th>
                                   </tr>
                                 </thead>
                                 <tbody></tbody>
@@ -162,9 +175,9 @@
     var fila_escojida = null;
     var estante_escojido = null;
     var locacion_escojida = null;
-    function BuscarLocaciones() {
+    function BuscarLocaciones(id_usuario) {
         loading(true, "Consultando información...")
-        let url = "{{ route('api/auditor/getLocations') }}?usuario={{ $usuario->id_usuario }}&auditoria={{ $auditoria->id_auditoria }}"
+        let url = "{{ route('api/auditor/getLocations') }}?usuario="+id_usuario+"&auditoria={{ $auditoria->id_auditoria }}"
 
         $.get(url, (response) => {
             console.log(response)
@@ -238,16 +251,14 @@
 
     function ActualizarProductos(id_locacion, id_estante, id_fila) {
         ValidarActive('fila', id_fila)
-        $("#ModalProductos").modal("show")
+        //$("#ModalProductos").modal("show")
         let locacion = this.locaciones.find(element => element.id_locacion == id_locacion)
         let estante = locacion.estantes.find(element => element.id_estante == id_estante)
         let fila = estante.filas.find(element => element.id_fila == id_fila)
         let tabla = ""
         fila.productos.forEach((producto) => {
             tabla += '<tr>'+
-                        '<td>'+producto.codigo+'</td>'+
-                        '<td><strong>'+producto.nombre+'</strong></td>'+
-                        '<td>'+(producto.id_seguimiento_auditoria == -1 ? "Sin contar" : producto.seguimiento.created_at)+'</td>'
+                        '<td><small>'+producto.codigo+' - <strong>'+producto.nombre+'</strong></small></td>'
             if(producto.id_seguimiento_auditoria != -1){
                 tabla += '<td><center><span onclick="BorrarSeguimientoAuditoria('+producto.id_seguimiento_auditoria+')"><i class="fa fa-trash"></i></span></center></td>'
             }     
@@ -338,10 +349,15 @@
     }
 
     document.addEventListener("DOMContentLoaded", function(event) {
-        BuscarLocaciones()
+        @if ($usuario != null)
+            BuscarLocaciones({{ $usuario->id_usuario }})
+        @else
+            @if (count($usuarios) > 0)
+                BuscarLocaciones({{ $usuarios[0]->id_usuario }})
+            @endif
+        @endif
     });
 </script>
-@endsection
 
 <div class="modal" id="ModalProductos">
     <div class="modal-dialog" style="max-width: 800px">
@@ -392,5 +408,6 @@
             </div>
         </div>
     </div>
-</div>
+</div>  
+@endsection
 

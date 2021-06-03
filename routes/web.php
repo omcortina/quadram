@@ -42,6 +42,7 @@ Route::any('usuario/actualizar_perfil', [UsuarioController::class, 'ActualizarPe
 Route::get('producto/listado', [ProductoController::class, 'Listado'])->name('producto/listado');
 Route::get('producto/cargar_archivo', function () { return view('producto.cargar_archivo');})->name('producto/cargar_archivo');
 Route::post('producto/importar_excel', [ProductoController::class, 'ImportarExcel'])->name('producto/importar_excel');
+Route::any('producto/gestion', [ProductoController::class, 'Gestion'])->name('producto/gestion');
 
 //ALMACEN
 Route::get('almacen/ver_listado', [AlmacenController::class, 'VerListado'])->name('almacen/ver_listado');
@@ -81,12 +82,15 @@ Route::get('auditoria/buscar_locaciones/{id_almacen}', [AuditoriaController::cla
 Route::any('auditoria/guardar', [AuditoriaController::class, 'Guardar'])->name('auditoria/guardar');
 Route::any('auditoria/informe/{id_auditoria}', [AuditoriaController::class, 'Imprimir'])->name('auditoria/informe');
 Route::any('auditoria/finalizar/{id_auditoria}', [AuditoriaController::class, 'Finalizar'])->name('auditoria/finalizar');
+//TRANSCRIPCION
+Route::any('auditoria/seguimiento/transcripcion', [SeguimientoAuditoriaController::class, 'Transcripcion'])->name('auditoria/seguimiento/transcripcion');
 
 //SEGUIMIENTO AUDITORIA
 Route::any('auditoria/seguimiento', [SeguimientoAuditoriaController::class, 'Informe'])->name('auditoria/seguimiento');
 Route::any('conteo/seguimiento', [SeguimientoConteoController::class, 'Informe'])->name('conteo/seguimiento');
 Route::any('conteo/informe/{id_conteo}', [ConteoController::class, 'Imprimir'])->name('conteo/informe');
 Route::any('conteo/finalizar/{id_conteo}', [ConteoController::class, 'Finalizar'])->name('conteo/finalizar');
+Route::any('conteo/listado', [ConteoController::class, 'Listado'])->name('conteo/listado');
 
 
 //API
