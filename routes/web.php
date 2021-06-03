@@ -76,6 +76,8 @@ Route::get('auditoria/buscar_locaciones/{id_almacen}', [AuditoriaController::cla
 Route::any('auditoria/guardar', [AuditoriaController::class, 'Guardar'])->name('auditoria/guardar');
 Route::any('auditoria/informe/{id_auditoria}', [AuditoriaController::class, 'Imprimir'])->name('auditoria/informe');
 Route::any('auditoria/finalizar/{id_auditoria}', [AuditoriaController::class, 'Finalizar'])->name('auditoria/finalizar');
+//TRANSCRIPCION
+Route::any('auditoria/seguimiento/transcripcion', [SeguimientoAuditoriaController::class, 'Transcripcion'])->name('auditoria/seguimiento/transcripcion');
 
 //SEGUIMIENTO AUDITORIA
 Route::any('auditoria/seguimiento', [SeguimientoAuditoriaController::class, 'Informe'])->name('auditoria/seguimiento');

@@ -35,7 +35,7 @@
 		</tr>
 		<tr><td><b>Almacen: </b>{{ $conteo->auditoria->inventario->almacen->nombre }}</td></tr>
 		<tr><td><b>Auditoria: #</b>{{ $conteo->id_auditoria }}</td></tr>
-		<tr><td colspan="2"><center>Desde <b>{{ date('d/m/Y', strtotime($conteo->fecha_inicio)) }}</b> hasta <b>{{ date('d/m/Y', strtotime($conteo->fecha_fin)) }}</b></center></td></tr>
+		<tr><td colspan="2"><center>Desde <b>{{ date('d/m/Y H:i', strtotime($conteo->fecha_inicio)) }}</b> hasta <b>{{ date('d/m/Y H:i', strtotime($conteo->fecha_fin)) }}</b></center></td></tr>
 	</table>
 	<br>
 	<table cellpadding="0" cellspacing="0" class="table" border="1">

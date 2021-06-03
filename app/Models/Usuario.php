@@ -43,4 +43,9 @@ class Usuario extends Model
     {
         return $this->nombres." ".$this->apellidos;
     }
+
+    public function presentacion()
+    {
+        return $this->nombres." ".$this->apellidos." (".$this->documento.")";
+    }
 }

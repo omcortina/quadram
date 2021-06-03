@@ -69,7 +69,7 @@
                       @if ($inventario)
                         <a class="icons" href="{{ route('auditoria/gestion') }}?inventario={{ $auditoria->id_inventario }}&auditoria={{ $auditoria->id_auditoria }}" title="Editar"><i data-feather="edit"></i></a>
                       @else
-                        <a class="icons" href="{{ route('auditoria/seguimiento') }}?auditoria={{ $auditoria->id_auditoria }}" title="Trascribir"><i data-feather="truck"></i></a>
+                        <a class="icons" href="{{ route('auditoria/seguimiento/transcripcion') }}?auditoria={{ $auditoria->id_auditoria }}" title="Trascribir"><i data-feather="truck"></i></a>
                       @endif
                     </center>
                   </td>
