@@ -894,6 +894,7 @@ class APIController extends Controller
 								$seguimiento->id_fila_estante = $post->id_fila;
 								$seguimiento->save();
                                 $producto->id_seguimiento_conteo = $seguimiento->id_seguimiento_conteo;
+                                $producto->cantidad = $seguimiento->cantidad;
                                 $producto->seguimientos = DB::select("SELECT *
 																      FROM seguimiento_conteo sc
 																      WHERE sc.id_producto = ".$producto->id_producto."
