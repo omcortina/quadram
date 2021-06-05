@@ -669,6 +669,8 @@ class APIController extends Controller
 							   AND sc.fecha_vencimiento = '".$producto['fecha_vencimiento']."'
 							   AND sc.id_fila_estante = ".$fila->id_fila."
 							   AND cd.id_conteo = ".$conteo->id_conteo);
+                $producto['tiene_conteo_final'] = count($seguimientos_conteo) > 0 ? true : false;
+                $producto['cantidad_3'] = count($seguimientos_conteo) > 0 ? $seguimientos_conteo[0]->cantidad : 0;
 				$producto['seguimientos'] = $seguimientos_conteo;
 				$seguimientos[] = (object) $producto;
 			}
@@ -711,6 +713,8 @@ class APIController extends Controller
 							   AND sc.fecha_vencimiento = '".$producto['fecha_vencimiento']."'
 							   AND sc.id_fila_estante = ".$fila->id_fila."
 							   AND cd.id_conteo = ".$conteo->id_conteo);
+                $producto['tiene_conteo_final'] = count($seguimientos_conteo) > 0 ? true : false;
+                $producto['cantidad_3'] = count($seguimientos_conteo) > 0 ? $seguimientos_conteo[0]->cantidad : 0;
 				$producto['seguimientos'] = $seguimientos_conteo;
 				$seguimientos[] = (object) $producto;
 			}
