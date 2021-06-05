@@ -223,6 +223,7 @@
         let locacion = this.locaciones.find(element => element.id_locacion == id_locacion)
         let estante = locacion.estantes.find(element => element.id_estante == id_estante)
         let tabla = ""
+        console.log(estante.filas)
         estante.filas.forEach((fila) => {
             if(fila.estado == 1){
                 tabla += '<tr>'+
