@@ -36,6 +36,7 @@
               <tr>
                 <th scope="col">Codigo</th>
                 <th scope="col">Nombre</th>
+                <th scope="col">Cod. Barras</th>
                 <th scope="col">Descipción</th>
                 <th scope="col"><center>Estado</center></th>
                 <th scope="col"><center>Acciones</center></th>
@@ -46,6 +47,13 @@
                 <tr>
                   <td>{{ $producto->codigo }}</td>
                   <td>{{ Str::length($producto->nombre) > 50 ? Str::limit($producto->nombre, 47, '...') : $producto->nombre }}</td>
+                  <td>
+                    @if ($producto->codigo_barras != null)
+                      {{ $producto->codigo_barras }}
+                    @else
+                      No definido
+                    @endif
+                  </td>
                   <td>
                     @if ($producto->descripcion != null)
                       {{ $producto->descripcion }}
