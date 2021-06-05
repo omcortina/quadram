@@ -214,7 +214,7 @@ class APIController extends Controller
 
 							foreach ($estantes as $estante) {
 								$filas = DB::select("SELECT id_fila_estante as id_fila,
-													 nombre
+													 nombre, estado
 											  FROM fila_estante
 											  WHERE id_estante = ".$estante->id_estante);
 
@@ -781,7 +781,7 @@ class APIController extends Controller
 
 						foreach ($estantes as $estante) {
 							$filas = DB::select("SELECT id_fila_estante as id_fila,
-												 nombre
+												 nombre, estado
 										  FROM fila_estante
 										  WHERE id_estante = ".$estante->id_estante);
 
