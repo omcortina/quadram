@@ -42,8 +42,8 @@ class UsuarioController extends Controller
 					  ->first();
 			if($usuario){
 				$redirect = "";
-				if($usuario->tipo->id_dominio == 2) $redirect = '/inventario/gestion';
-				if($usuario->tipo->id_dominio == 11) $redirect = '/auditoria/listado/todos';
+				if($usuario->tipo->id_dominio == 2) $redirect = 'inventario/gestion';
+				if($usuario->tipo->id_dominio == 11) $redirect = 'auditoria/listado/todos';
 				session([
 					'id_usuario' => $usuario->id_usuario,
 					'tipo_usuario' => $usuario->tipo->id_dominio
