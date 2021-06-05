@@ -884,13 +884,16 @@ class APIController extends Controller
 								if(is_null($seguimiento)) $seguimiento = new SeguimientoConteo;
 								$seguimiento->id_conteo_detalle = $post->id_conteo_detalle;
 								$seguimiento->id_producto = $post->id_producto;
-								$seguimiento->cantidad = $seguimiento->cantidad + $post->cantidad;
+								if ($seguimiento->conteo_detalle->conteo == 3) {
+									$seguimiento->cantidad = $seguimiento->cantidad;
+								}else{
+									$seguimiento->cantidad = $seguimiento->cantidad + $post->cantidad;
+								}
 								$seguimiento->fecha_vencimiento = $post->fecha_vencimiento;
 								$seguimiento->lote = $post->lote;
 								$seguimiento->id_fila_estante = $post->id_fila;
 								$seguimiento->save();
                                 $producto->id_seguimiento_conteo = $seguimiento->id_seguimiento_conteo;
-                                $producto->cantidad = $post->cantidad;
                                 $producto->seguimientos = DB::select("SELECT *
 																      FROM seguimiento_conteo sc
 																      WHERE sc.id_producto = ".$producto->id_producto."
