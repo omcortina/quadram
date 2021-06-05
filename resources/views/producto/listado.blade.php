@@ -45,7 +45,7 @@
               @foreach($productos as $producto)
                 <tr>
                   <td>{{ $producto->codigo }}</td>
-                  <td>{{ Str::length($producto->nombre) > 40 ? Str::limit($producto->nombre, 37, '...') : $producto->nombre }}</td>
+                  <td>{{ Str::length($producto->nombre) > 50 ? Str::limit($producto->nombre, 47, '...') : $producto->nombre }}</td>
                   <td>
                     @if ($producto->descripcion != null)
                       {{ $producto->descripcion }}
