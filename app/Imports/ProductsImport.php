@@ -10,7 +10,7 @@ class ProductsImport implements ToModel, WithHeadingRow
 
     public function model(array $row)
     {
-        $product = Producto::where('codigo', $row["referencia_interna"])->firts();
+        $product = Producto::where('codigo', $row["referencia_interna"])->first();
         if ($product) {
             $product->estado = 0;
             $product->save();
