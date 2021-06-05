@@ -90,7 +90,7 @@
     input[type="datetime-local"]{
         font-size: small;
     }
-    
+
 </style>
 <div class="row">
     <div class="col-sm-12">
@@ -258,13 +258,15 @@
         let estante = locacion.estantes.find(element => element.id_estante == id_estante)
         let tabla = ""
         estante.filas.forEach((fila) => {
-            tabla += '<tr>'+
-                        '<td id="td-fila-'+fila.id_fila+'"'+
-                            'class="td-fila"'+
-                            'onclick="ActualizarProductos('+id_locacion+', '+id_estante+', '+fila.id_fila+')">'+
-                            '<strong>Fila '+fila.nombre+'</strong>'+
-                        '</td>'+
-                    '</tr>'
+            if(fila.estado == 1){
+                tabla += '<tr>'+
+                    '<td id="td-fila-'+fila.id_fila+'"'+
+                        'class="td-fila"'+
+                        'onclick="ActualizarProductos('+id_locacion+', '+id_estante+', '+fila.id_fila+')">'+
+                        '<strong>Fila '+fila.nombre+'</strong>'+
+                    '</td>'+
+                '</tr>'
+            }
         })
         if(tabla == "") tabla = "<center> <span class='span-msg'>No hay filas disponibles</span> </center>"
         $("#seguimiento-tabla-filas tbody").html(tabla)
@@ -302,7 +304,7 @@
                                 tabla +='<td><center><span class="mr-2" onclick="BorrarSeguimientoConteo('+producto.id_seguimiento_conteo+')"><i class="fa fa-trash icons"></i></span> <span onclick="VerificarProducto(\''+producto.id_producto+'\',\''+producto.lote+'\',\''+producto.fecha_vencimiento+'\',\''+producto.cantidad+'\')"><i class="fa fa-check icons"></i></span></center></td>'
                             }
                 tabla +='</tr>'
-                
+
             }else{
                 producto.seguimientos.forEach((pro_seguimiento) => {
                     tabla += '<tr>'+
@@ -393,7 +395,7 @@
             return false
         }
 
-        
+
 
         if (this.conteo_actual == 3) {
             let validacion = this.fila_escojida.productos.filter(element => element.id_producto == id_producto && element.lote == lote && element.fecha_vencimiento)
@@ -402,7 +404,7 @@
                 return false
             }
         }
-        
+
         $("#btn-agregar").prop("disabled", true)
         $("#btn-agregar").html("Validando...")
         let url = "{{ route('api/counter/saveTracing') }}"
@@ -427,7 +429,7 @@
             $("#btn-agregar").prop("disabled", true)
             $("#btn-agregar").html("Agregar producto")
         })
-        
+
     }
 
     function AgregarProductoLista(id_estante, id_fila, producto) {
@@ -526,7 +528,7 @@
                         <center>
                             <button onclick="AgregarProducto()" class="btn btn-primary mt-2 w-100" id="btn-agregar">Agregar producto</button>
                         </center>
-                        
+
                     </div>
                 </div><br>
                 <div class="row">
@@ -556,6 +558,6 @@
             </div>
         </div>
     </div>
-</div>  
+</div>
 @endsection
 
