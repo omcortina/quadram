@@ -251,24 +251,35 @@
         let fila = estante.filas.find(element => element.id_fila == id_fila)
         let tabla = ""
         fila.productos.forEach((producto) => {
-            tabla += '<tr>'+
+            if (!producto.tiene_seguimiento_conteo) {
+                tabla += '<tr>'+
+                            '<td>'+producto.codigo+'</td>'+
+                            '<td><strong>'+producto.nombre+'</strong></td>'+
+                            '<td>Sin contar</td>'+
+                            '<td></td>'+
+                            '<td></td>'+
+                            '<td></td>'+
+                            '</tr>'
+                
+            }else{
+                producto.seguimientos.forEach((pro_seguimiento) => {
+                    tabla += '<tr>'+
                         '<td>'+producto.codigo+'</td>'+
-                        '<td>'+
-                            '<strong>'+producto.nombre+'</strong>'+
-                        '</td>'+
-                        '<td class="text-right">'+(producto.id_seguimiento_conteo == -1 ? "Sin contar" : producto.seguimiento.cantidad)+'</td>'+
-                        '<td>'+(producto.id_seguimiento_conteo == -1 ? "Sin contar" : producto.seguimiento.lote)+'</td>'+
-                        '<td>'+(producto.id_seguimiento_conteo == -1 ? "Sin contar" : producto.seguimiento.fecha_vencimiento)+'</td>'+
-                        '<td>'+(producto.id_seguimiento_conteo == -1 ? "Sin contar" : producto.seguimiento.created_at)+'</td>'+
-                    '</tr>'
+                        '<td><strong>'+producto.nombre+'</strong></td>'+
+                        '<td>'+pro_seguimiento.created_at+'</td>'+
+                        '<td>'+pro_seguimiento.lote+'</td>'+
+                        '<td>'+pro_seguimiento.fecha_vencimiento+'</td>'+
+                        '<td>'+pro_seguimiento.cantidad+'</td>'
+                })
+            }
+            
         })
         if(tabla == "") tabla = "<center> <span class='span-msg'>No hay productos disponibles</span> </center>"
-        let contados = fila.productos.filter(item => item.id_seguimiento_conteo != -1)
+        let contados = fila.productos.filter(item => item.tiene_seguimiento_conteo == true)
         let info = contados.length + " de "+ fila.productos.length
         $("#info_conteo").html(info)
         $("#seguimiento-tabla-productos tbody").html(tabla)
     }
-
 
 
     function ValidarActive(tabla, id) {
@@ -305,7 +316,7 @@
 @endsection
 
 <div class="modal bd-example-modal-lg" tabindex="-1" id="ModalProductos">
-    <div class="modal-dialog modal-lg" >
+    <div class="modal-dialog modal-lg" style="max-width: 1000px">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">Listado productos contados</h5>
@@ -322,11 +333,11 @@
                                 <thead class="thead-light">
                                     <tr>
                                         <th scope="col"><b>Código</b></th>
-                                        <th scope="col"><b>Producto</b></th>
-                                        <th scope="col"><b>Cantidad</b></th>
-                                        <th scope="col"><b>Lote</b></th>
-                                        <th scope="col"><b>Vencimiento</b></th>
+                                        <th scope="col"><b>Nombre</b></th>
                                         <th scope="col"><b>Realización</b></th>
+                                        <th scope="col"><b>Lote</b></th>
+                                        <th scope="col"><b>Fecha Vencimiento</b></th>
+                                        <th scope="col"><b>Cantidad</b></th>
                                     </tr>
                                 </thead>
                                 <tbody></tbody>

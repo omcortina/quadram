@@ -76,4 +76,10 @@ class ConteoController extends Controller
 			'error' => $error
 		]);
 	}
+
+	public function Listado()
+    {   
+        $conteos = Conteo::orderBy('id_conteo', 'desc')->get();
+        return view('conteo.listado', compact(['conteos']));
+    }
 }

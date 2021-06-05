@@ -146,7 +146,7 @@
 
         if($.trim(nombre_usuario) == "") { Alertar("El nombre de usuario es obligatorio."); return false; }
         if($.trim(tipo_usuario) == "") { Alertar("El tipo de usuario es obligatorio."); return false; }
-
+        loading(true, "Guardando información...")
         $("#form-usuario").submit()
     }
 
@@ -191,8 +191,9 @@
             "password_nueva" : password_nueva,
             "id_usuario_para_cambiar" : {{$usuario->id_usuario ? $usuario->id_usuario : "0"}}
         }
-
+        loading(true, "Guardando información...")
         $.post(url, request, (response)=>{
+            loading(false)
             if(response.error == false){
                 toastr.success(response.mensaje)
                 setTimeout(()=>{
@@ -203,6 +204,10 @@
                 toastr.error(response.mensaje)
                 return false
             }
+        })
+        .fail((error) => {
+            loading(false)
+            toastr.error("Ocurrio un error, por favor comuniquese con el proveedor de software.", "Error")
         })
     }
 

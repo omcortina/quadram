@@ -15,6 +15,10 @@ class Conteo extends Model
       	return $this->belongsTo(Auditoria::class, 'id_auditoria');
     }
 
+    public function usuario(){
+        return $this->belongsTo(Usuario::class, 'id_usuario');
+    }
+
     public function detalles(){
         return $this->hasMany(ConteoDetalle::class, 'id_conteo');
     }

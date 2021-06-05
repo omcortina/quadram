@@ -48,7 +48,7 @@ class UsuarioController extends Controller
 					'id_usuario' => $usuario->id_usuario,
 					'tipo_usuario' => $usuario->tipo->id_dominio
 				]);
-				return redirect(config('global.servidor').$redirect);
+				return redirect(config('global.servidor')."/".$redirect);
 			}else{
 				$mensaje = "Credenciales invalidas";
         		session()->flash('mensaje_login', $mensaje);

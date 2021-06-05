@@ -31,4 +31,21 @@ class SeguimientoConteoController extends Controller
    				'usuario', 'conteo', 'estante', 'num_conteo']));
     	}
     }
+
+    
+
+    public function Transcripcion(Request $request)
+    {
+        $data = (object) $request->all();
+        if ($data) {
+            $conteo = Conteo::find($data->conteo);
+            $usuario = isset($data->usuario) ? Usuario::find($data->usuario) : null;
+            $estante = isset($data->estante) ? Estante::find($data->estante) : null;
+
+            $usuarios = Usuario::where('id_dominio_tipo_usuario', 4)->get();
+            return view('seguimiento_conteo.transcripcion', compact([
+                'usuario', 'conteo', 'estante', 'usuarios'
+            ]));
+        }
+    }
 }
