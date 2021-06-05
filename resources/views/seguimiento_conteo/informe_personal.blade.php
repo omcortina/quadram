@@ -228,17 +228,19 @@
             let tabla = ""
             if(estante){
                 estante.filas.forEach((fila) => {
-                    tabla += '<tr>'+
-                                '<td id="td-fila-'+fila.id_fila+'"'+
-                                    'class="td-fila"'+
-                                    'onclick="ActualizarProductos('+id_locacion+', '+id_estante+', '+fila.id_fila+')">'+
-                                    '<strong>Fila '+fila.nombre+'</strong>'+
-                                '</td>'+
-                            '</tr>'
+                    if(fila.estado == 1){
+                        tabla += '<tr>'+
+                            '<td id="td-fila-'+fila.id_fila+'"'+
+                                'class="td-fila"'+
+                                'onclick="ActualizarProductos('+id_locacion+', '+id_estante+', '+fila.id_fila+')">'+
+                                '<strong>Fila '+fila.nombre+'</strong>'+
+                            '</td>'+
+                        '</tr>'
+                    }
                 })
                 if(tabla == "") tabla = "<center> <span class='span-msg'>No hay filas disponibles</span> </center>"
                 $("#seguimiento-tabla-filas tbody").html(tabla)
-                $("#seguimiento-tabla-productos tbody").html("") 
+                $("#seguimiento-tabla-productos tbody").html("")
             }
         }
     }
@@ -260,7 +262,7 @@
                             '<td></td>'+
                             '<td></td>'+
                             '</tr>'
-                
+
             }else{
                 producto.seguimientos.forEach((pro_seguimiento) => {
                     tabla += '<tr>'+
@@ -272,7 +274,7 @@
                         '<td>'+pro_seguimiento.cantidad+'</td>'
                 })
             }
-            
+
         })
         if(tabla == "") tabla = "<center> <span class='span-msg'>No hay productos disponibles</span> </center>"
         let contados = fila.productos.filter(item => item.tiene_seguimiento_conteo == true)

@@ -223,13 +223,16 @@
         let estante = locacion.estantes.find(element => element.id_estante == id_estante)
         let tabla = ""
         estante.filas.forEach((fila) => {
-            tabla += '<tr>'+
-                        '<td id="td-fila-'+fila.id_fila+'"'+
-                            'class="td-fila"'+
-                            'onclick="ActualizarProductos('+id_locacion+', '+id_estante+', '+fila.id_fila+')">'+
-                            '<strong>Fila '+fila.nombre+'</strong>'+
-                        '</td>'+
-                    '</tr>'
+            if(fila.estado == 1){
+                tabla += '<tr>'+
+                    '<td id="td-fila-'+fila.id_fila+'"'+
+                        'class="td-fila"'+
+                        'onclick="ActualizarProductos('+id_locacion+', '+id_estante+', '+fila.id_fila+')">'+
+                        '<strong>Fila '+fila.nombre+'</strong>'+
+                    '</td>'+
+                '</tr>'
+            }
+
         })
         if(tabla == "") tabla = "<center> <span class='span-msg'>No hay filas disponibles</span> </center>"
         $("#seguimiento-tabla-filas tbody").html(tabla)
@@ -250,7 +253,7 @@
                         '<td>'+(producto.id_seguimiento_auditoria == -1 ? "Sin auditar" : producto.seguimiento.created_at)+'</td>'
             if(producto.id_seguimiento_auditoria != -1){
                 tabla += '<td><center><span onclick="BorrarSeguimientoAuditoria('+producto.id_seguimiento_auditoria+')"><i class="fa fa-trash"></i></span></center></td>'
-            }     
+            }
             tabla +=   '</tr>'
         })
         if(tabla == "") tabla = "<center> <span class='span-msg'>No hay productos disponibles</span> </center>"
@@ -308,7 +311,7 @@
             toastr.error("Debe escoger un producto valido")
             return false
         }
-        
+
         let validacion = this.fila_escojida.productos.filter(element => element.id_producto == id_producto)
         if(validacion.length > 0){
             toastr.error("Este producto ya se encuentra en esta fila auditado", "Error")
