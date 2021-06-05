@@ -3,13 +3,13 @@
 @section('breadcumb')
 <div class="row align-items-center py-4">
     <div class="col-lg-9">
-        <h6 class="h2 text-white d-inline-block mb-0">Gestion auditoria</h6>
+        <h6 class="h2 text-white d-inline-block mb-0">Gestion conteo</h6>
         <nav aria-label="breadcrumb" class="d-none d-md-inline-block ml-md-4">
         <ol class="breadcrumb breadcrumb-links breadcrumb-dark">
             <li class="breadcrumb-item"><a href="#"><i class="fas fa-user"></i></a></li>
-            <li class="breadcrumb-item"><a onclick="history.go(-1)">Auditoria</a></li>
-            <li class="breadcrumb-item active" aria-current="page">Almacen - {{ $auditoria->inventario->almacen->nombre }}</li>
-            <li class="breadcrumb-item active" aria-current="page">Desde {{ date('d/m/Y H:i', strtotime($auditoria->fecha_inicio)) }} hasta {{ date('d/m/Y H:i', strtotime($auditoria->fecha_fin)) }}</li>
+            <li class="breadcrumb-item"><a onclick="history.go(-1)">Conteo</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Almacen - {{ $conteo->auditoria->inventario->almacen->nombre }}</li>
+            <li class="breadcrumb-item active" aria-current="page">Desde {{ date('d/m/Y H:i', strtotime($conteo->fecha_inicio)) }} hasta {{ date('d/m/Y H:i', strtotime($conteo->fecha_fin)) }}</li>
         </ol>
         </nav>
     </div>
@@ -98,17 +98,40 @@
             <div class="card-header border-0">
                 <div class="row">
                     <div class="col-sm-12">
-                        <h3><b>Transcripcion de Auditoria</b></h3>
+                        <h3><b>Transcripción de Conteos</b></h3>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-sm-6">
-                        <label>Auditor</label>
-                        <select onchange="BuscarLocaciones(this.value)" class="my-select2" >
+                        <label>Contador</label>
+                        <select id="select-usuarios" onchange="BuscarLocaciones(this.value)" class="my-select2" >
                             @foreach ($usuarios as $item)
                                 <option value="{{ $item->id_usuario }}">{{ $item->presentacion() }}</option>
                             @endforeach
                         </select>
+                    </div>
+                </div><br>
+                <div class="row">
+                    <div class="col-sm-4">
+                        <center>
+                            <button class="btn btn-active btn-conteo w-100" id="btn-conteo-1" onclick="EscogerConteo(1)">
+                                Primero
+                            </button>
+                        </center>
+                    </div>
+                    <div class="col-sm-4">
+                        <center>
+                            <button class="btn btn-conteo w-100" id="btn-conteo-2" onclick="EscogerConteo(2)">
+                                Segundo
+                            </button>
+                        </center>
+                    </div>
+                    <div class="col-sm-4">
+                        <center>
+                            <button class="btn btn-conteo w-100" id="btn-conteo-3" onclick="EscogerConteo(3)">
+                                Tercero
+                            </button>
+                        </center>
                     </div>
                 </div><br>
                 <div class="row">
@@ -162,10 +185,21 @@
     var fila_escojida = null;
     var estante_escojido = null;
     var locacion_escojida = null;
+    var conteo_actual = 1;
+
+    function EscogerConteo(conteo) {
+        let id_usuario = $("#select-usuarios").val()
+        if (conteo != this.conteo_actual && id_usuario) {
+            this.conteo_actual = conteo
+            $(".btn-conteo").each(function(){ $(this).removeClass('btn-active') });
+            $("#btn-conteo-"+conteo).addClass('btn-active')
+            BuscarLocaciones(id_usuario)
+        }
+    }
 
     function BuscarLocaciones(id_usuario) {
         loading(true, "Consultando información...")
-        let url = "{{ route('api/auditor/getLocations') }}?usuario="+id_usuario+"&auditoria={{ $auditoria->id_auditoria }}"
+        let url = "{{ route('api/counter/getLocations') }}?usuario="+id_usuario+"&conteo={{ $conteo->id_conteo }}&num_conteo="+this.conteo_actual
 
         $.get(url, (response) => {
             console.log(response)
@@ -245,14 +279,30 @@
         let fila = estante.filas.find(element => element.id_fila == id_fila)
         let tabla = ""
         fila.productos.forEach((producto) => {
-            tabla += '<tr>'+
+            if (!producto.tiene_seguimiento_conteo) {
+                tabla += '<tr>'+
+                            '<td>'+producto.codigo+'</td>'+
+                            '<td><strong>'+producto.nombre+'</strong></td>'+
+                            '<td>Sin contar</td>'+
+                            '<td></td>'+
+                            '<td></td>'+
+                            '<td></td>'+
+                            '<td></td>'+
+                            '</tr>'
+                
+            }else{
+                producto.seguimientos.forEach((pro_seguimiento) => {
+                    tabla += '<tr>'+
                         '<td>'+producto.codigo+'</td>'+
                         '<td><strong>'+producto.nombre+'</strong></td>'+
-                        '<td>'+(producto.id_seguimiento_auditoria == -1 ? "Sin contar" : producto.seguimiento.created_at)+'</td>'
-            if(producto.id_seguimiento_auditoria != -1){
-                tabla += '<td><center><span onclick="BorrarSeguimientoAuditoria('+producto.id_seguimiento_auditoria+')"><i class="fa fa-trash"></i></span></center></td>'
-            }     
-            tabla +=   '</tr>'
+                        '<td>'+pro_seguimiento.created_at+'</td>'+
+                        '<td>'+pro_seguimiento.lote+'</td>'+
+                        '<td>'+pro_seguimiento.fecha_vencimiento+'</td>'+
+                        '<td>'+pro_seguimiento.cantidad+'</td>'+
+                        '<td><center><span onclick="BorrarSeguimientoConteo('+pro_seguimiento.id_seguimiento_conteo+')"><i class="fa fa-trash"></i></span></center></td>'+
+                        '</tr>'
+                })
+            }
         })
         if(tabla == "") tabla = "<center> <span class='span-msg'>No hay productos disponibles</span> </center>"
         $("#seguimiento-tabla-productos tbody").html(tabla)
@@ -286,11 +336,11 @@
         @endif
     }
 
-    function BorrarSeguimientoAuditoria(id_seguimiento_auditoria) {
+    function BorrarSeguimientoConteo(id_seguimiento_conteo) {
         let confirmacion = confirm("¿Seguro que desea eliminar este seguimiento?")
         if (confirmacion) {
-            let url = "{{ route('api/auditor/deleteTracing') }}"
-            let request = {'id_seguimiento_auditoria' : id_seguimiento_auditoria}
+            let url = "{{ route('api/counter/deleteTracing') }}"
+            let request = {'id_seguimiento_conteo' : id_seguimiento_conteo}
             loading(true, "Borrando registro...")
             $.ajax({
                 url : url,
@@ -298,7 +348,7 @@
                 data : request,
                 success: function (response) {
                     loading(false)
-                    EliminarProductoLista(id_seguimiento_auditoria)
+                    EliminarProductoLista(id_seguimiento_conteo)
                 }
             });
         }
@@ -306,31 +356,39 @@
 
     function AgregarProducto() {
         let id_producto = $("#id_producto").val()
+        let lote = $("#lote").val()
+        let fecha_vencimiento = $("#fecha_vencimiento").val()
+        let cantidad = $("#cantidad").val()
         if(id_producto == 0){
             toastr.error("Debe escoger un producto valido")
             return false
         }
+        if(cantidad < 0 || cantidad.trim() == ""){
+            toastr.error("La cantidad debe ser mayor o igual a 0")
+            return false
+        }
         
-        let validacion = this.fila_escojida.productos.filter(element => element.id_producto == id_producto)
+        let validacion = this.fila_escojida.productos.filter(element => element.id_producto == id_producto &&element.seguimiento.lote == lote && element.seguimiento.fecha_vencimiento)
         if(validacion.length > 0){
-            toastr.error("Este producto ya se encuentra en esta fila auditado", "Error")
+            toastr.error("Este producto ya se encuentra en esta fila auditado con el mismo lote y fecha de vencimiento", "Error")
         }else{
             $("#btn-agregar").prop("disabled", true)
             $("#btn-agregar").html("Validando...")
-            let url = "{{ route('api/auditor/saveTracing') }}"
+            let url = "{{ route('api/counter/saveTracing') }}"
             let request = {
-                'id_auditoria_detalle' : this.estante_escojido.id_auditoria_detalle,
+                'id_conteo_detalle' : this.estante_escojido.id_conteo_detalle,
                 'id_estante' : this.estante_escojido.id_estante,
                 'id_fila' : this.fila_escojida.id_fila,
-                'id_producto' : id_producto
+                'id_producto' : id_producto,
+                'lote' : lote,
+                'fecha_vencimiento' : fecha_vencimiento,
+                'cantidad' : cantidad,
             }
 
             $.post(url, request, (response) => {
                 $("#btn-agregar").prop("disabled", false)
                 $("#btn-agregar").html("Agregar producto")
                 toastr.success(response.message)
-                let created_at = response.product.seguimiento.created_at.replace("T", " ").split(".")[0]
-                response.product.seguimiento.created_at = created_at
                 AgregarProductoLista(this.estante_escojido.id_estante, this.fila_escojida.id_fila, response.product)
             })
             .fail((error) => {
@@ -347,7 +405,12 @@
                 if(estante.id_estante == id_estante){
                     estante.filas.forEach((fila) => {
                         if(fila.id_fila == id_fila){
-                            fila.productos.push(producto)
+                            fila.productos.forEach((pro) => {
+                                if (pro.id_producto == producto.id_producto) {
+                                    pro.tiene_seguimiento_conteo = producto.tiene_seguimiento_conteo;
+                                    pro.seguimientos = producto.seguimientos
+                                }
+                            })
                         }
                     })
                 }
@@ -356,14 +419,21 @@
         ActualizarProductos(this.locacion_escojida.id_locacion, id_estante, id_fila)
     }
 
-    function EliminarProductoLista(id_seguimiento_auditoria) {
+    function EliminarProductoLista(id_seguimiento_conteo) {
         this.locaciones.forEach((locacion) => {
             locacion.estantes.forEach((estante) => {
                 estante.filas.forEach((fila) => {
                     let pos = 0
                     fila.productos.forEach((pro) => {
-                        if(pro.id_seguimiento_auditoria == id_seguimiento_auditoria){
-                            fila.productos.splice(pos, 1)
+                        if (pro.tiene_seguimiento_conteo) {
+                            let pos_seguimientos = 0
+                            pro.seguimientos.forEach((pro_seguimiento) => {
+                                if(pro_seguimiento.id_seguimiento_conteo == id_seguimiento_conteo){
+                                    if (pro.seguimientos.length == 1) pro.tiene_seguimiento_conteo = false
+                                    pro.seguimientos.splice(pos_seguimientos, 1)
+                                }
+                                pos_seguimientos++
+                            })
                         }
                         pos++
                     })
@@ -385,7 +455,7 @@
 </script>
 
 <div class="modal" id="ModalProductos">
-    <div class="modal-dialog" style="max-width: 800px">
+    <div class="modal-dialog" style="max-width: 1000px">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">Listado productos auditados</h5>
@@ -393,7 +463,7 @@
             </div>
             <div class="modal-body">
                 <div class="row">
-                    <div class="col-sm-8">
+                    <div class="col-sm-12">
                         <label>Producto</label>
                         <select class="my-select2" id="id_producto">
                             @php
@@ -405,9 +475,24 @@
                             @endforeach
                         </select>
                     </div>
-                    <div class="col-sm-4 text-right">
+                    <div class="col-sm-4"><br>
+                        <label>Lote</label>
+                        <input type="text" class="form-control" id="lote">
+                    </div>
+                    <div class="col-sm-4"><br>
+                        <label>F. Vencimiento</label>
+                        <input type="date" class="form-control" id="fecha_vencimiento">
+                    </div>
+                    <div class="col-sm-4"><br>
+                        <label>Cantidad</label>
+                        <input type="number" class="form-control" id="cantidad">
+                    </div>
+                    <div class="col-sm-12">
                         <br>
-                        <button onclick="AgregarProducto()" class="btn btn-primary mt-2 w-100" id="btn-agregar">Agregar producto</button>
+                        <center>
+                            <button onclick="AgregarProducto()" class="btn btn-primary mt-2 w-100" id="btn-agregar">Agregar producto</button>
+                        </center>
+                        
                     </div>
                 </div><br>
                 <div class="row">
@@ -419,6 +504,9 @@
                                         <th scope="col"><b>Código</b></th>
                                         <th scope="col"><b>Nombre</b></th>
                                         <th scope="col"><b>Realización</b></th>
+                                        <th scope="col"><b>Lote</b></th>
+                                        <th scope="col"><b>Fecha Vencimiento</b></th>
+                                        <th scope="col"><b>Cantidad</b></th>
                                         <th scope="col"></th>
                                     </tr>
                                 </thead>

@@ -39,8 +39,13 @@
             <thead class="thead-light">
               <tr>
                 <th scope="col">Almacen</th>
+                @if ($inventario)
                 <th scope="col">Fechas Auditoria</th>
                 <th scope="col">Fechas Conteos</th>
+                @else
+                <th scope="col">Fecha Inicio</th>
+                <th scope="col">Fecha Fin</th>
+                @endif
                 <th scope="col">Usuario registra</th>
                 <th scope="col">Estado</th>
                 <th scope="col"><center>Acciones</center></th>
@@ -50,13 +55,19 @@
               @foreach($auditorias as $auditoria)
                 <tr>
                   <td>{{ $auditoria->inventario->almacen->nombre }}</td>
-                  <td>{{ date('d/m/Y', strtotime($auditoria->fecha_inicio)) }} hasta {{ date('d/m/Y', strtotime($auditoria->fecha_fin)) }}</td>
-                  <td>@if($auditoria->conteo())
-                    {{ date('d/m/Y', strtotime($auditoria->conteo()->fecha_inicio)) }} hasta {{ date('d/m/Y', strtotime($auditoria->conteo()->fecha_fin)) }}
-                      @else
-                       No definidas
-                      @endif
-                  </td>
+                  @if ($inventario)
+                    <td>{{ date('d/m/Y H:i', strtotime($auditoria->fecha_inicio)) }} hasta {{ date('d/m/Y H:i', strtotime($auditoria->fecha_fin)) }}</td>
+                    <td>@if($auditoria->conteo())
+                      {{ date('d/m/Y H:i', strtotime($auditoria->conteo()->fecha_inicio)) }} hasta {{ date('d/m/Y H:i', strtotime($auditoria->conteo()->fecha_fin)) }}
+                        @else
+                         No definidas
+                        @endif
+                    </td>
+                  @else
+                    <td>{{ date('d/m/Y H:i', strtotime($auditoria->fecha_inicio)) }}</td>
+                    <td>{{ date('d/m/Y H:i', strtotime($auditoria->fecha_fin)) }}</td>
+                  @endif
+                  
                   <td>{{ $auditoria->usuario->nombre_completo() }}</td>
                   <td>
                     @if ($auditoria->estado == 1)

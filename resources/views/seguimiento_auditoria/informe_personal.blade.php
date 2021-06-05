@@ -247,7 +247,7 @@
             tabla += '<tr>'+
                         '<td>'+producto.codigo+'</td>'+
                         '<td><strong>'+producto.nombre+'</strong></td>'+
-                        '<td>'+(producto.id_seguimiento_auditoria == -1 ? "Sin contar" : producto.seguimiento.created_at)+'</td>'
+                        '<td>'+(producto.id_seguimiento_auditoria == -1 ? "Sin auditar" : producto.seguimiento.created_at)+'</td>'
             if(producto.id_seguimiento_auditoria != -1){
                 tabla += '<td><center><span onclick="BorrarSeguimientoAuditoria('+producto.id_seguimiento_auditoria+')"><i class="fa fa-trash"></i></span></center></td>'
             }     
