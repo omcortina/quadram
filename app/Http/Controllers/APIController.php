@@ -885,7 +885,7 @@ class APIController extends Controller
 								$seguimiento->id_conteo_detalle = $post->id_conteo_detalle;
 								$seguimiento->id_producto = $post->id_producto;
 								if ($seguimiento->conteo_detalle->conteo == 3) {
-									$seguimiento->cantidad = $seguimiento->cantidad;
+									$seguimiento->cantidad = $post->cantidad;
 								}else{
 									$seguimiento->cantidad = $seguimiento->cantidad + $post->cantidad;
 								}
