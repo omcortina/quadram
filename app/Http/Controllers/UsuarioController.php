@@ -7,8 +7,8 @@ use App\Models\Usuario;
 use App\Models\Dominio;
 
 class UsuarioController extends Controller
-{	
-	
+{
+
 	public function Formulario(Request $request){
 		$data = $request->all();
 		$usuario = new Usuario;
@@ -42,13 +42,13 @@ class UsuarioController extends Controller
 					  ->first();
 			if($usuario){
 				$redirect = "";
-				if($usuario->tipo->id_dominio == 2) $redirect = 'inventario/gestion';
-				if($usuario->tipo->id_dominio == 11) $redirect = 'auditoria/listado/todos';
+				if($usuario->tipo->id_dominio == 2) $redirect = '/inventario/gestion';
+				if($usuario->tipo->id_dominio == 11) $redirect = '/auditoria/listado/todos';
 				session([
 					'id_usuario' => $usuario->id_usuario,
 					'tipo_usuario' => $usuario->tipo->id_dominio
 				]);
-				return redirect()->route('inventario/gestion');
+				return redirect(config('global.servidor').$redirect);
 			}else{
 				$mensaje = "Credenciales invalidas";
         		session()->flash('mensaje_login', $mensaje);
@@ -107,7 +107,7 @@ class UsuarioController extends Controller
 			$usuario = Usuario::where("id_usuario", $data->id_usuario)
 							  ->where("password", md5($data->password))
 							  ->first();
-			
+
 			if(!isset($data->id_usuario_para_cambiar)){
 				if($usuario){
 					$usuario->password = md5($data->password_nueva);
@@ -139,5 +139,5 @@ class UsuarioController extends Controller
 			"error" => $error
 		]);
 	}
-    
+
 }

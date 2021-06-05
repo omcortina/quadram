@@ -514,7 +514,7 @@ class APIController extends Controller
 									if ($conteo->conteo_activo != 3) {
 										$seguimientos = DB::select("SELECT DISTINCT(p.id_producto) as id_producto,
 													 s.id_seguimiento_auditoria,
-                                                     s.id_fila_estante,													 
+                                                     s.id_fila_estante,
 													 p.codigo,
 													 p.codigo_barras,
 													 p.nombre,
@@ -525,7 +525,7 @@ class APIController extends Controller
 											  AND s.estado = 1
 											  AND s.id_auditoria_detalle = ".$estante->id_auditoria_detalle);
 
-									
+
 										foreach ($seguimientos as $seguimiento) {
 											$seguimientos_conteo = DB::select("SELECT *
 																   FROM seguimiento_conteo sc
@@ -568,7 +568,7 @@ class APIController extends Controller
     {
     	$seguimientos = [];
 		$seguimientos_conteo_1 = "SELECT DISTINCT(p.id_producto) as id_producto,
-                                sc.id_fila_estante,													 
+                                sc.id_fila_estante,
 								p.codigo,
 								p.codigo_barras,
 								p.nombre,
@@ -585,10 +585,10 @@ class APIController extends Controller
 							  	AND sc.valido = 1
 							  	AND sc.id_fila_estante = $fila->id_fila
 							  	AND sc.estado = 1";
-		
+
 
 		$seguimientos_conteo_2 = "SELECT DISTINCT(p.id_producto) as id_producto,
-                                sc.id_fila_estante,													 
+                                sc.id_fila_estante,
 								p.codigo,
 								p.codigo_barras,
 								p.nombre,
@@ -596,7 +596,7 @@ class APIController extends Controller
 								sc.cantidad,
 								sc.fecha_vencimiento,
 								sc.lote,
-								sc.id_seguimiento_conteo 
+								sc.id_seguimiento_conteo
 								FROM seguimiento_conteo sc
 								LEFT JOIN producto p USING(id_producto)
 								LEFT JOIN conteo_detalle cd USING(id_conteo_detalle)
@@ -617,9 +617,9 @@ class APIController extends Controller
 					//ESTA VARIABLE PERMITIRA SABER SI EL PRODUCTO EXISTE EN AMBOS CONTEOS SI SOLO EXISTE EN EL PRIMER CONTEO DEBE SER VERIFICADO EN EL TERCER CONTEO
 					$encontro = true;
 					if ($conteo_1->cantidad != $conteo_2->cantidad) {
-						$producto['id_producto'] = $conteo_2->id_producto;												 
-						$producto['id_seguimiento_conteo'] = $conteo_2->id_seguimiento_conteo;												 
-						$producto['id_fila_estante'] = $fila->id_fila;												 
+						$producto['id_producto'] = $conteo_2->id_producto;
+						$producto['id_seguimiento_conteo'] = $conteo_2->id_seguimiento_conteo;
+						$producto['id_fila_estante'] = $fila->id_fila;
 						$producto['codigo'] = $conteo_2->codigo;
 						$producto['codigo_barras'] = $conteo_2->codigo_barras;
 						$producto['nombre'] = $conteo_2->nombre;
@@ -645,9 +645,9 @@ class APIController extends Controller
 				}
 			}
 			if(!$encontro){
-				$producto['id_producto'] = $conteo_1->id_producto;	
-				$producto['id_seguimiento_conteo'] = $conteo_1->id_seguimiento_conteo;	
-				$producto['id_fila_estante'] = $fila->id_fila;												 
+				$producto['id_producto'] = $conteo_1->id_producto;
+				$producto['id_seguimiento_conteo'] = $conteo_1->id_seguimiento_conteo;
+				$producto['id_fila_estante'] = $fila->id_fila;
 				$producto['codigo'] = $conteo_1->codigo;
 				$producto['codigo_barras'] = $conteo_1->codigo_barras;
 				$producto['nombre'] = $conteo_1->nombre;
@@ -689,7 +689,7 @@ class APIController extends Controller
 			if(!$encontro){
 				$producto['id_producto'] = $conteo_2->id_producto;
 				$producto['id_seguimiento_conteo'] = $conteo_2->id_seguimiento_conteo;
-				$producto['id_fila_estante'] = $fila->id_fila;												 
+				$producto['id_fila_estante'] = $fila->id_fila;
 				$producto['codigo'] = $conteo_2->codigo;
 				$producto['codigo_barras'] = $conteo_2->codigo_barras;
 				$producto['nombre'] = $conteo_2->nombre;
@@ -890,6 +890,7 @@ class APIController extends Controller
 								$seguimiento->id_fila_estante = $post->id_fila;
 								$seguimiento->save();
                                 $producto->id_seguimiento_conteo = $seguimiento->id_seguimiento_conteo;
+                                $producto->cantidad = $post->cantidad;
                                 $producto->seguimientos = DB::select("SELECT *
 																      FROM seguimiento_conteo sc
 																      WHERE sc.id_producto = ".$producto->id_producto."
@@ -905,7 +906,7 @@ class APIController extends Controller
 						}else{
 							$message = "Parametro [id_producto] perteneciente al producto contado no esta definido";
 						}
-							
+
 					}else{
 						$message = "Parametro [cantidad] perteneciente a la cantidad contada no esta definida";
 					}
