@@ -271,9 +271,17 @@
         $("#seguimiento-tabla-productos tbody").html("")
     }
 
+
     function ActualizarProductos(id_locacion, id_estante, id_fila) {
         ValidarActive('fila', id_fila)
         $("#ModalProductos").modal("show")
+        if (this.conteo_actual == 3) {
+            $("#btn-agregar").html("Verificar producto")
+            $("#th-conteo").show()
+        }else{
+            $("#btn-agregar").html("Agregar producto")
+            $("#th-conteo").hide()
+        }
         let locacion = this.locaciones.find(element => element.id_locacion == id_locacion)
         let estante = locacion.estantes.find(element => element.id_estante == id_estante)
         let fila = estante.filas.find(element => element.id_fila == id_fila)
@@ -284,11 +292,16 @@
                             '<td>'+producto.codigo+'</td>'+
                             '<td><strong>'+producto.nombre+'</strong></td>'+
                             '<td>Sin contar</td>'+
-                            '<td></td>'+
-                            '<td></td>'+
-                            '<td></td>'+
-                            '<td></td>'+
-                            '</tr>'
+                            '<td>'+producto.lote+'</td>'+
+                            '<td>'+producto.fecha_vencimiento+'</td>'+
+                            '<td>'+producto.cantidad+'</td>'
+                            if (conteo_actual == 3) {
+                                if (producto.conteo == 1) tabla += '<td>Primero</td>'
+                                if (producto.conteo == 2) tabla += '<td>Segundo</td>'
+                                if (producto.conteo == 3) tabla += '<td>Tercero</td>'
+                                tabla +='<td><center><span class="mr-2" onclick="BorrarSeguimientoConteo('+producto.id_seguimiento_conteo+')"><i class="fa fa-trash icons"></i></span> <span onclick="VerificarProducto(\''+producto.id_producto+'\',\''+producto.lote+'\',\''+producto.fecha_vencimiento+'\',\''+producto.cantidad+'\')"><i class="fa fa-check icons"></i></span></center></td>'
+                            }
+                tabla +='</tr>'
                 
             }else{
                 producto.seguimientos.forEach((pro_seguimiento) => {
@@ -298,8 +311,9 @@
                         '<td>'+pro_seguimiento.created_at+'</td>'+
                         '<td>'+pro_seguimiento.lote+'</td>'+
                         '<td>'+pro_seguimiento.fecha_vencimiento+'</td>'+
-                        '<td>'+pro_seguimiento.cantidad+'</td>'+
-                        '<td><center><span onclick="BorrarSeguimientoConteo('+pro_seguimiento.id_seguimiento_conteo+')"><i class="fa fa-trash"></i></span></center></td>'+
+                        '<td>'+pro_seguimiento.cantidad+'</td>'
+                        if (conteo_actual == 3) tabla += '<td>Tercero</td>'
+                    tabla +=    '<td><center><span onclick="BorrarSeguimientoConteo('+pro_seguimiento.id_seguimiento_conteo+')"><i class="fa fa-trash"></i></span></center></td>'+
                         '</tr>'
                 })
             }
@@ -312,7 +326,12 @@
     }
 
 
-
+    function VerificarProducto(id_producto, lote, fecha_vencimiento, cantidad) {
+        $("#lote").val(lote)
+        $("#fecha_vencimiento").val(fecha_vencimiento)
+        $("#cantidad").val(cantidad)
+        $("#id_producto").val(id_producto).trigger('change')
+    }
     function ValidarActive(tabla, id) {
         $(".td-"+tabla).each(function(){ $(this).removeClass('td-active') });
 
@@ -339,12 +358,13 @@
     function BorrarSeguimientoConteo(id_seguimiento_conteo) {
         let confirmacion = confirm("¿Seguro que desea eliminar este seguimiento?")
         if (confirmacion) {
-            let url = "{{ route('api/counter/deleteTracing') }}"
+            let url = this.conteo_actual == 3 ? "{{ route('api/counter/invalidateCountTracing') }}" : "{{ route('api/counter/deleteTracing') }}"
             let request = {'id_seguimiento_conteo' : id_seguimiento_conteo}
             loading(true, "Borrando registro...")
+            let type_http = this.conteo_actual == 3 ? 'POST' : 'DELETE'
             $.ajax({
                 url : url,
-                type : 'DELETE',
+                type : type_http,
                 data : request,
                 success: function (response) {
                     loading(false)
@@ -367,36 +387,47 @@
             toastr.error("La cantidad debe ser mayor o igual a 0")
             return false
         }
-        
-        let validacion = this.fila_escojida.productos.filter(element => element.id_producto == id_producto &&element.seguimiento.lote == lote && element.seguimiento.fecha_vencimiento)
-        if(validacion.length > 0){
-            toastr.error("Este producto ya se encuentra en esta fila auditado con el mismo lote y fecha de vencimiento", "Error")
-        }else{
-            $("#btn-agregar").prop("disabled", true)
-            $("#btn-agregar").html("Validando...")
-            let url = "{{ route('api/counter/saveTracing') }}"
-            let request = {
-                'id_conteo_detalle' : this.estante_escojido.id_conteo_detalle,
-                'id_estante' : this.estante_escojido.id_estante,
-                'id_fila' : this.fila_escojida.id_fila,
-                'id_producto' : id_producto,
-                'lote' : lote,
-                'fecha_vencimiento' : fecha_vencimiento,
-                'cantidad' : cantidad,
-            }
-
-            $.post(url, request, (response) => {
-                $("#btn-agregar").prop("disabled", false)
-                $("#btn-agregar").html("Agregar producto")
-                toastr.success(response.message)
-                AgregarProductoLista(this.estante_escojido.id_estante, this.fila_escojida.id_fila, response.product)
-            })
-            .fail((error) => {
-                toastr.error("Ocurrio un error")
-                $("#btn-agregar").prop("disabled", true)
-                $("#btn-agregar").html("Agregar producto")
-            })
+        let exist_product = this.fila_escojida.productos.filter(element => element.id_producto)
+        if (exist_product.length == 0) {
+            toastr.error("Este producto no se encuentra auditado en esta fila previamente o no es necesario auditarlo en este conteo", "Error")
+            return false
         }
+
+        
+
+        if (this.conteo_actual == 3) {
+            let validacion = this.fila_escojida.productos.filter(element => element.id_producto == id_producto && element.lote == lote && element.fecha_vencimiento)
+            if (validacion.length == 0) {
+                toastr.error("El producto con lote y fecha de vencimiento no esta dentro de los productos a verificar en el conteo", "Error")
+                return false
+            }
+        }
+        
+        $("#btn-agregar").prop("disabled", true)
+        $("#btn-agregar").html("Validando...")
+        let url = "{{ route('api/counter/saveTracing') }}"
+        let request = {
+            'id_conteo_detalle' : this.estante_escojido.id_conteo_detalle,
+            'id_estante' : this.estante_escojido.id_estante,
+            'id_fila' : this.fila_escojida.id_fila,
+            'id_producto' : id_producto,
+            'lote' : lote,
+            'fecha_vencimiento' : fecha_vencimiento,
+            'cantidad' : cantidad,
+        }
+
+        $.post(url, request, (response) => {
+            $("#btn-agregar").prop("disabled", false)
+            $("#btn-agregar").html("Agregar producto")
+            toastr.success(response.message)
+            AgregarProductoLista(this.estante_escojido.id_estante, this.fila_escojida.id_fila, response.product)
+        })
+        .fail((error) => {
+            toastr.error("Ocurrio un error")
+            $("#btn-agregar").prop("disabled", true)
+            $("#btn-agregar").html("Agregar producto")
+        })
+        
     }
 
     function AgregarProductoLista(id_estante, id_fila, producto) {
@@ -434,6 +465,9 @@
                                 }
                                 pos_seguimientos++
                             })
+                        }
+                        if (this.conteo_actual == 3 && pro.id_seguimiento_conteo == id_seguimiento_conteo) {
+                            fila.productos.splice(pos, 1)
                         }
                         pos++
                     })
@@ -507,6 +541,7 @@
                                         <th scope="col"><b>Lote</b></th>
                                         <th scope="col"><b>Fecha Vencimiento</b></th>
                                         <th scope="col"><b>Cantidad</b></th>
+                                        <th id="th-conteo" scope="col" style="display: none;"><b>Conteo</b></th>
                                         <th scope="col"></th>
                                     </tr>
                                 </thead>

@@ -536,7 +536,6 @@ class APIController extends Controller
 											$seguimiento->seguimientos = $seguimientos_conteo;
 										}
 									}else{
-
 										$seguimientos = $this->ProductosConteo3($conteo, $fila);
 									}
 									$fila->productos = $seguimientos;
@@ -568,7 +567,7 @@ class APIController extends Controller
     {
     	$seguimientos = [];
 		$seguimientos_conteo_1 = "SELECT DISTINCT(p.id_producto) as id_producto,
-                                sc.id_fila_estante,													 
+                                sc.id_fila_estante,
 								p.codigo,
 								p.codigo_barras,
 								p.nombre,
@@ -585,10 +584,10 @@ class APIController extends Controller
 							  	AND sc.valido = 1
 							  	AND sc.id_fila_estante = $fila->id_fila
 							  	AND sc.estado = 1";
-		
+
 
 		$seguimientos_conteo_2 = "SELECT DISTINCT(p.id_producto) as id_producto,
-                                sc.id_fila_estante,													 
+                                sc.id_fila_estante,
 								p.codigo,
 								p.codigo_barras,
 								p.nombre,
@@ -596,7 +595,7 @@ class APIController extends Controller
 								sc.cantidad,
 								sc.fecha_vencimiento,
 								sc.lote,
-								sc.id_seguimiento_conteo 
+								sc.id_seguimiento_conteo
 								FROM seguimiento_conteo sc
 								LEFT JOIN producto p USING(id_producto)
 								LEFT JOIN conteo_detalle cd USING(id_conteo_detalle)
@@ -617,15 +616,16 @@ class APIController extends Controller
 					//ESTA VARIABLE PERMITIRA SABER SI EL PRODUCTO EXISTE EN AMBOS CONTEOS SI SOLO EXISTE EN EL PRIMER CONTEO DEBE SER VERIFICADO EN EL TERCER CONTEO
 					$encontro = true;
 					if ($conteo_1->cantidad != $conteo_2->cantidad) {
-						$producto['id_producto'] = $conteo_2->id_producto;												 
-						$producto['id_seguimiento_conteo'] = $conteo_2->id_seguimiento_conteo;												 
-						$producto['id_fila_estante'] = $fila->id_fila;												 
+						$producto['id_producto'] = $conteo_2->id_producto;
+						$producto['id_seguimiento_conteo'] = $conteo_2->id_seguimiento_conteo;
+						$producto['id_fila_estante'] = $fila->id_fila;
 						$producto['codigo'] = $conteo_2->codigo;
 						$producto['codigo_barras'] = $conteo_2->codigo_barras;
 						$producto['nombre'] = $conteo_2->nombre;
 						$producto['descripcion'] = $conteo_2->descripcion;
 						$producto['cantidad_1'] = $conteo_1->cantidad;
 						$producto['cantidad_2'] = $conteo_2->cantidad;
+						$producto['conteo'] = 2;
 						$producto['diferencia'] = $conteo_2->cantidad > $conteo_1->cantidad ? $conteo_2->cantidad - $conteo_1->cantidad : $conteo_1->cantidad - $conteo_2->cantidad;
 						$producto['fecha_vencimiento'] = $conteo_2->fecha_vencimiento;
 						$producto['lote'] = $conteo_2->lote;
@@ -640,14 +640,15 @@ class APIController extends Controller
 								   AND sc.id_fila_estante = ".$fila->id_fila."
 								   AND cd.id_conteo = ".$conteo->id_conteo);
 						$producto['seguimientos'] = $seguimientos_conteo;
+						$producto['tiene_seguimiento_conteo'] = count($seguimientos_conteo) > 0 ? true : false;
 						$seguimientos[] = (object) $producto;
 					}
 				}
 			}
 			if(!$encontro){
-				$producto['id_producto'] = $conteo_1->id_producto;	
-				$producto['id_seguimiento_conteo'] = $conteo_1->id_seguimiento_conteo;	
-				$producto['id_fila_estante'] = $fila->id_fila;												 
+				$producto['id_producto'] = $conteo_1->id_producto;
+				$producto['id_seguimiento_conteo'] = $conteo_1->id_seguimiento_conteo;
+				$producto['id_fila_estante'] = $fila->id_fila;
 				$producto['codigo'] = $conteo_1->codigo;
 				$producto['codigo_barras'] = $conteo_1->codigo_barras;
 				$producto['nombre'] = $conteo_1->nombre;
@@ -655,6 +656,7 @@ class APIController extends Controller
 				$producto['cantidad'] = $conteo_1->cantidad;
 				$producto['cantidad_1'] = $conteo_1->cantidad;
 				$producto['cantidad_2'] = 0;
+				$producto['conteo'] = 1;
 				$producto['diferencia'] = $conteo_1->cantidad;
 				$producto['fecha_vencimiento'] = $conteo_1->fecha_vencimiento;
 				$producto['lote'] = $conteo_1->lote;
@@ -669,6 +671,9 @@ class APIController extends Controller
 							   AND sc.fecha_vencimiento = '".$producto['fecha_vencimiento']."'
 							   AND sc.id_fila_estante = ".$fila->id_fila."
 							   AND cd.id_conteo = ".$conteo->id_conteo);
+                $producto['tiene_conteo_final'] = count($seguimientos_conteo) > 0 ? true : false;
+                $producto['cantidad_3'] = count($seguimientos_conteo) > 0 ? $seguimientos_conteo[0]->cantidad : 0;
+                $producto['tiene_seguimiento_conteo'] = count($seguimientos_conteo) > 0 ? true : false;
 				$producto['seguimientos'] = $seguimientos_conteo;
 				$seguimientos[] = (object) $producto;
 			}
@@ -689,13 +694,14 @@ class APIController extends Controller
 			if(!$encontro){
 				$producto['id_producto'] = $conteo_2->id_producto;
 				$producto['id_seguimiento_conteo'] = $conteo_2->id_seguimiento_conteo;
-				$producto['id_fila_estante'] = $fila->id_fila;												 
+				$producto['id_fila_estante'] = $fila->id_fila;
 				$producto['codigo'] = $conteo_2->codigo;
 				$producto['codigo_barras'] = $conteo_2->codigo_barras;
 				$producto['nombre'] = $conteo_2->nombre;
 				$producto['descripcion'] = $conteo_2->descripcion;
 				$producto['cantidad'] = $conteo_2->cantidad;
 				$producto['cantidad_1'] = 0;
+				$producto['conteo'] = 2;
 				$producto['cantidad_2'] = $conteo_2->cantidad;
 				$producto['diferencia'] = $conteo_2->cantidad;
 				$producto['fecha_vencimiento'] = $conteo_2->fecha_vencimiento;
@@ -711,6 +717,9 @@ class APIController extends Controller
 							   AND sc.fecha_vencimiento = '".$producto['fecha_vencimiento']."'
 							   AND sc.id_fila_estante = ".$fila->id_fila."
 							   AND cd.id_conteo = ".$conteo->id_conteo);
+                $producto['tiene_conteo_final'] = count($seguimientos_conteo) > 0 ? true : false;
+                $producto['cantidad_3'] = count($seguimientos_conteo) > 0 ? $seguimientos_conteo[0]->cantidad : 0;
+				$producto['tiene_seguimiento_conteo'] = count($seguimientos_conteo) > 0 ? true : false;
 				$producto['seguimientos'] = $seguimientos_conteo;
 				$seguimientos[] = (object) $producto;
 			}
@@ -778,29 +787,39 @@ class APIController extends Controller
 
 							//RECORREMOS LAS FILAS PARA BUSCAR SEGUIMIENTOS YA REALIZADOS POR EL AUDITOR
 							foreach ($filas as $fila) {
-								$seguimientos = DB::select("SELECT s.id_seguimiento_auditoria,
-                                                 s.id_fila_estante,
-												 p.id_producto,
+
+								if ($num_conteo != 3) {
+									$seguimientos = DB::select("SELECT DISTINCT(p.id_producto) as id_producto,
+												 s.id_seguimiento_auditoria,
+	                                             s.id_fila_estante,	
 												 p.codigo,
+												 p.codigo_barras,
 												 p.nombre,
 												 p.descripcion,
-												 '' as seguimiento
+												 s.created_at,
+												 '' as lote,
+												 '' as fecha_vencimiento,
+												 '' as cantidad
 										  FROM seguimiento_auditoria s
 										  LEFT JOIN producto p USING(id_producto)
 										  WHERE s.id_fila_estante = ".$fila->id_fila."
 										  AND s.estado = 1
 										  AND s.id_auditoria_detalle = ".$estante->id_auditoria_detalle);
 
-								foreach ($seguimientos as $seguimiento) {
-									$seguimientos_conteo = DB::select("SELECT *
-														   FROM seguimiento_conteo sc
-														   WHERE sc.id_producto = ".$seguimiento->id_producto."
-														   AND sc.estado = 1
-														   AND sc.id_conteo_detalle = ".$estante->id_conteo_detalle);
-									$seguimiento->tiene_seguimiento_conteo = count($seguimientos_conteo) > 0 ? true : false;
-									$seguimiento->seguimientos = count($seguimientos_conteo) > 0 ? $seguimientos_conteo : [];
+								
+									foreach ($seguimientos as $seguimiento) {
+										$seguimientos_conteo = DB::select("SELECT *
+															   FROM seguimiento_conteo sc
+															   WHERE sc.id_producto = ".$seguimiento->id_producto."
+															   AND sc.estado = 1
+															   AND sc.id_fila_estante = ".$fila->id_fila."
+															   AND sc.id_conteo_detalle = ".$estante->id_conteo_detalle);
+										$seguimiento->tiene_seguimiento_conteo = count($seguimientos_conteo) > 0 ? true : false;
+										$seguimiento->seguimientos = $seguimientos_conteo;
+									}
+								}else{
+									$seguimientos = $this->ProductosConteo3($conteo, $fila);
 								}
-
 								$fila->productos = $seguimientos;
 							}
 							$estante->filas = $filas;
@@ -884,7 +903,7 @@ class APIController extends Controller
 								$seguimiento->id_conteo_detalle = $post->id_conteo_detalle;
 								$seguimiento->id_producto = $post->id_producto;
 								if ($seguimiento->conteo_detalle->conteo == 3) {
-									$seguimiento->cantidad = $seguimiento->cantidad;
+									$seguimiento->cantidad = $post->cantidad;
 								}else{
 									$seguimiento->cantidad = $seguimiento->cantidad + $post->cantidad;
 								}
@@ -893,6 +912,7 @@ class APIController extends Controller
 								$seguimiento->id_fila_estante = $post->id_fila;
 								$seguimiento->save();
 								$producto->tiene_seguimiento_conteo = true;
+								$producto->conteo = $seguimiento->conteo_detalle->conteo;
                                 $producto->id_seguimiento_conteo = $seguimiento->id_seguimiento_conteo;
                                 $producto->seguimientos = DB::select("SELECT *
 																      FROM seguimiento_conteo sc
@@ -1098,7 +1118,11 @@ class APIController extends Controller
 			if(isset($post->id_seguimiento_conteo)){
 				$seguimiento = SeguimientoConteo::find($post->id_seguimiento_conteo);
 				if($seguimiento){
-					$seguimiento->valido = 0;
+					if ($seguimiento->conteo_detalle->conteo == 3) {
+						$seguimiento->estado = 0;
+					}else{
+						$seguimiento->valido = 0;
+					}
 					$seguimiento->save();
 					$producto = $seguimiento->producto;
 					$producto->id_seguimiento_conteo = $seguimiento->id_seguimiento_conteo;
