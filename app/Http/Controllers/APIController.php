@@ -136,8 +136,9 @@ class APIController extends Controller
 							foreach ($estantes as $estante) {
 								$filas = DB::select("SELECT id_fila_estante as id_fila,
 													 nombre
-											  FROM fila_estante
-											  WHERE id_estante = ".$estante->id_estante);
+											  FROM fila_estantex
+                                              WHERE estado = 1
+											  AND id_estante = ".$estante->id_estante);
 
 								//RECORREMOS LAS FILAS PARA BUSCAR SEGUIMIENTOS YA REALIZADOS POR EL USUARIO
 								foreach ($filas as $fila) {
@@ -507,7 +508,8 @@ class APIController extends Controller
 								$filas = DB::select("SELECT id_fila_estante as id_fila,
 													 nombre
 											  FROM fila_estante
-											  WHERE id_estante = ".$estante->id_estante);
+                                              WHERE estado = 1
+											  AND id_estante = ".$estante->id_estante);
 
 								//RECORREMOS LAS FILAS PARA BUSCAR SEGUIMIENTOS YA REALIZADOS POR EL AUDITOR
 								foreach ($filas as $fila) {
