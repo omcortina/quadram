@@ -21,6 +21,18 @@
 
 @section('contenido')
 <style type="text/css">
+    .panel_stand{
+        display: inline-flex;
+        width: 100%;
+    }
+    .panel_stand_left{
+        width: 70%;
+    }
+    .panel_stand_right{
+        width: 30%;
+        text-align: right;
+        padding-top: 8px;
+    }
     .panel_stand p{
         font-size: smaller;
         margin-bottom: 0;
@@ -164,7 +176,10 @@
                         <h3><b>Conteo</b></h3>
                     </div>
                     <div class="col-sm-8 text-right">
+
                         @if ($conteo->id_conteo)
+                            <a id="btn-informe-diferencias" href="{{ route('conteo/informe_diferencias', $conteo->id_conteo) }}" target="_blank" class="btn btn-success" style="font-size: 13px !important;"><i data-feather="file-minus"></i> Informe de diferencias</a>
+
                             <a href="{{ route('conteo/informe', $conteo->id_conteo, $conteo->id_conteo) }}" target="_blank" class="btn btn-danger" style="font-size: 13px !important;"><i data-feather="file-text"></i> Informe de conteo</a>
                         @endif
                     </div>
@@ -410,11 +425,21 @@
         let locacion = this.auditoria_locaciones.find(element => element.id_locacion == id_locacion)
         let tabla = ""
         locacion.estantes.forEach((estante) => {
+            let link_formato = ""
+            @if ($auditoria->id_auditoria)
+                link_formato = '<a href="#" target="_blank" style="font-size: 11px !important;"> <i data-feather="printer"></i></a>'
+            @endif
+            if(estante.encargado.nombre == "No asignado") link_formato = ""
             tabla += '<tr onclick="AuditoriaConfigurarEstante('+id_locacion+', '+estante.id_estante+')">'+
                         '<td class="pd-short">'+
                             '<div class="panel_stand">'+
-                                '<strong>Estante '+estante.nombre+'</strong>'+
-                                '<p>'+estante.encargado.nombre+'</p>'+
+                                '<div class="panel_stand_left">'+
+                                    '<strong>Estante '+estante.nombre+'</strong>'+
+                                    '<p>'+estante.encargado.nombre+'</p>'+
+                                '</div>'+
+                                '<div class="panel_stand_right">'+
+                                    link_formato
+                                '</div>'+
                             '</div>'+
                         '</td>'+
                     '</tr>'
@@ -438,6 +463,9 @@
             this.progreso_conteo_1 = response.progreso_conteo_1
             this.progreso_conteo_2 = response.progreso_conteo_2
             this.progreso_conteo_3 = response.progreso_conteo_3
+
+            if(this.progreso_conteo_2 < 100) $("#btn-informe-diferencias").fadeOut()
+            
             loading(false)
         })
         .fail((error) => {toastr.error("Ocurrio un error"); loading(false)})
@@ -605,16 +633,28 @@
         let tabla = ""
         locacion.estantes.forEach((estante) => {
             let encargado = estante.encargados.find(element => element.conteo == this.conteo_actual)
+            let link_formato = ""
+            @if ($conteo->id_conteo)
+                link_formato = '<a href="{{ config('global.servidor') }}/conteo/formato/{{ $conteo->id_conteo }}/'+estante.id_estante+'/'+this.conteo_actual+'" target="_blank" style="font-size: 11px !important;"> <i data-feather="printer"></i></a>'
+            @endif
+            if(encargado.nombre == "No asignado") link_formato = ""
             tabla += '<tr onclick="ConteoConfigurarEstante('+id_locacion+', '+estante.id_estante+')">'+
                         '<td class="pd-short">'+
                             '<div class="panel_stand">'+
-                                '<strong>Estante '+estante.nombre+'</strong>'+
-                                '<p>'+encargado.nombre+'</p>'+
+                                '<div class="panel_stand_left">'+
+                                    '<strong>Estante '+estante.nombre+'</strong>'+
+                                    '<p>'+encargado.nombre+'</p>'+
+                                '</div>'+
+                                '<div class="panel_stand_right">'+
+                                    link_formato
+                                '</div>'+
                             '</div>'+
                         '</td>'+
                     '</tr>'
         })
+
         $("#conteo-tabla-estantes tbody").html(tabla)
+        feather.replace()
     }
 
     function EscogerConteo(conteo) {

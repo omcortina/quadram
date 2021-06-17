@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Conteo;
+use App\Models\ConteoDetalle;
+use App\Models\AuditoriaDetalle;
 use App\Models\SeguimientoConteo;
 use App\Models\SeguimientoAuditoria;
 use Illuminate\Support\Facades\DB;
@@ -53,6 +55,50 @@ class ConteoController extends Controller
 			'seguimientos', 'conteo', 'num_conteo'
 		]));
     	return $pdf->stream('Informe de conteo.pdf');
+	}
+
+	public function ImprimirDiferencias($id_conteo)
+	{
+		$seguimientos = [];
+		$conteo = Conteo::find($id_conteo);
+		
+		$sql = "SELECT sa.id_seguimiento_auditoria 
+				FROM seguimiento_auditoria sa
+				LEFT JOIN auditoria_detalle ad USING(id_auditoria_detalle)
+				WHERE ad.estado = 1 AND sa.estado = 1
+				AND ad.id_auditoria = $conteo->id_auditoria
+				ORDER BY ad.id_auditoria_detalle, id_fila_estante ASC";
+		foreach (DB::select($sql) as $result) {
+			$seguimientos[] = SeguimientoAuditoria::find($result->id_seguimiento_auditoria);
+		}
+		
+
+		$view = 'pdf.informe_diferencias_conteo';
+		$pdf = \PDF::loadView($view, compact([
+			'seguimientos', 'conteo'
+		]));
+    	return $pdf->stream('Informe de diferencias en conteos.pdf');
+	}
+
+	public function ImprimirFormatoContador($id_conteo, $id_estante, $num_conteo)
+	{
+		$conteo_detalle = ConteoDetalle::where('id_conteo', $id_conteo)
+									   ->where('id_estante', $id_estante)
+									   ->where('conteo', $num_conteo)
+									   ->first();
+		if ($conteo_detalle) {
+			$seguimientos_auditoria = SeguimientoAuditoria::where('estado', 1)
+											->where('id_auditoria_detalle', $conteo_detalle->id_auditoria_detalle)
+											->get();
+			$view = 'pdf.formato_conteo';
+			$pdf = \PDF::loadView($view, compact([
+				'seguimientos_auditoria', 'conteo_detalle'
+			]))->setPaper('a4', 'landscape');
+			return $pdf->stream("Formato de conteo (Estante $conteo_detalle->estante->nombre).pdf");
+		}else{
+			echo "<h2>Url invalida</h2>";
+			die;
+		}
 	}
 
 	public function Finalizar($id_conteo)

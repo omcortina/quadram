@@ -50,6 +50,11 @@
         background-color: aliceblue;
     }
 
+    .td-estante{
+        display: inline-flex;
+        width: 100%;
+    }
+
     .td-estante:hover{
         cursor: pointer;
         background-color: aliceblue;
@@ -208,7 +213,8 @@
                         '<td id="td-estante-'+estante.id_estante+'"'+
                             'class="td-estante"'+
                             'onclick="ActualizarFilas('+id_locacion+', '+estante.id_estante+')">'+
-                            '<strong>Estante '+estante.nombre+'</strong>'+
+                            '<strong style="width: 70%;">Estante '+estante.nombre+'</strong>'+
+                            '<div style="text-align: right; width: 30%;"><a href="#" target="_blank" style="font-size: 11px !important;"> <i data-feather="printer"></i></a></div>'+
                         '</td>'+
                     '</tr>'
         })
@@ -216,6 +222,7 @@
         $("#seguimiento-tabla-estantes tbody").html(tabla)
         $("#seguimiento-tabla-filas tbody").html("")
         $("#seguimiento-tabla-productos tbody").html("")
+        feather.replace()
     }
 
     function ActualizarFilas(id_locacion, id_estante) {
