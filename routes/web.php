@@ -12,7 +12,6 @@ use App\Http\Controllers\EstanteController;
 use App\Http\Controllers\SeguimientoAuditoriaController;
 use App\Http\Controllers\SeguimientoConteoController;
 use App\Http\Controllers\APIController;
-use App\Http\Controllers\FilaEstanteController;
 
 
 /*
@@ -49,25 +48,20 @@ Route::get('almacen/ver_listado', [AlmacenController::class, 'VerListado'])->nam
 Route::get('almacen/listado', [AlmacenController::class, 'Listado'])->name('almacen/listado');
 Route::any('almacen/nuevo_almacen', [AlmacenController::class, 'Guardar'])->name('almacen/nuevo_almacen');
 Route::any('almacen/informacion/{id_almacen}', [AlmacenController::class, 'Informacion'])->name('almacen/informacion');
-Route::get('almacen/cambiar_estado/{id_almacen}', [AlmacenController::class, 'CambiarEstado'])->name('almacen/cambiar_estado');
-
 
 //LOCACION
 Route::get('locacion/listado/{id_almacen}', [LocacionController::class, 'Listado'])->name('locacion/listado');
 Route::any('locacion/guardar', [LocacionController::class, 'Guardar'])->name('locacion/guardar');
 Route::get('locacion/estantes_por_locacion/{id_locacion}', [LocacionController::class, 'EstantesPorLocacion'])->name('locacion/estantes_por_locacion');
-Route::get('locacion/eliminar_locacion/{id_locacion}', [LocacionController::class, 'EliminarLocacion'])->name('locacion/eliminar_locacion');
 
 //ESTANTE
 Route::get('estante/listado', [EstanteController::class, 'Listado'])->name('estante/listado');
 Route::any('estante/guardar', [EstanteController::class, 'Guardar'])->name('estante/guardar');
 Route::any('estante/filas_por_estante/{id_estante}', [EstanteController::class, 'FilasPorEstante'])->name('estante/filas_por_estante');
-Route::get('estante/eliminar_estante/{id_estante}', [EstanteController::class, 'EliminarEstante'])->name('estante/eliminar_estante');
 
 //FILA
 Route::get('fila/listado', [EstanteController::class, 'ListadoFilas'])->name('fila/listado');
 Route::any('fila/guardar', [EstanteController::class, 'GuardarFila'])->name('fila/guardar');
-Route::any('fila/eliminar_fila/{id_fila}', [FilaEstanteController::class, 'EliminarFila'])->name('fila/eliminar_fila');
 
 //INVENTARIO
 Route::get('inventario/gestion', [InventarioController::class, 'Gestion'])->name('inventario/gestion');
@@ -93,7 +87,9 @@ Route::any('conteo/seguimiento', [SeguimientoConteoController::class, 'Informe']
 Route::any('conteo/informe/{id_conteo}', [ConteoController::class, 'Imprimir'])->name('conteo/informe');
 Route::any('conteo/finalizar/{id_conteo}', [ConteoController::class, 'Finalizar'])->name('conteo/finalizar');
 Route::any('conteo/listado', [ConteoController::class, 'Listado'])->name('conteo/listado');
-
+Route::any('conteo/informe_diferencias/{id_conteo}', [ConteoController::class, 'ImprimirDiferencias'])->name('conteo/informe_diferencias');
+Route::any('conteo/formato/{id_conteo}/{id_estante}/{num_conteo}', [ConteoController::class, 'ImprimirFormatoContador'])->name('conteo/formato');
+Route::any('auditoria/formato/{id_auditoria}/{id_estante}', [AuditoriaController::class, 'ImprimirFormatoAuditor'])->name('auditoria/formato');
 
 //API
 Route::post('api/login', [APIController::class, 'Login'])->name('api/login');

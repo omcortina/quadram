@@ -7,6 +7,7 @@ use App\Models\Auditoria;
 use App\Models\Conteo;
 use App\Models\Inventario;
 use App\Models\Locacion;
+use App\Models\Estante;
 use App\Models\Usuario;
 use App\Models\AuditoriaDetalle;
 use App\Models\ConteoDetalle;
@@ -281,5 +282,19 @@ class AuditoriaController extends Controller
 			'mensaje' => $mensaje,
 			'error' => $error
 		]);
+	}
+
+	public function ImprimirFormatoAuditor($id_auditoria, $id_estante)
+	{
+		$auditoria_detalle = AuditoriaDetalle::where("id_auditoria", $id_auditoria)
+											 ->where("id_estante", $id_estante)
+											 ->first();
+		$estante = Estante::find($id_estante);
+		$auditoria = Auditoria::find($id_auditoria);
+		$view = 'pdf.formato_auditoria';
+		$pdf = \PDF::loadView($view, compact([
+			'auditoria_detalle', 'auditoria', 'estante'
+		]));
+		return $pdf->stream('Formato de auditoria.pdf');
 	}
 }
