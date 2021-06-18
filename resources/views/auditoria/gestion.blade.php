@@ -33,6 +33,18 @@
         text-align: right;
         padding-top: 8px;
     }
+    .panel_stand{
+        display: inline-flex;
+        width: 100%;
+    }
+    .panel_stand_left{
+        width: 70%;
+    }
+    .panel_stand_right{
+        width: 30%;
+        text-align: right;
+        padding-top: 8px;
+    }
     .panel_stand p{
         font-size: smaller;
         margin-bottom: 0;
