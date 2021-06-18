@@ -427,7 +427,7 @@
         locacion.estantes.forEach((estante) => {
             let link_formato = ""
             @if ($auditoria->id_auditoria)
-                link_formato = '<a href="#" target="_blank" style="font-size: 11px !important;"> <i data-feather="printer"></i></a>'
+                link_formato = '<a href="{{ config('global.servidor') }}/auditoria/formato/{{ $auditoria->id_auditoria }}/'+estante.id_estante+'" target="_blank" style="font-size: 11px !important;"> <i data-feather="printer"></i></a>'
             @endif
             if(estante.encargado.nombre == "No asignado") link_formato = ""
             tabla += '<tr onclick="AuditoriaConfigurarEstante('+id_locacion+', '+estante.id_estante+')">'+

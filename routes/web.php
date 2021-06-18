@@ -89,6 +89,7 @@ Route::any('conteo/finalizar/{id_conteo}', [ConteoController::class, 'Finalizar'
 Route::any('conteo/listado', [ConteoController::class, 'Listado'])->name('conteo/listado');
 Route::any('conteo/informe_diferencias/{id_conteo}', [ConteoController::class, 'ImprimirDiferencias'])->name('conteo/informe_diferencias');
 Route::any('conteo/formato/{id_conteo}/{id_estante}/{num_conteo}', [ConteoController::class, 'ImprimirFormatoContador'])->name('conteo/formato');
+Route::any('auditoria/formato/{id_auditoria}/{id_estante}', [AuditoriaController::class, 'ImprimirFormatoAuditor'])->name('auditoria/formato');
 
 //API
 Route::post('api/login', [APIController::class, 'Login'])->name('api/login');
